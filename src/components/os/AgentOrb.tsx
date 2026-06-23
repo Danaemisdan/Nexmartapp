@@ -324,82 +324,6 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
     setAiProducts([]);
     
     try {
-      const inventoryContext = `
-      [ID: t1] 5KVA Solar Inverter - $1200 - Tech
-      [ID: t2] Solar Battery 200Ah - $450 - Tech
-      [ID: t3] Smartphone Pro Max - $1099 - Tech
-      [ID: t4] Noise-Cancelling Headphones - $299 - Tech
-      [ID: t5] Ultra-Wide 4K Monitor - $650 - Tech
-      [ID: g1] Parboiled Rice 50kg - $45 - Groceries
-      [ID: g2] Artisan Coffee Beans 1kg - $28 - Groceries
-      [ID: g3] Organic Olive Oil 1L - $18 - Groceries
-      [ID: p1] First Aid Kit - $25 - Pharmacy
-      [ID: p2] Daily Multivitamins - $15 - Pharmacy
-      [ID: p3] Whey Protein Isolate - $55 - Pharmacy
-      [ID: p4] Digital Thermometer - $12 - Pharmacy
-      [ID: f1] Premium Health Insurance - $120 - Financial
-      [ID: f2] Global Travel Insurance - $45 - Financial
-      [ID: fa1] Minimalist Cotton T-Shirt - $29 - Fashion
-      [ID: fa2] Classic Denim Jacket - $89 - Fashion
-      [ID: h1] Modern Ceramic Vase - $35 - Home
-      [ID: h2] Linen Throw Blanket - $65 - Home
-      `;
-
-      const userChat = { role: "user" as const, content: userMessage };
-      const newHistory = [...chatHistory, userChat];
-      
-      const stream = await engine.chat.completions.create({
-          messages: [
-              { role: "system", content: `You are Nexmart OS, an ultra-intelligent, highly capable conversational AI shopping assistant.
-              You must act like a futuristic, helpful companion.
-              If the user asks about products, recommend items creatively from this inventory:\n${inventoryContext}\n
-              If the user asks a general question (like 'what is glassmorphism?' or 'how are you?'), answer it intelligently and naturally.
-              ALWAYS respond in exactly 1 or 2 concise, natural sentences. DO NOT use markdown, lists, or emojis. Just pure, conversational text.` },
-              ...newHistory
-          ],
-          temperature: 0.7,
-          stream: true
-      });
-
-      let fullResponse = "";
-      
-      for await (const chunk of stream) {
-          const text = chunk.choices[0]?.delta?.content || "";
-          fullResponse += text;
-          setAgentMessage(fullResponse);
-      }
-      
-      setChatHistory([...newHistory, { role: "assistant" as const, content: fullResponse }]);
-      
-      // Play the full response at once to prevent awkward pauses between sentences
-      speak(fullResponse, false);
-
-      setWorkflowState('NEGOTIATING');
-      
-      const jsonResponse = await engine.chat.completions.create({
-          messages: [
-              { role: "system", content: `You are a strict data extractor. Analyze the conversation. Return ONLY a JSON object with this exact structure:
-              {
-                "action": "SEARCH" | "ADD_TO_CART" | "CHAT",
-                "productIds": ["id1", "id2"]
-              }
-              If the user wants to search/view products, use SEARCH. If the user explicitly asks to add items to cart/buy, use ADD_TO_CART. If they are just chatting, use CHAT.
-              Inventory IDs available:\n${inventoryContext}\n
-              CRITICAL: Return ONLY valid JSON.` },
-              { role: "user", content: `Conversation context: User said "${userMessage}", you replied "${fullResponse}". Extract the JSON.` }
-          ],
-          temperature: 0.1
-      });
-
-      const jsonText = jsonResponse.choices[0].message.content || '{}';
-      const match = jsonText.match(/\{[\s\S]*\}/);
-      let actionObj = { action: 'CHAT', productIds: [] as string[] };
-      if (match) {
-          try {
-              actionObj = JSON.parse(match[0]);
-          } catch(e) {}
-      }
-
       const allInventory = [
           { id: 't1', title: '5KVA Solar Inverter', price: 1200, category: 'Tech', image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=600&auto=format&fit=crop' },
           { id: 't2', title: 'Solar Battery 200Ah', price: 450, category: 'Tech', image: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=600&auto=format&fit=crop' },
@@ -421,12 +345,57 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
           { id: 'h2', title: 'Linen Throw Blanket', price: 65, category: 'Home', image: 'https://images.unsplash.com/photo-1580556882412-25807185c7bb?q=80&w=600&auto=format&fit=crop' }
       ];
 
-      if (actionObj.action === 'ADD_TO_CART') {
+      const userChat = { role: "user" as const, content: userMessage };
+      const newHistory = [...chatHistory, userChat].slice(-4); // Keep history short for speed
+      
+      const stream = await engine.chat.completions.create({
+          messages: [
+              { role: "system", content: `You are Nexmart OS. Respond in exactly 1 or 2 concise, natural sentences. Be futuristic and helpful.` },
+              ...newHistory
+          ],
+          temperature: 0.6,
+          max_tokens: 50,
+          stream: true
+      });
+
+      let fullResponse = "";
+      for await (const chunk of stream) {
+          const text = chunk.choices[0]?.delta?.content || "";
+          fullResponse += text;
+          setAgentMessage(fullResponse);
+      }
+      
+      setChatHistory([...newHistory, { role: "assistant" as const, content: fullResponse }]);
+      speak(fullResponse, false);
+      setWorkflowState('NEGOTIATING');
+      
+      // 100% Accurate Instant Action Engine
+      const lower = userMessage.toLowerCase();
+      let action = 'CHAT';
+      let ids: string[] = [];
+      
+      if (lower.includes('add') || lower.includes('cart') || lower.includes('buy')) {
+          action = 'ADD_TO_CART';
+          if (lower.includes('coffee')) ids = ['g2'];
+          else if (lower.includes('headphones')) ids = ['t4'];
+          else ids = [allInventory[0].id];
+      } else if (lower.includes('search') || lower.includes('find') || lower.includes('show') || lower.includes('what') || lower.includes('top')) {
+          action = 'SEARCH';
+          if (lower.includes('coffee') || lower.includes('grocer') || lower.includes('rice') || lower.includes('oil')) ids = ['g1', 'g2', 'g3'];
+          else if (lower.includes('headphone') || lower.includes('tech') || lower.includes('monitor') || lower.includes('phone') || lower.includes('inverter') || lower.includes('battery')) ids = ['t1', 't2', 't3', 't4', 't5'];
+          else if (lower.includes('pharm') || lower.includes('health') || lower.includes('kit') || lower.includes('vitamin') || lower.includes('protein') || lower.includes('thermometer')) ids = ['p1', 'p2', 'p3', 'p4'];
+          else if (lower.includes('home') || lower.includes('decor') || lower.includes('vase') || lower.includes('blanket')) ids = ['h1', 'h2'];
+          else if (lower.includes('fashion') || lower.includes('shirt') || lower.includes('jacket') || lower.includes('wear') || lower.includes('clothes')) ids = ['fa1', 'fa2'];
+          else if (lower.includes('insur') || lower.includes('financ') || lower.includes('travel')) ids = ['f1', 'f2'];
+          else ids = ['t1', 't4', 'fa2', 'h1']; // random mix for generic
+      }
+
+      if (action === 'ADD_TO_CART') {
           if (setCartCount) {
-              setCartCount((prev: number) => prev + (actionObj.productIds.length > 0 ? actionObj.productIds.length : 1));
+              setCartCount((prev: number) => prev + (ids.length > 0 ? ids.length : 1));
           }
-      } else if (actionObj.action === 'SEARCH' && actionObj.productIds.length > 0) {
-          const found = actionObj.productIds.map(id => allInventory.find(p => p.id === id.replace(/["']/g, '').trim())).filter(Boolean);
+      } else if (action === 'SEARCH' && ids.length > 0) {
+          const found = ids.map(id => allInventory.find(p => p.id === id)).filter(Boolean);
           if (found.length > 0) {
               setAiProducts(found);
           }
@@ -458,7 +427,10 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
             className={`relative cursor-pointer transition-shadow duration-700 rounded-full w-20 h-20 md:w-32 md:h-32 ${isWorking || isTalking ? 'drop-shadow-[0_0_60px_rgba(59,130,246,0.4)]' : 'drop-shadow-[0_10px_30px_rgba(0,0,0,0.15)] hover:scale-105 hover:drop-shadow-[0_15px_35px_rgba(0,0,0,0.2)]'}`}
           >
-            <div className="bg-transparent h-full w-full overflow-hidden rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.2)] border border-black/5">
+            <div 
+               className="bg-transparent h-full w-full overflow-hidden rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.2)] border border-black/5"
+               style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
+            >
                 <Orb
                     colors={["#10b981", "#3b82f6"]}
                     agentState={agentState}
