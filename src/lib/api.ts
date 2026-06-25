@@ -30,7 +30,7 @@ export async function fetchProducts(): Promise<Product[]> {
                     price: parseFloat(p.selling_price) || 0,
                     originalPrice: (parseFloat(p.selling_price) || 0) * 1.2, // Fake 20% discount for UI
                     discount: '-20%',
-                    rating: 4.5 + (Math.random() * 0.5), // Ovaloop doesn't have rating
+                    rating: Math.round((4.5 + Math.random() * 0.5) * 10) / 10, // Ovaloop doesn't have rating
                     reviews: Math.floor(Math.random() * 500) + 10,
                     // Ovaloop might have null images, use a placeholder if needed
                     image: p.image_path || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80',
