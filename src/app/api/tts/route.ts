@@ -1,19 +1,6 @@
 import { MsEdgeTTS, OUTPUT_FORMAT } from "msedge-tts";
 import { NextResponse } from "next/server";
-import { Readable } from "stream";
 
-// Convert Node.js Readable to Web ReadableStream for instant streaming
-function streamToWebReadable(nodeStream: Readable) {
-  return new ReadableStream({
-    start(controller) {
-      nodeStream.on('data', chunk => controller.enqueue(new Uint8Array(chunk)));
-      nodeStream.on('end', () => controller.close());
-      nodeStream.on('error', err => controller.error(err));
-    }
-  });
-}
-
-// Changed to GET so we can stream directly into <audio src="..."> with zero delay
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -28,13 +15,19 @@ export async function GET(req: Request) {
     const tts = new MsEdgeTTS();
     await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
     
-    // This streams the audio *as it is being generated* by Microsoft Edge
+    // Instead of streaming, we wait for the buffer to finish to prevent Vercel 500 crashes
     const { audioStream } = tts.toStream(text);
-    const webStream = streamToWebReadable(audioStream);
+    
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of audioStream) {
+        chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
 
-    return new NextResponse(webStream, {
+    return new NextResponse(buffer, {
       headers: {
         'Content-Type': 'audio/mpeg',
+        'Content-Length': buffer.length.toString(),
         'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     });
