@@ -90,7 +90,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
               setShowGpuWarning(true);
           }
 
-          workerRef.current = new Worker(new URL('@/lib/worker.ts', import.meta.url), { type: 'module' });
+          workerRef.current = new Worker(new URL('../../lib/worker.ts', import.meta.url), { type: 'module' });
           
           // Force SmolLM2-135M on all devices for absolute maximum speed and stability
           const modelToLoad = 'SmolLM2-135M-Instruct-q4f16_1-MLC';
