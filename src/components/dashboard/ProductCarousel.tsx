@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { ArrowRight, Star, ShoppingCart, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Product } from '@/lib/api';
@@ -29,10 +30,10 @@ export default function ProductCarousel({ title, subtitle, products, type, onPro
 
             <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 md:pb-6 hide-scrollbar snap-x">
                 {products.map((product) => (
-                    <div 
+                    <Link 
                         key={product.id} 
-                        onClick={() => onProductClick && onProductClick(product)}
-                        className="cursor-pointer min-w-[180px] sm:min-w-[200px] md:min-w-[240px] max-w-[180px] sm:max-w-[200px] md:max-w-[240px] bg-white border border-gray-100 rounded-2xl p-3 md:p-4 flex flex-col group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex-shrink-0 snap-start relative"
+                        href={`/product/${product.id}`}
+                        className="min-w-[180px] sm:min-w-[200px] md:min-w-[240px] max-w-[180px] sm:max-w-[200px] md:max-w-[240px] bg-white border border-gray-100 rounded-2xl p-3 md:p-4 flex flex-col group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex-shrink-0 snap-start relative"
                     >
                         {/* Badges */}
                         {type === 'deals' && product.discount && (
@@ -78,7 +79,7 @@ export default function ProductCarousel({ title, subtitle, products, type, onPro
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
         </section>

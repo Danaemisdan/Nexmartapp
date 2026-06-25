@@ -1,20 +1,19 @@
-import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { NextRequest, NextResponse } from 'next/server';
+import { getAllProducts } from '@/lib/db';
 
-export async function GET() {
+// This route is dynamic — it reads from Redis (prod) or local JSON (dev)
+export const dynamic = 'force-dynamic';
+
+export async function GET(req: NextRequest) {
     try {
-        const filePath = path.join(process.cwd(), 'src/lib/ovaloop_products.json');
-        
-        if (fs.existsSync(filePath)) {
-            const raw = fs.readFileSync(filePath, 'utf8');
-            const data = JSON.parse(raw);
-            return NextResponse.json(data);
-        }
-        
-        return NextResponse.json([]);
-    } catch (e) {
-        console.error("Failed to read local inventory:", e);
-        return NextResponse.json([]);
+        const { searchParams } = new URL(req.url);
+        const limit = parseInt(searchParams.get('limit') || '100');
+        const offset = parseInt(searchParams.get('offset') || '0');
+
+        const products = await getAllProducts(limit, offset);
+        return NextResponse.json(products);
+    } catch (e: any) {
+        console.error('[API /products] Error:', e.message);
+        return NextResponse.json([], { status: 500 });
     }
 }
