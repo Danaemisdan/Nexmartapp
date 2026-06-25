@@ -115,7 +115,7 @@ export default function Header({ isLoggedIn, onOpenAuth, agentProps }: HeaderPro
 
                 {/* Center Notch for the AgentOrb (Mobile & Desktop) */}
                 <div className="flex justify-center items-center flex-shrink-0 z-[60] relative">
-                    <div className="absolute top-2 md:top-4 left-1/2 -translate-x-1/2">
+                    <div className="absolute -top-6 md:-top-10 left-1/2 -translate-x-1/2">
                         <AgentOrb {...agentProps} />
                     </div>
                 </div>
