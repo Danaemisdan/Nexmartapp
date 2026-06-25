@@ -398,38 +398,31 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
       <AnimatePresence>
           {showGpuWarning && <WebGPUWarning />}
       </AnimatePresence>
-      <div className={`${inline ? 'relative' : 'fixed top-[10px] md:top-[50px] left-1/2 -translate-x-1/2'} z-50 flex flex-col items-center transition-all duration-500`}>
+      <div className={`${inline ? 'relative' : 'fixed top-[10px] md:top-[20px] left-1/2 -translate-x-1/2'} z-50 flex flex-col items-center transition-all duration-500`}>
       
       <div className="relative">
           <motion.div 
             onClick={handleOrbClick}
-            animate={{ scale: isWorking || isTalking ? 1.3 : 1 }}
+            animate={{ scale: isWorking || isTalking ? 1.2 : 1 }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className={`relative cursor-pointer transition-shadow duration-700 rounded-full w-20 h-20 md:w-32 md:h-32 ${isWorking || isTalking ? 'drop-shadow-[0_0_60px_rgba(59,130,246,0.4)]' : 'drop-shadow-[0_10px_30px_rgba(0,0,0,0.15)] hover:scale-105 hover:drop-shadow-[0_15px_35px_rgba(0,0,0,0.2)]'}`}
+            className={`relative cursor-pointer transition-shadow duration-700 w-24 h-24 md:w-36 md:h-36 ${isWorking || isTalking ? 'drop-shadow-[0_0_60px_rgba(59,130,246,0.4)]' : 'drop-shadow-[0_10px_30px_rgba(0,0,0,0.2)] hover:scale-105 hover:drop-shadow-[0_15px_35px_rgba(0,0,0,0.3)]'}`}
           >
-            <div 
-               className="bg-transparent h-full w-full overflow-hidden rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.2)] border border-black/5"
-               style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
-            >
-                <Orb
-                    colors={["#10b981", "#3b82f6"]}
-                    agentState={agentState}
-                />
-            </div>
+             {/* Native ElevenLabs Orb - No Clipping Masks! */}
+             <Orb agentState={agentState} />
           </motion.div>
 
           {/* Status Pill */}
           {!isAiReady && !hasStartedBoot && (
-              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-white flex items-center gap-2 pointer-events-none">
-                  <Sparkles className="w-3 h-3 text-blue-600" />
-                  <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">Tap to Boot AI</span>
+              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white/10 flex items-center gap-2 pointer-events-none">
+                  <Sparkles className="w-4 h-4 text-blue-400" />
+                  <span className="text-[11px] font-bold text-gray-200 uppercase tracking-wider">Tap to Boot AI</span>
               </div>
           )}
           
           {!isAiReady && hasStartedBoot && (
-              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-white flex items-center gap-2 pointer-events-none">
-                  <Loader2 className="w-3 h-3 text-blue-600 animate-spin" />
-                  <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">{aiProgress}</span>
+              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white/10 flex items-center gap-2 pointer-events-none">
+                  <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
+                  <span className="text-[11px] font-bold text-gray-200 uppercase tracking-wider">{aiProgress}</span>
               </div>
           )}
 
@@ -452,10 +445,10 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                 initial={{ opacity: 0, y: -10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                className="max-w-xl w-full text-center bg-white/40 backdrop-blur-3xl px-6 py-4 rounded-3xl border border-white/60 text-gray-900 shadow-2xl flex flex-col gap-2 pointer-events-auto"
+                className="max-w-xl w-full text-center bg-black/60 backdrop-blur-3xl px-6 py-4 rounded-3xl border border-white/10 text-white shadow-2xl flex flex-col gap-2 pointer-events-auto"
               >
                 {userTranscript && (
-                    <span className="text-xs font-bold text-[#3b82f6] uppercase tracking-wider block">
+                    <span className="text-xs font-bold text-blue-400 uppercase tracking-wider block">
                         You: "{userTranscript}"
                     </span>
                 )}
