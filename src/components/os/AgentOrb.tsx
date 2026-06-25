@@ -158,10 +158,15 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                                
                                return { choices: [{ message: { content: JSON.stringify({ action, productIds: ids }) } }] };
                           } else {
-                               const userIntent = lastMsg;
-                               let text = "I can certainly help you with that! Let me check the store.";
-                               if (userIntent.includes('add') || userIntent.includes('cart')) text = "I've added that to your cart. Anything else?";
-                               else if (userIntent.includes('search') || userIntent.includes('find') || userIntent.includes('show')) text = "Here is what I found for you.";
+                               const userIntent = lastMsg.toLowerCase();
+                               let text = `I can certainly help you with "${lastMsg}". Let me check the store.`;
+                               if (userIntent.includes('add') || userIntent.includes('cart')) {
+                                   const item = lastMsg.replace(/add/i, '').replace(/to cart/i, '').replace(/buy/i, '').trim() || 'that';
+                                   text = `I've added ${item} to your cart. Anything else?`;
+                               } else if (userIntent.includes('search') || userIntent.includes('find') || userIntent.includes('show')) {
+                                   const query = lastMsg.replace(/search for/i, '').replace(/find me/i, '').replace(/show me/i, '').replace(/some/i, '').trim() || 'that';
+                                   text = `Here is what I found for ${query}.`;
+                               }
                                
                                await new Promise(resolve => setTimeout(resolve, 800)); // Simulate thinking delay
                                if (req.stream) {
@@ -437,7 +442,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
       </div>
 
       {/* Dynamic Subtitle Bubble (Glassmorphic) */}
-      <div className="h-24 mt-4 flex flex-col items-center justify-start w-[90vw] md:w-[600px] pointer-events-none">
+      <div className="h-24 mt-16 flex flex-col items-center justify-start w-[90vw] md:w-[600px] pointer-events-none">
           <AnimatePresence mode="wait">
             {(agentMessage || userTranscript) && !showKeyboard && (
               <motion.div 
