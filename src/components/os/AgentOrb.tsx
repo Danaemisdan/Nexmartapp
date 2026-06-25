@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Keyboard, X, Plus, ArrowUp, Loader2, Sparkles } from 'lucide-react';
 import { CreateWebWorkerMLCEngine, MLCEngineInterface } from '@mlc-ai/web-llm';
-import { CSSOrb } from "@/components/ui/css-orb";
+import { AgentState, Orb } from "@/components/ui/orb";
 import WebGPUWarning from './WebGPUWarning';
 import { useStore } from '@/lib/StoreContext';
 
@@ -90,7 +90,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
               setShowGpuWarning(true);
           }
 
-          workerRef.current = new Worker(new URL('../../lib/worker.ts', import.meta.url), { type: 'module' });
+          workerRef.current = new Worker(new URL('@/lib/worker.ts', import.meta.url), { type: 'module' });
           
           // Force SmolLM2-135M on all devices for absolute maximum speed and stability
           const modelToLoad = 'SmolLM2-135M-Instruct-q4f16_1-MLC';
@@ -388,12 +388,17 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
     }
   };
 
+  let agentState: AgentState = null;
+  if (isWorking) agentState = "thinking";
+  if (isTalking) agentState = "talking";
+  if (isListening) agentState = "listening";
+
   return (
     <>
       <AnimatePresence>
           {showGpuWarning && <WebGPUWarning />}
       </AnimatePresence>
-      <div className={`${inline ? 'relative' : 'fixed bottom-[100px] md:bottom-8 right-4 md:right-8'} z-50 flex flex-col items-end transition-all duration-500`}>
+      <div className={`${inline ? 'relative' : 'fixed top-[10px] md:top-[50px] left-1/2 -translate-x-1/2'} z-50 flex flex-col items-center transition-all duration-500`}>
       
       <div className="relative">
           <motion.div 
@@ -402,11 +407,15 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
             className={`relative cursor-pointer transition-shadow duration-700 rounded-full w-20 h-20 md:w-32 md:h-32 ${isWorking || isTalking ? 'drop-shadow-[0_0_60px_rgba(59,130,246,0.4)]' : 'drop-shadow-[0_10px_30px_rgba(0,0,0,0.15)] hover:scale-105 hover:drop-shadow-[0_15px_35px_rgba(0,0,0,0.2)]'}`}
           >
-            <CSSOrb 
-                isWorking={isWorking}
-                isListening={isListening}
-                isTalking={isTalking}
-            />
+            <div 
+               className="bg-transparent h-full w-full overflow-hidden rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.2)] border border-black/5"
+               style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
+            >
+                <Orb
+                    colors={["#10b981", "#3b82f6"]}
+                    agentState={agentState}
+                />
+            </div>
           </motion.div>
 
           {/* Status Pill */}
@@ -443,7 +452,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                 initial={{ opacity: 0, y: -10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                className="max-w-xl w-full text-center bg-white/90 backdrop-blur-3xl px-6 py-4 rounded-3xl border border-white/60 text-gray-900 shadow-2xl flex flex-col gap-2 pointer-events-auto"
+                className="max-w-xl w-full text-center bg-white/40 backdrop-blur-3xl px-6 py-4 rounded-3xl border border-white/60 text-gray-900 shadow-2xl flex flex-col gap-2 pointer-events-auto"
               >
                 {userTranscript && (
                     <span className="text-xs font-bold text-[#3b82f6] uppercase tracking-wider block">
@@ -467,7 +476,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="absolute top-44 bg-white/90 backdrop-blur-3xl border border-white/60 p-3 rounded-3xl shadow-2xl w-[90vw] md:w-[600px] flex flex-col gap-2"
+            className="absolute top-44 bg-white/40 backdrop-blur-3xl border border-white/60 p-3 rounded-3xl shadow-2xl w-[90vw] md:w-[600px] flex flex-col gap-2"
           >
             <div className="px-4 pt-2 pb-1 flex items-center justify-between">
                 <h3 className="text-gray-900 font-bold text-lg tracking-tight">Magic AI Search</h3>

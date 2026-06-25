@@ -436,8 +436,8 @@ void main() {
     // Check if the pixel is inside any of the ovals
     for (int i = 0; i < 7; i++) {
         float noise = texture(uPerlinTexture, vec2(mod(centers[i] + uTime * 0.05, 1.0), 0.5)).r;
-        a = max(0.01, 0.5 + noise * 0.3); // Increased for more coverage
-        b = max(0.01, noise * mix(3.5, 2.5, uInputVolume)); // Prevent division by zero
+        a = 0.5 + noise * 0.3; // Increased for more coverage
+        b = noise * mix(3.5, 2.5, uInputVolume); // Increased height for fuller appearance
         bool reverseGradient = (i % 2 == 1); // Reverse gradient for every second oval
 
         // Calculate the distance in polar coordinates
