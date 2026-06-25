@@ -33,7 +33,7 @@ export default function CategoriesView() {
                                     className="cursor-pointer bg-white border border-gray-100 rounded-2xl p-4 flex flex-col group hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                                 >
                                     <div className="w-full aspect-square bg-gray-50 rounded-xl mb-4 p-4 flex items-center justify-center overflow-hidden">
-                                        <img src={product.image || product.thumbnail} alt={product.title} className="max-w-full max-h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+                                        <img src={product.image} alt={product.title} className="max-w-full max-h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
                                     </div>
                                     <div className="flex flex-col flex-1">
                                         <h3 className="text-sm font-bold text-gray-800 leading-tight mb-1 line-clamp-2">{product.title}</h3>

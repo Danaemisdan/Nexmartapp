@@ -12,6 +12,8 @@ export interface Product {
     category: string;
     brand?: string;
     stock?: number;
+    thumbnail?: string;
+    discountPercentage?: number;
 }
 
 export async function fetchProducts(): Promise<Product[]> {
