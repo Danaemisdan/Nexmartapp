@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { revalidatePath } from 'next/cache';
-import { bulkUpsert, rebuildIndex, mapToNexmart, NexmartProduct } from '@/lib/db';
+import { bulkUpsert } from '@/lib/db';
 import { OVALOOP_SECRET_KEY } from '@/lib/ovaloop';
-import { commitFiles, isGitHubConfigured, GitHubFile } from '@/lib/github';
-import fs from 'fs';
-import path from 'path';
+import { isSupabaseConfigured } from '@/lib/supabase';
 
 export async function POST(req: NextRequest) {
     try {
@@ -37,91 +35,32 @@ export async function POST(req: NextRequest) {
             if (!inventoryRes.ok) throw new Error(`S3 download failed: ${inventoryRes.status}`);
             const rawProducts: any[] = await inventoryRes.json();
 
-            console.log(`[Ovaloop Webhook] ${rawProducts.length} products received. Diffing...`);
+            console.log(`[Ovaloop Webhook] ${rawProducts.length} products received. Diffing and Upserting...`);
 
-            // ── DIFF: find which products actually changed ────────────────────
-            const changedProducts: NexmartProduct[] = [];
-            const allProducts: NexmartProduct[] = [];
+            // ── BULK UPSERT ───────────────────────────────────────────────
+            // Updates Supabase or falls back to local file writes. 
+            // Returns ONLY the IDs of products that actually changed.
+            const { changedIds, total } = await bulkUpsert(rawProducts);
 
-            for (let i = 0; i < rawProducts.length; i++) {
-                const product = mapToNexmart(rawProducts[i], i);
-                allProducts.push(product);
+            console.log(`[Ovaloop Webhook] ${changedIds.length}/${total} products changed.`);
 
-                // Check existing file to see if price/stock changed
-                const filePath = path.join(process.cwd(), 'public/data/products', `${product.id}.json`);
-                let changed = true;
-                try {
-                    if (fs.existsSync(filePath)) {
-                        const existing: NexmartProduct = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-                        // Preserve existing rating/reviews (don't re-randomise on each update)
-                        product.rating = existing.rating;
-                        product.reviews = existing.reviews;
-                        changed = existing.price !== product.price || existing.stock !== product.stock;
-                    }
-                } catch {}
-
-                if (changed) changedProducts.push(product);
-            }
-
-            console.log(`[Ovaloop Webhook] ${changedProducts.length}/${rawProducts.length} products changed.`);
-
-            if (changedProducts.length === 0) {
-                return NextResponse.json({ success: true, total: rawProducts.length, changed: 0 });
-            }
-
-            // ── BUILD INDEX from all products ─────────────────────────────────
-            const index = allProducts.map(p => ({
-                id: p.id, title: p.title, price: p.price,
-                originalPrice: p.originalPrice, discount: p.discount,
-                image: p.image, category: p.category,
-                rating: p.rating, reviews: p.reviews,
-            }));
-
-            // ── FILES TO COMMIT ───────────────────────────────────────────────
-            // Only changed product JSON files + the updated index
-            const files: GitHubFile[] = [
-                // Lightweight index (always update it)
-                {
-                    path: 'public/data/index.json',
-                    content: JSON.stringify(index, null, 2),
-                },
-                // Only the specific product files that actually changed
-                ...changedProducts.map(p => ({
-                    path: `public/data/products/${p.id}.json`,
-                    content: JSON.stringify(p, null, 2),
-                })),
-            ];
-
-            if (isGitHubConfigured()) {
-                // ── PRODUCTION: commit to GitHub → Vercel auto-redeploys ──────
-                await commitFiles(
-                    files,
-                    `[Ovaloop] Update ${changedProducts.length} product(s) — ${new Date().toISOString()}`
-                );
-                console.log('[Ovaloop Webhook] GitHub commit complete. Vercel will auto-rebuild.');
-            } else {
-                // ── LOCAL DEV: write files directly to disk ───────────────────
-                for (const file of files) {
-                    const absPath = path.join(process.cwd(), file.path);
-                    fs.mkdirSync(path.dirname(absPath), { recursive: true });
-                    const tmp = absPath + '.tmp';
-                    fs.writeFileSync(tmp, file.content, 'utf8');
-                    fs.renameSync(tmp, absPath);
+            // ── SURGICAL REVALIDATION ─────────────────────────────────────────
+            if (changedIds.length > 0) {
+                // Tell Next.js to regenerate HTML ONLY for changed product pages.
+                for (const id of changedIds) {
+                    revalidatePath(`/product/${id}`);
                 }
-                // In local dev, also call revalidatePath for hot ISR
-                for (const p of changedProducts) {
-                    revalidatePath(`/product/${p.id}`);
-                }
+                // Revalidate listing/home
                 revalidatePath('/');
                 revalidatePath('/api/products');
-                console.log('[Ovaloop Webhook] Local mode: wrote files to disk and revalidated pages.');
+                console.log(`[Ovaloop Webhook] Revalidated ${changedIds.length} product pages.`);
             }
 
             return NextResponse.json({
                 success: true,
-                total: rawProducts.length,
-                changed: changedProducts.length,
-                mode: isGitHubConfigured() ? 'github' : 'local',
+                total,
+                changed: changedIds.length,
+                mode: isSupabaseConfigured() ? 'supabase' : 'local',
             });
         }
 

@@ -1,20 +1,15 @@
 /**
- * Nexmart Data Layer
+ * Nexmart Data Layer — Supabase
  *
  * Architecture:
- * - Each product is a single JSON file at: public/data/products/[id].json
- * - A lightweight index at:             public/data/index.json  (id + title + price + image only)
- * - These files are served FREE by Vercel's global CDN as static assets
- * - Product HTML pages read from their own JSON file at generation time
- * - The webhook ONLY writes the specific JSON files that changed — no full rewrites
- * - In production (Vercel serverless), files are written via the GitHub API
- * - Locally, files are written directly to disk
- *
- * Zero external databases. Zero cost. 50,000+ products supported.
+ * - Products are stored in a Supabase Postgres database.
+ * - The Ovaloop webhook updates Supabase, inserting new products and updating existing ones.
+ * - Local dev mode still falls back to public/data if Supabase isn't configured, ensuring smooth local dev.
  */
 
 import path from 'path';
 import fs from 'fs';
+import { supabase, isSupabaseConfigured } from './supabase';
 
 // ─── Canonical Product Type ──────────────────────────────────────────────────
 export interface NexmartProduct {
@@ -33,7 +28,6 @@ export interface NexmartProduct {
   sku: string;
 }
 
-// Lightweight index entry — what listing pages need (not the full product object)
 export interface ProductIndexEntry {
   id: string;
   title: string;
@@ -46,7 +40,7 @@ export interface ProductIndexEntry {
   reviews: number;
 }
 
-// ─── Paths ───────────────────────────────────────────────────────────────────
+// ─── Paths (For Local Fallback) ──────────────────────────────────────────────
 const DATA_DIR = path.join(process.cwd(), 'public/data/products');
 const INDEX_FILE = path.join(process.cwd(), 'public/data/index.json');
 
@@ -76,27 +70,19 @@ export function mapToNexmart(p: any, index: number = 0): NexmartProduct {
   };
 }
 
-// ─── Atomic File Write ───────────────────────────────────────────────────────
-// Writes to a .tmp file first, then renames atomically to prevent corruption
-function writeAtomic(filePath: string, data: any) {
-  const tmp = filePath + '.tmp';
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
-  fs.renameSync(tmp, filePath);
-}
-
-// ─── Read Index ───────────────────────────────────────────────────────────────
-function readIndex(): ProductIndexEntry[] {
-  try {
-    if (!fs.existsSync(INDEX_FILE)) return [];
-    return JSON.parse(fs.readFileSync(INDEX_FILE, 'utf8'));
-  } catch {
-    return [];
-  }
-}
-
 // ─── Read One Product ─────────────────────────────────────────────────────────
 export async function getProduct(id: string): Promise<NexmartProduct | null> {
+  if (isSupabaseConfigured() && supabase) {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error || !data) return null;
+    return data as NexmartProduct;
+  }
+
+  // Local fallback
   const filePath = path.join(DATA_DIR, `${id}.json`);
   try {
     if (!fs.existsSync(filePath)) return null;
@@ -106,84 +92,53 @@ export async function getProduct(id: string): Promise<NexmartProduct | null> {
   }
 }
 
-// ─── Read All (from index, paginated) ────────────────────────────────────────
+// ─── Read All (paginated) ────────────────────────────────────────────────────
 export async function getAllProducts(limit = 100, offset = 0): Promise<ProductIndexEntry[]> {
-  const index = readIndex();
-  return index.slice(offset, offset + limit);
+  if (isSupabaseConfigured() && supabase) {
+    const { data, error } = await supabase
+      .from('products')
+      .select('id, title, price, originalPrice, discount, image, category, rating, reviews')
+      .range(offset, offset + limit - 1)
+      .order('price', { ascending: false }); // Sort by price or however you want
+      
+    if (error || !data) return [];
+    
+    // Map database result to ProductIndexEntry
+    return data.map((d: any) => ({
+        id: d.id, title: d.title, price: d.price, originalPrice: d.originalPrice, 
+        discount: d.discount, image: d.image, category: d.category, 
+        rating: d.rating, reviews: d.reviews
+    }));
+  }
+
+  // Local fallback
+  try {
+    if (!fs.existsSync(INDEX_FILE)) return [];
+    const index: ProductIndexEntry[] = JSON.parse(fs.readFileSync(INDEX_FILE, 'utf8'));
+    return index.slice(offset, offset + limit);
+  } catch {
+    return [];
+  }
 }
 
 // ─── Get All IDs (for generateStaticParams) ───────────────────────────────────
 export async function getAllProductIds(): Promise<string[]> {
-  const index = readIndex();
-  return index.map(p => p.id);
-}
+  if (isSupabaseConfigured() && supabase) {
+    const { data, error } = await supabase
+      .from('products')
+      .select('id');
+    if (error || !data) return [];
+    return data.map((d: any) => d.id);
+  }
 
-// ─── Upsert One Product ───────────────────────────────────────────────────────
-// Writes the product JSON file ONLY if price or stock actually changed.
-// Returns { changed } so the webhook can target revalidation precisely.
-export async function upsertProduct(
-  raw: any,
-  index: number = 0
-): Promise<{ changed: boolean; product: NexmartProduct }> {
-  const product = mapToNexmart(raw, index);
-  const filePath = path.join(DATA_DIR, `${product.id}.json`);
-
-  // Read existing product to diff it
-  let existing: NexmartProduct | null = null;
+  // Local fallback
   try {
-    if (fs.existsSync(filePath)) {
-      existing = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    }
-  } catch {}
-
-  const priceChanged = !existing || existing.price !== product.price;
-  const stockChanged = !existing || existing.stock !== product.stock;
-  const isNew = !existing;
-  const changed = isNew || priceChanged || stockChanged;
-
-  if (changed) {
-    // Preserve existing rating/reviews if the product already exists
-    // (we don't want to randomise them on every webhook update)
-    if (existing) {
-      product.rating = existing.rating;
-      product.reviews = existing.reviews;
-    }
-    writeAtomic(filePath, product);
+    if (!fs.existsSync(INDEX_FILE)) return [];
+    const index: ProductIndexEntry[] = JSON.parse(fs.readFileSync(INDEX_FILE, 'utf8'));
+    return index.map(p => p.id);
+  } catch {
+    return [];
   }
-
-  return { changed, product };
-}
-
-// ─── Rebuild Index ────────────────────────────────────────────────────────────
-// Called after a bulk upsert — rebuilds the lightweight index.json from all
-// individual product files. Fast scan-and-write, does NOT touch product files.
-export async function rebuildIndex(): Promise<number> {
-  if (!fs.existsSync(DATA_DIR)) return 0;
-
-  const files = fs.readdirSync(DATA_DIR).filter(f => f.endsWith('.json'));
-  const entries: ProductIndexEntry[] = [];
-
-  for (const file of files) {
-    try {
-      const p: NexmartProduct = JSON.parse(
-        fs.readFileSync(path.join(DATA_DIR, file), 'utf8')
-      );
-      entries.push({
-        id: p.id,
-        title: p.title,
-        price: p.price,
-        originalPrice: p.originalPrice,
-        discount: p.discount,
-        image: p.image,
-        category: p.category,
-        rating: p.rating,
-        reviews: p.reviews,
-      });
-    } catch {}
-  }
-
-  writeAtomic(INDEX_FILE, entries);
-  return entries.length;
 }
 
 // ─── Bulk Upsert ─────────────────────────────────────────────────────────────
@@ -195,27 +150,109 @@ export async function bulkUpsert(
   const changedIds: string[] = [];
   const BATCH = 100;
 
-  for (let i = 0; i < rawProducts.length; i += BATCH) {
-    const batch = rawProducts.slice(i, i + BATCH);
-    const results = await Promise.all(batch.map((p, j) => upsertProduct(p, i + j)));
-    results.forEach(({ changed, product }) => {
-      if (changed) changedIds.push(product.id);
-    });
+  if (isSupabaseConfigured() && supabase) {
+    // ── Supabase Upsert ──
+    for (let i = 0; i < rawProducts.length; i += BATCH) {
+      const batch = rawProducts.slice(i, i + BATCH);
+      const mappedBatch = batch.map((p, j) => mapToNexmart(p, i + j));
+
+      // 1. Fetch existing products for this batch to compare
+      const batchIds = mappedBatch.map(p => p.id);
+      const { data: existingData } = await supabase
+        .from('products')
+        .select('id, price, stock, rating, reviews')
+        .in('id', batchIds);
+
+      const existingMap = new Map((existingData || []).map((p: any) => [p.id, p]));
+      
+      const toUpsert = [];
+
+      // 2. Diff each product
+      for (const product of mappedBatch) {
+        const existing = existingMap.get(product.id);
+        const priceChanged = !existing || existing.price !== product.price;
+        const stockChanged = !existing || existing.stock !== product.stock;
+        const isNew = !existing;
+        const changed = isNew || priceChanged || stockChanged;
+
+        if (changed) {
+          if (existing) {
+            // Preserve existing rating/reviews
+            product.rating = existing.rating;
+            product.reviews = existing.reviews;
+          }
+          toUpsert.push(product);
+          changedIds.push(product.id);
+        }
+      }
+
+      // 3. Upsert the changed ones
+      if (toUpsert.length > 0) {
+        const { error } = await supabase
+            .from('products')
+            .upsert(toUpsert, { onConflict: 'id' });
+            
+        if (error) {
+            console.error("Supabase upsert error:", error);
+        }
+      }
+    }
+  } else {
+     // ── Local File Fallback ──
+     // Re-use logic from previous implementation for local dev
+     console.log("Supabase not configured, using local file writes...");
+     
+     // Helper for atomic file write
+     const writeAtomic = (filePath: string, data: any) => {
+        const tmp = filePath + '.tmp';
+        fs.mkdirSync(path.dirname(filePath), { recursive: true });
+        fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
+        fs.renameSync(tmp, filePath);
+     };
+
+     for (let i = 0; i < rawProducts.length; i += BATCH) {
+        const batch = rawProducts.slice(i, i + BATCH);
+        
+        for (let j=0; j < batch.length; j++) {
+            const product = mapToNexmart(batch[j], i + j);
+            const filePath = path.join(DATA_DIR, `${product.id}.json`);
+            
+            let existing: NexmartProduct | null = null;
+            try {
+                if (fs.existsSync(filePath)) {
+                    existing = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                }
+            } catch {}
+            
+            const priceChanged = !existing || existing.price !== product.price;
+            const stockChanged = !existing || existing.stock !== product.stock;
+            const isNew = !existing;
+            const changed = isNew || priceChanged || stockChanged;
+            
+            if (changed) {
+                if (existing) {
+                    product.rating = existing.rating;
+                    product.reviews = existing.reviews;
+                }
+                writeAtomic(filePath, product);
+                changedIds.push(product.id);
+            }
+        }
+    }
+    
+    // Rebuild index
+    if (fs.existsSync(DATA_DIR)) {
+        const files = fs.readdirSync(DATA_DIR).filter(f => f.endsWith('.json'));
+        const entries: ProductIndexEntry[] = [];
+        for (const file of files) {
+            try {
+                const p: NexmartProduct = JSON.parse(fs.readFileSync(path.join(DATA_DIR, file), 'utf8'));
+                entries.push({ id: p.id, title: p.title, price: p.price, originalPrice: p.originalPrice, discount: p.discount, image: p.image, category: p.category, rating: p.rating, reviews: p.reviews });
+            } catch {}
+        }
+        writeAtomic(INDEX_FILE, entries);
+    }
   }
 
-  // Always rebuild the index after a bulk upsert
-  await rebuildIndex();
-
   return { changedIds, total: rawProducts.length };
-}
-
-// ─── Seed from legacy ovaloop_products.json (one-time migration) ──────────────
-// Run this once locally to convert the old flat JSON to the per-file structure.
-export async function seedFromLegacy(): Promise<number> {
-  const legacyPath = path.join(process.cwd(), 'src/lib/ovaloop_products.json');
-  if (!fs.existsSync(legacyPath)) return 0;
-
-  const raw: any[] = JSON.parse(fs.readFileSync(legacyPath, 'utf8'));
-  const { total } = await bulkUpsert(raw);
-  return total;
 }
