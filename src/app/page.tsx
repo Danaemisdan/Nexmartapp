@@ -14,12 +14,8 @@ export default function Home() {
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
     const handleSplashComplete = () => {
-        const hasOnboarded = localStorage.getItem('nexmart_onboarded');
-        if (hasOnboarded === 'true') {
-            setAppState('HOME');
-        } else {
-            setAppState('ONBOARDING');
-        }
+        // Temporarily force onboarding every time for testing
+        setAppState('ONBOARDING');
     };
 
     return (

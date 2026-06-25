@@ -27,7 +27,7 @@ export async function fetchProducts(): Promise<Product[]> {
             originalPrice: +(p.price / (1 - (p.discountPercentage || 0) / 100)).toFixed(2),
             discount: `-${Math.round(p.discountPercentage || 0)}%`,
             rating: p.rating,
-            reviews: p.reviews || Math.floor(Math.random() * 500) + 10,
+            reviews: Array.isArray(p.reviews) ? p.reviews.length : (typeof p.reviews === 'number' ? p.reviews : Math.floor(Math.random() * 500) + 10),
             image: p.thumbnail,
             images: p.images,
             category: p.category,
