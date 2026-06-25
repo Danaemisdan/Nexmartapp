@@ -41,7 +41,8 @@ export function Orb({
   return (
     <div className={className ?? "relative h-full w-full"}>
       <Canvas
-        camera={{ position: [0, 0, 8], fov: 50 }}
+        orthographic
+        camera={{ position: [0, 0, 100], zoom: 20 }}
         resize={{ debounce: resizeDebounce }}
         gl={{
           alpha: true,
