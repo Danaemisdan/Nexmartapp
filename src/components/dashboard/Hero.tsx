@@ -9,7 +9,7 @@ interface HeroProps {
 
 export default function Hero({ children }: HeroProps) {
     return (
-        <section className="relative w-full overflow-hidden bg-[#f8f9fa] pb-16 pt-8 md:pt-16 border-b border-gray-100">
+        <section className="relative w-full overflow-hidden bg-white pb-16 pt-8 md:pt-16 border-b border-gray-100">
             <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10 flex flex-col md:flex-row items-center justify-between">
                 
                 {/* Left Content */}
