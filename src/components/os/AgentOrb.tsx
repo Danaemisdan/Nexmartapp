@@ -388,11 +388,6 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
     }
   };
 
-  let agentState: AgentState = null;
-  if (isWorking) agentState = "thinking";
-  if (isTalking) agentState = "talking";
-  if (isListening) agentState = "listening";
-
   return (
     <>
       <AnimatePresence>
