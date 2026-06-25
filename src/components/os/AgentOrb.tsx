@@ -435,15 +435,15 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
       </div>
 
       {/* Dynamic Subtitle Bubble (Glassmorphic) */}
-      <div className="absolute bottom-24 right-0 flex flex-col items-end justify-end w-[90vw] md:w-[400px] pointer-events-none">
+      <div className="h-24 mt-4 flex flex-col items-center justify-start w-[90vw] md:w-[600px] pointer-events-none">
           <AnimatePresence mode="wait">
             {(agentMessage || userTranscript) && !showKeyboard && (
               <motion.div 
                 key="subtitle"
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="w-full text-right bg-white/90 backdrop-blur-3xl px-6 py-4 rounded-3xl border border-white/60 text-gray-900 shadow-2xl flex flex-col gap-2 pointer-events-auto"
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                className="max-w-xl w-full text-center bg-white/90 backdrop-blur-3xl px-6 py-4 rounded-3xl border border-white/60 text-gray-900 shadow-2xl flex flex-col gap-2 pointer-events-auto"
               >
                 {userTranscript && (
                     <span className="text-xs font-bold text-[#3b82f6] uppercase tracking-wider block">
@@ -464,10 +464,10 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
       <AnimatePresence>
         {showKeyboard && !isWorking && !isListening && (
           <motion.div 
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="absolute bottom-24 right-0 bg-white/90 backdrop-blur-3xl border border-white/60 p-3 rounded-3xl shadow-2xl w-[90vw] md:w-[400px] flex flex-col gap-2"
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="absolute top-44 bg-white/90 backdrop-blur-3xl border border-white/60 p-3 rounded-3xl shadow-2xl w-[90vw] md:w-[600px] flex flex-col gap-2"
           >
             <div className="px-4 pt-2 pb-1 flex items-center justify-between">
                 <h3 className="text-gray-900 font-bold text-lg tracking-tight">Magic AI Search</h3>
