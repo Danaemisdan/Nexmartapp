@@ -1,1 +1,54 @@
-[]
+[
+    {
+        "id": "oval_1",
+        "title": "Sony WH-1000XM5 Wireless Headphones",
+        "description": "Industry-leading noise canceling with two processors and eight microphones.",
+        "price": 348.00,
+        "discountPercentage": 10,
+        "rating": 4.8,
+        "stock": 45,
+        "brand": "Sony",
+        "category": "Electronics",
+        "thumbnail": "https://m.media-amazon.com/images/I/41JACWT-wWL._AC_SX466_.jpg",
+        "images": ["https://m.media-amazon.com/images/I/41JACWT-wWL._AC_SX466_.jpg"]
+    },
+    {
+        "id": "oval_2",
+        "title": "Breville Barista Express Espresso Machine",
+        "description": "Dose control grinding with precise espresso extraction.",
+        "price": 699.95,
+        "discountPercentage": 5,
+        "rating": 4.7,
+        "stock": 12,
+        "brand": "Breville",
+        "category": "Home & Kitchen",
+        "thumbnail": "https://m.media-amazon.com/images/I/71wLpQy0VYL._AC_SX466_.jpg",
+        "images": ["https://m.media-amazon.com/images/I/71wLpQy0VYL._AC_SX466_.jpg"]
+    },
+    {
+        "id": "oval_3",
+        "title": "Apple iPad Pro 12.9-inch",
+        "description": "M2 chip, Liquid Retina XDR display, pro cameras.",
+        "price": 1099.00,
+        "discountPercentage": 0,
+        "rating": 4.9,
+        "stock": 8,
+        "brand": "Apple",
+        "category": "Electronics",
+        "thumbnail": "https://m.media-amazon.com/images/I/81hAx31ma3L._AC_SX466_.jpg",
+        "images": ["https://m.media-amazon.com/images/I/81hAx31ma3L._AC_SX466_.jpg"]
+    },
+    {
+        "id": "oval_4",
+        "title": "YETI Rambler 20 oz Tumbler",
+        "description": "Stainless steel, vacuum insulated with MagSlider lid.",
+        "price": 35.00,
+        "discountPercentage": 0,
+        "rating": 4.8,
+        "stock": 150,
+        "brand": "YETI",
+        "category": "Home & Kitchen",
+        "thumbnail": "https://m.media-amazon.com/images/I/61Nl0aW00UL._AC_SX466_.jpg",
+        "images": ["https://m.media-amazon.com/images/I/61Nl0aW00UL._AC_SX466_.jpg"]
+    }
+]

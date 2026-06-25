@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Keyboard, X, Plus, ArrowUp, Loader2, Sparkles } from 'lucide-react';
 import { CreateWebWorkerMLCEngine, MLCEngineInterface } from '@mlc-ai/web-llm';
-import { AgentState, Orb } from "@/components/ui/orb";
+import { CSSOrb } from "@/components/ui/css-orb";
 import WebGPUWarning from './WebGPUWarning';
 import { useStore } from '@/lib/StoreContext';
 
@@ -407,15 +407,11 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
             className={`relative cursor-pointer transition-shadow duration-700 rounded-full w-20 h-20 md:w-32 md:h-32 ${isWorking || isTalking ? 'drop-shadow-[0_0_60px_rgba(59,130,246,0.4)]' : 'drop-shadow-[0_10px_30px_rgba(0,0,0,0.15)] hover:scale-105 hover:drop-shadow-[0_15px_35px_rgba(0,0,0,0.2)]'}`}
           >
-            <div 
-               className="bg-transparent h-full w-full overflow-hidden rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,0.2)] border border-black/5"
-               style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
-            >
-                <Orb
-                    colors={["#10b981", "#3b82f6"]}
-                    agentState={agentState}
-                />
-            </div>
+            <CSSOrb 
+                isWorking={isWorking}
+                isListening={isListening}
+                isTalking={isTalking}
+            />
           </motion.div>
 
           {/* Status Pill */}

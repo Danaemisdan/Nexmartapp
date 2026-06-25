@@ -17,7 +17,7 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
             <div className="bg-black text-white text-[10px] md:text-xs font-bold py-1.5 md:py-2 text-center flex items-center justify-center gap-2 tracking-wider">
                 <Sparkles className="w-3 h-3 text-yellow-400" /> 
                 AI Picks Just for You - Smarter Shopping, Better Choices! 
-                <span onClick={() => alert('App coming soon!')} className="hidden md:inline cursor-pointer ml-4 hover:text-gray-300">Download App 📱</span>
+                <span onClick={() => {}} className="hidden md:inline cursor-pointer ml-4 hover:text-gray-300">Download App 📱</span>
             </div>
 
             <div className="max-w-7xl mx-auto w-full px-4 md:px-6">
@@ -97,7 +97,7 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
 
                 {/* Desktop Secondary Nav */}
                 <div className="hidden md:flex items-center justify-between border-t border-gray-100 py-3">
-                    <button onClick={() => alert('Categories coming soon!')} className="flex items-center gap-2 text-sm font-bold text-gray-900 hover:text-[#1e3a8a] transition-colors">
+                    <button onClick={() => navigate('categories')} className="flex items-center gap-2 text-sm font-bold text-gray-900 hover:text-[#1e3a8a] transition-colors">
                         <Menu className="w-4 h-4" /> All Categories
                     </button>
                     
@@ -106,8 +106,8 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
                         <span onClick={() => navigate('home')} className="cursor-pointer hover:text-gray-900 flex items-center gap-1">
                             AI Picks <span className="bg-[#1e3a8a] text-white text-[9px] px-1.5 py-0.5 rounded-sm">NEW</span>
                         </span>
-                        <span onClick={() => alert('Deals coming soon!')} className="cursor-pointer hover:text-gray-900">Deals</span>
-                        <span onClick={() => alert('Order tracking coming soon!')} className="cursor-pointer hover:text-gray-900 flex items-center gap-1"><Package className="w-4 h-4"/> Track Order</span>
+                        <span onClick={() => navigate('deals')} className="cursor-pointer hover:text-gray-900">Deals</span>
+                        <span onClick={() => {}} className="cursor-pointer hover:text-gray-900 flex items-center gap-1"><Package className="w-4 h-4"/> Track Order</span>
                     </div>
                 </div>
 

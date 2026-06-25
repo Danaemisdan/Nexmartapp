@@ -8,6 +8,8 @@ import HomeView from '../views/HomeView';
 import CartView from '../views/CartView';
 import WishlistView from '../views/WishlistView';
 import ProductDetailsView from '../views/ProductDetailsView';
+import CategoriesView from '../views/CategoriesView';
+import DealsView from '../views/DealsView';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export type WorkflowState = 'IDLE' | 'RESEARCHING' | 'NEGOTIATING' | 'READY' | 'TALKING' | 'LISTENING';
@@ -66,6 +68,16 @@ function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
                     {activeView === 'product' && (
                         <motion.div key="product" initial={{opacity:0, x:20}} animate={{opacity:1, x:0}} exit={{opacity:0, x:-20}} className="flex-1">
                             <ProductDetailsView />
+                        </motion.div>
+                    )}
+                    {activeView === 'categories' && (
+                        <motion.div key="categories" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="flex-1">
+                            <CategoriesView />
+                        </motion.div>
+                    )}
+                    {activeView === 'deals' && (
+                        <motion.div key="deals" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="flex-1">
+                            <DealsView />
                         </motion.div>
                     )}
                 </AnimatePresence>
