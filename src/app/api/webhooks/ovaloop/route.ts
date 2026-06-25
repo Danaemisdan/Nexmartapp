@@ -5,6 +5,9 @@ import { bulkUpsert } from '@/lib/db';
 import { OVALOOP_SECRET_KEY } from '@/lib/ovaloop';
 import { isSupabaseConfigured } from '@/lib/supabase';
 
+// Give Vercel up to 5 minutes to process massive payloads
+export const maxDuration = 300;
+
 export async function POST(req: NextRequest) {
     try {
         const signatureHeader = req.headers.get('x-ovaloop-signature');
