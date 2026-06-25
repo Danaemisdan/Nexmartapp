@@ -33,21 +33,23 @@ function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
 
     return (
         <div className="h-full w-full overflow-y-auto bg-white flex flex-col hide-scrollbar relative">
-            <Header isLoggedIn={isLoggedIn} onOpenAuth={onOpenAuth} />
+            <Header 
+                isLoggedIn={isLoggedIn} 
+                onOpenAuth={onOpenAuth} 
+                agentProps={{
+                    workflowState,
+                    setWorkflowState,
+                    setCurrentTask,
+                    setAiProducts,
+                    setIsAiReady,
+                    setAiProgress,
+                    aiProgress,
+                    isAiReady,
+                    inline: true
+                }}
+            />
             
             <main className="flex-1 flex flex-col relative">
-                {/* AgentOrb is persistent across all views, living in the main content space but overlaying it */}
-                <AgentOrb 
-                    workflowState={workflowState}
-                    setWorkflowState={setWorkflowState}
-                    setCurrentTask={setCurrentTask}
-                    setAiProducts={setAiProducts}
-                    setIsAiReady={setIsAiReady}
-                    setAiProgress={setAiProgress}
-                    aiProgress={aiProgress}
-                    isAiReady={isAiReady}
-                    inline={false}
-                />
 
                 <AnimatePresence mode="wait">
                     {activeView === 'home' && (

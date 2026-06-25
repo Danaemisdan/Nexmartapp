@@ -403,14 +403,14 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
       <AnimatePresence>
           {showGpuWarning && <WebGPUWarning />}
       </AnimatePresence>
-      <div className={`${inline ? 'relative' : 'fixed top-[10px] md:top-[20px] left-1/2 -translate-x-1/2'} z-50 flex flex-col items-center transition-all duration-500`}>
+      <div className={`${inline ? 'relative' : 'fixed top-[20px] md:top-[10px] left-1/2 -translate-x-1/2'} z-[60] flex flex-col items-center transition-all duration-500`}>
       
-      <div className="relative">
+      <div className="relative flex items-center justify-center">
           <motion.div 
             onClick={handleOrbClick}
-            animate={{ scale: isWorking || isTalking ? 1.2 : 1 }}
+            animate={{ scale: isWorking || isTalking ? 1.15 : 1 }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className={`relative cursor-pointer transition-shadow duration-700 w-24 h-24 md:w-36 md:h-36 ${isWorking || isTalking ? 'drop-shadow-[0_0_60px_rgba(59,130,246,0.4)]' : 'drop-shadow-[0_10px_30px_rgba(0,0,0,0.2)] hover:scale-105 hover:drop-shadow-[0_15px_35px_rgba(0,0,0,0.3)]'}`}
+            className={`relative cursor-pointer transition-shadow duration-700 w-32 h-32 md:w-48 md:h-48 flex items-center justify-center ${isWorking || isTalking ? 'drop-shadow-[0_0_60px_rgba(59,130,246,0.5)]' : 'drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:scale-105 hover:drop-shadow-[0_15px_35px_rgba(0,0,0,0.4)]'}`}
           >
              {/* Native ElevenLabs Orb - No Clipping Masks! */}
              <Orb agentState={agentState} />

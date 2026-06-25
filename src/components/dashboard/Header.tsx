@@ -1,13 +1,15 @@
 import React from 'react';
 import { Search, ShoppingCart, Heart, User, Sparkles, Menu, Package } from 'lucide-react';
 import { useStore } from '@/lib/StoreContext';
+import AgentOrb from '../os/AgentOrb';
 
 interface HeaderProps {
     isLoggedIn: boolean;
     onOpenAuth: () => void;
+    agentProps: any;
 }
 
-export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
+export default function Header({ isLoggedIn, onOpenAuth, agentProps }: HeaderProps) {
     const { getCartCount, navigate } = useStore();
     const cartCount = getCartCount();
 
@@ -112,8 +114,8 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
                 </div>
 
                 {/* Center Notch for the AgentOrb (Mobile & Desktop) */}
-                <div className="flex justify-center items-center flex-shrink-0">
-                    <div className="w-[80px] h-[80px] md:w-[200px] md:h-[40px]"></div>
+                <div className="flex justify-center items-center flex-shrink-0 -mb-16 md:-mb-24 z-[60] relative">
+                    <AgentOrb {...agentProps} />
                 </div>
             </div>
         </header>

@@ -253,7 +253,7 @@ function Scene({
 
   return (
     <mesh ref={circleRef}>
-      <circleGeometry args={[3.5, 64]} />
+      <planeGeometry args={[10, 10]} />
       <shaderMaterial
         uniforms={uniforms}
         fragmentShader={fragmentShader}
