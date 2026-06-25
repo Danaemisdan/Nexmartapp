@@ -71,7 +71,11 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
                     {step === 0 && (
                         <motion.div key="step0" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="flex flex-col items-center text-center">
                             <div className="w-20 h-20 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-3xl flex items-center justify-center mb-8 shadow-xl shadow-blue-500/20 rotate-3">
-                                <Sparkles className="w-10 h-10 text-white" />
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10">
+                                    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="white"/>
+                                    <path d="M2 17L12 22L22 17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M2 12L12 17L22 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
                             </div>
                             <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 mb-4">Meet Nexmart AI.</h2>
                             <p className="text-lg text-slate-500 mb-10 leading-relaxed max-w-sm">Experience the future of shopping. Your personal AI agent is ready to curate, negotiate, and discover.</p>
