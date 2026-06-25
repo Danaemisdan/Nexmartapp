@@ -1,0 +1,46 @@
+[
+  {
+    "id": "oval_1",
+    "title": "Sony WH-1000XM5 Wireless Headphones",
+    "price": 348,
+    "originalPrice": 417.6,
+    "discount": "-17%",
+    "image": "https://m.media-amazon.com/images/I/41JACWT-wWL._AC_SX466_.jpg",
+    "category": "General",
+    "rating": 4.7,
+    "reviews": 389
+  },
+  {
+    "id": "oval_2",
+    "title": "Breville Barista Express Espresso Machine",
+    "price": 699.95,
+    "originalPrice": 839.94,
+    "discount": "-17%",
+    "image": "https://m.media-amazon.com/images/I/71wLpQy0VYL._AC_SX466_.jpg",
+    "category": "General",
+    "rating": 4.5,
+    "reviews": 245
+  },
+  {
+    "id": "oval_3",
+    "title": "Apple iPad Pro 12.9-inch",
+    "price": 1099,
+    "originalPrice": 1318.8,
+    "discount": "-17%",
+    "image": "https://m.media-amazon.com/images/I/81hAx31ma3L._AC_SX466_.jpg",
+    "category": "General",
+    "rating": 4.8,
+    "reviews": 355
+  },
+  {
+    "id": "oval_4",
+    "title": "YETI Rambler 20 oz Tumbler",
+    "price": 35,
+    "originalPrice": 42,
+    "discount": "-17%",
+    "image": "https://m.media-amazon.com/images/I/61Nl0aW00UL._AC_SX466_.jpg",
+    "category": "General",
+    "rating": 4.8,
+    "reviews": 369
+  }
+]
