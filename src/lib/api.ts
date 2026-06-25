@@ -16,6 +16,31 @@ export interface Product {
 
 export async function fetchProducts(): Promise<Product[]> {
     try {
+        // 1. Try to fetch from our local Ovaloop Inventory API
+        const localRes = await fetch('/api/products');
+        if (localRes.ok) {
+            const ovaloopData = await localRes.json();
+            if (ovaloopData && ovaloopData.length > 0) {
+                return ovaloopData.map((p: any) => ({
+                    id: p.id,
+                    title: p.name,
+                    description: p.product_description || `Premium ${p.category_name} product from ${p.business_name}`,
+                    price: parseFloat(p.selling_price) || 0,
+                    originalPrice: (parseFloat(p.selling_price) || 0) * 1.2, // Fake 20% discount for UI
+                    discount: '-20%',
+                    rating: 4.5 + (Math.random() * 0.5), // Ovaloop doesn't have rating
+                    reviews: Math.floor(Math.random() * 500) + 10,
+                    // Ovaloop might have null images, use a placeholder if needed
+                    image: p.image_path || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80',
+                    images: [p.image_path || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80'],
+                    category: p.category_name,
+                    brand: p.business_name,
+                    stock: parseFloat(p.stock_unit) || 0
+                }));
+            }
+        }
+        
+        // 2. Fallback to DummyJSON if Ovaloop is empty
         const res = await fetch('https://dummyjson.com/products?limit=100');
         const data = await res.json();
         

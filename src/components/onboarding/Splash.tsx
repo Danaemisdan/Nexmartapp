@@ -18,7 +18,7 @@ export default function Splash({ onComplete }: { onComplete: () => void }) {
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="flex flex-col items-center"
             >
-                <img src="/logo.png" alt="Nexmart" className="h-20 mb-4" />
+                <img src="/logo-full.png" alt="Nexmart" className="h-20 mb-4" />
                 <motion.p 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
