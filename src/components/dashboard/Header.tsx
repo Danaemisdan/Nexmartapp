@@ -1,141 +1,124 @@
 import React from 'react';
-import { Search, Heart, ShoppingCart, User, Menu, Target } from 'lucide-react';
+import { Search, ShoppingCart, Heart, User, Sparkles, Menu, Package } from 'lucide-react';
+import { useStore } from '@/lib/StoreContext';
 
 interface HeaderProps {
     isLoggedIn: boolean;
     onOpenAuth: () => void;
-    cartCount?: number;
 }
 
-export default function Header({ isLoggedIn, onOpenAuth, cartCount = 2 }: HeaderProps) {
+export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
+    const { getCartCount, navigate } = useStore();
+    const cartCount = getCartCount();
+
     return (
-        <header className="w-full bg-white flex flex-col z-50 sticky top-0 border-b border-gray-100 shadow-sm relative">
-            {/* Topmost Banner (Desktop Only) */}
-            <div className="hidden md:flex w-full bg-black text-white text-xs py-2 px-4 justify-between items-center font-medium">
-                <div className="flex-1 text-center flex items-center justify-center gap-2">
-                    <span className="text-[#1e3a8a]">✨</span> AI Picks Just for You - Smarter Shopping, Better Choices!
-                </div>
-                <div className="flex items-center gap-3 absolute right-4">
-                    <span>Download App</span>
-                    <div className="flex gap-1">
-                        <span className="opacity-80"></span>
-                        <span className="opacity-80">🤖</span>
-                    </div>
-                </div>
+        <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 pb-2 md:pb-0">
+            {/* Top Announcement Bar */}
+            <div className="bg-black text-white text-[10px] md:text-xs font-bold py-1.5 md:py-2 text-center flex items-center justify-center gap-2 tracking-wider">
+                <Sparkles className="w-3 h-3 text-yellow-400" /> 
+                AI Picks Just for You - Smarter Shopping, Better Choices! 
+                <span className="hidden md:inline cursor-pointer ml-4 hover:text-gray-300">Download App 📱</span>
             </div>
 
-            {/* Main Header */}
-            <div className="max-w-7xl mx-auto w-full px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
-                {/* Logo */}
-                <div className="flex items-center flex-shrink-0 cursor-pointer flex-1">
-                    <img src="/logo.png" alt="Nexmart" className="h-6 md:h-8 object-contain" />
+            <div className="max-w-7xl mx-auto w-full px-4 md:px-6">
+                <div className="flex items-center justify-between h-14 md:h-20 gap-4">
+                    {/* Logo & Mobile Menu */}
+                    <div className="flex items-center gap-3">
+                        <button className="md:hidden p-2 -ml-2 text-gray-600">
+                            <Menu className="w-6 h-6" />
+                        </button>
+                        <div 
+                            onClick={() => navigate('home')}
+                            className="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity"
+                        >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 md:w-8 md:h-8">
+                                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#1e3a8a"/>
+                                <path d="M2 17L12 22L22 17" stroke="#1e3a8a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M2 12L12 17L22 12" stroke="#1e3a8a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            <span className="text-xl md:text-2xl font-black tracking-tight text-gray-900 hidden sm:block">Nexmart</span>
+                        </div>
+                    </div>
+
+                    {/* Search Bar - Hidden on mobile, handled by AgentOrb */}
+                    <div className="hidden md:flex flex-1 max-w-2xl mx-8 relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <Search className="h-5 w-5 text-gray-400 group-focus-within:text-[#1e3a8a] transition-colors" />
+                        </div>
+                        <input 
+                            type="text" 
+                            className="w-full bg-gray-50 border-2 border-gray-100 text-gray-900 text-sm rounded-full focus:ring-0 focus:border-[#1e3a8a] block pl-12 p-3 transition-all placeholder:text-gray-400 font-medium" 
+                            placeholder="Ask AI to find anything..." 
+                        />
+                        <button className="absolute inset-y-1 right-1 bg-[#1e3a8a] text-white px-4 rounded-full text-xs font-bold hover:bg-[#172554] transition-colors">
+                            Search
+                        </button>
+                    </div>
+
+                    {/* Desktop Actions */}
+                    <div className="hidden md:flex items-center gap-6">
+                        <button onClick={() => navigate('wishlist')} className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
+                            <Heart className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] font-bold">Wishlist</span>
+                        </button>
+                        
+                        <button onClick={() => navigate('cart')} className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors relative group">
+                            <div className="relative">
+                                <ShoppingCart className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-1.5 -right-2 bg-[#1e3a8a] text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </div>
+                            <span className="text-[10px] font-bold">Cart</span>
+                        </button>
+                        
+                        {isLoggedIn ? (
+                            <button className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
+                                <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs group-hover:scale-110 transition-transform">JD</div>
+                                <span className="text-[10px] font-bold">Profile</span>
+                            </button>
+                        ) : (
+                            <button onClick={onOpenAuth} className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
+                                <User className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                                <span className="text-[10px] font-bold">Sign In</span>
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Mobile Actions (Right aligned) */}
+                    <div className="flex md:hidden items-center gap-4">
+                        <button onClick={() => navigate('cart')} className="relative text-gray-900">
+                            <ShoppingCart className="w-6 h-6" />
+                            {cartCount > 0 && (
+                                <span className="absolute -top-1 -right-1.5 bg-[#1e3a8a] text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white">
+                                    {cartCount}
+                                </span>
+                            )}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Desktop Secondary Nav */}
+                <div className="hidden md:flex items-center justify-between border-t border-gray-100 py-3">
+                    <button className="flex items-center gap-2 text-sm font-bold text-gray-900 hover:text-[#1e3a8a] transition-colors">
+                        <Menu className="w-4 h-4" /> All Categories
+                    </button>
+                    
+                    <div className="flex items-center gap-8 text-sm font-bold text-gray-600">
+                        <span onClick={() => navigate('home')} className="cursor-pointer text-[#1e3a8a] border-b-2 border-[#1e3a8a] pb-1">Home</span>
+                        <span onClick={() => navigate('home')} className="cursor-pointer hover:text-gray-900 flex items-center gap-1">
+                            AI Picks <span className="bg-[#1e3a8a] text-white text-[9px] px-1.5 py-0.5 rounded-sm">NEW</span>
+                        </span>
+                        <span onClick={() => navigate('home')} className="cursor-pointer hover:text-gray-900">Deals</span>
+                        <span className="cursor-pointer hover:text-gray-900 flex items-center gap-1"><Package className="w-4 h-4"/> Track Order</span>
+                    </div>
                 </div>
 
                 {/* Center Notch for the AgentOrb (Mobile & Desktop) */}
                 <div className="flex justify-center items-center flex-shrink-0">
                     <div className="w-[80px] h-[80px] md:w-[200px] md:h-[40px]"></div>
-                </div>
-
-                {/* Actions (Desktop) */}
-                <div className="hidden md:flex items-center gap-8 flex-shrink-0 flex-1 justify-end">
-                    <button className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
-                        <Target className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                        <span className="text-[10px] font-bold">AI Assistant</span>
-                    </button>
-                    <button className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
-                        <Heart className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                        <span className="text-[10px] font-bold">Wishlist</span>
-                    </button>
-                    <button className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group relative">
-                        <div className="relative">
-                            <ShoppingCart className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                            {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-2 bg-[#1e3a8a] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">
-                                    {cartCount}
-                                </span>
-                            )}
-                        </div>
-                        <span className="text-[10px] font-bold">Cart</span>
-                    </button>
-                    <button 
-                        onClick={!isLoggedIn ? onOpenAuth : undefined}
-                        className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group"
-                    >
-                        {isLoggedIn ? (
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#1e3a8a] to-[#3b82f6] text-white flex items-center justify-center shadow-sm">
-                                <User className="w-4 h-4" />
-                            </div>
-                        ) : (
-                            <User className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                        )}
-                        <span className="text-[10px] font-bold">{isLoggedIn ? 'Account' : 'Sign In'}</span>
-                    </button>
-                </div>
-
-                {/* Actions (Mobile) */}
-                <div className="flex md:hidden items-center gap-4 flex-shrink-0 flex-1 justify-end">
-                    <button className="text-gray-800 hover:text-[#1e3a8a] relative">
-                        <ShoppingCart className="w-6 h-6" />
-                        {cartCount > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-[#1e3a8a] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">
-                                {cartCount}
-                            </span>
-                        )}
-                    </button>
-                    <button className="text-gray-800 hover:text-[#1e3a8a]">
-                        <Menu className="w-6 h-6" />
-                    </button>
-                </div>
-            </div>
-
-            {/* Sub Nav & Search (Desktop Only) */}
-            <div className="hidden md:flex max-w-7xl mx-auto w-full px-6 pb-4 items-center justify-between">
-                {/* Left Side: Categories & Search Bar kept aside */}
-                <div className="flex items-center gap-4 flex-1">
-                    <button className="flex items-center gap-2 border border-gray-200 rounded-full px-4 py-2 hover:bg-gray-50 transition-colors flex-shrink-0">
-                        <Menu className="w-4 h-4 text-gray-600" />
-                        <span className="text-sm font-bold text-gray-800">All Categories</span>
-                    </button>
-
-                    <div className="w-full max-w-sm relative">
-                        <input 
-                            type="text" 
-                            placeholder="Search smart..." 
-                            className="w-full bg-gray-50 border border-gray-200 rounded-full py-2.5 px-6 pr-12 outline-none focus:border-[#1e3a8a] focus:bg-white transition-all font-medium text-sm"
-                        />
-                        <button className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-[#1e3a8a] text-white p-1.5 rounded-full hover:bg-[#172554] transition-colors shadow-md shadow-[#1e3a8a]/20">
-                            <Search className="w-4 h-4" />
-                        </button>
-                    </div>
-                </div>
-
-                {/* Center Notch for the AgentOrb */}
-                <div className="flex justify-center items-center flex-shrink-0">
-                    <div className="w-[200px] h-[10px]"></div>
-                </div>
-
-                {/* Right Side: Links kept aside */}
-                <nav className="flex items-center gap-6 flex-1 justify-end">
-                    <a href="#" className="text-sm font-bold text-[#1e3a8a] border-b-2 border-[#1e3a8a] pb-1">Home</a>
-                    <a href="#" className="text-sm font-bold text-gray-600 hover:text-black transition-colors pb-1 flex items-center gap-1">
-                        AI Picks <span className="bg-[#1e3a8a] text-white text-[9px] px-1.5 py-0.5 rounded-full uppercase tracking-wider ml-1">New</span>
-                    </a>
-                    <a href="#" className="text-sm font-bold text-gray-600 hover:text-black transition-colors pb-1">Deals</a>
-                    <a href="#" className="text-sm font-bold text-gray-600 hover:text-black transition-colors pb-1">Track Order</a>
-                </nav>
-            </div>
-
-            {/* Mobile Search Bar (Only visible on mobile) */}
-            <div className="flex md:hidden w-full px-4 pb-3">
-                <div className="w-full relative">
-                    <input 
-                        type="text" 
-                        placeholder="Search smart. Nexmart AI finds it for you..." 
-                        className="w-full bg-gray-50 border border-gray-200 rounded-xl py-2.5 px-4 pr-10 outline-none focus:border-[#1e3a8a] focus:bg-white transition-all font-medium text-sm"
-                    />
-                    <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#1e3a8a] transition-colors">
-                        <Search className="w-4 h-4" />
-                    </button>
                 </div>
             </div>
         </header>

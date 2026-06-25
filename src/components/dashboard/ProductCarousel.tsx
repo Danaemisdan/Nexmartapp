@@ -1,26 +1,18 @@
 import React from 'react';
 import { ArrowRight, Star, ShoppingCart, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
-
-export interface Product {
-    id: string;
-    title: string;
-    image: string;
-    price: number;
-    originalPrice?: number;
-    rating: number;
-    reviews: number;
-    discount?: string;
-}
+import { Product } from '@/lib/api';
 
 interface ProductCarouselProps {
     title: string | React.ReactNode;
     subtitle?: string;
     products: Product[];
     type: 'deals' | 'ai_picks';
+    onProductClick?: (product: Product) => void;
+    onAddToCart?: (product: Product) => void;
 }
 
-export default function ProductCarousel({ title, subtitle, products, type }: ProductCarouselProps) {
+export default function ProductCarousel({ title, subtitle, products, type, onProductClick, onAddToCart }: ProductCarouselProps) {
     return (
         <section className="max-w-7xl mx-auto w-full px-4 md:px-6 py-8 md:py-10">
             <div className="flex items-end justify-between mb-4 md:mb-6">
@@ -39,7 +31,8 @@ export default function ProductCarousel({ title, subtitle, products, type }: Pro
                 {products.map((product) => (
                     <div 
                         key={product.id} 
-                        className="min-w-[180px] sm:min-w-[200px] md:min-w-[240px] max-w-[180px] sm:max-w-[200px] md:max-w-[240px] bg-white border border-gray-100 rounded-2xl p-3 md:p-4 flex flex-col group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex-shrink-0 snap-start relative"
+                        onClick={() => onProductClick && onProductClick(product)}
+                        className="cursor-pointer min-w-[180px] sm:min-w-[200px] md:min-w-[240px] max-w-[180px] sm:max-w-[200px] md:max-w-[240px] bg-white border border-gray-100 rounded-2xl p-3 md:p-4 flex flex-col group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex-shrink-0 snap-start relative"
                     >
                         {/* Badges */}
                         {type === 'deals' && product.discount && (
@@ -76,11 +69,12 @@ export default function ProductCarousel({ title, subtitle, products, type }: Pro
                                         {product.rating} <span className="font-medium">({product.reviews})</span>
                                     </div>
                                     
-                                    {type === 'ai_picks' && (
-                                        <button className="w-8 h-8 rounded-full border-2 border-[#1e3a8a] text-[#1e3a8a] flex items-center justify-center hover:bg-[#1e3a8a] hover:text-white transition-colors">
-                                            <ShoppingCart className="w-4 h-4" />
-                                        </button>
-                                    )}
+                                    <button 
+                                        onClick={(e) => { e.stopPropagation(); onAddToCart && onAddToCart(product); }}
+                                        className="w-8 h-8 rounded-full border-2 border-[#1e3a8a] text-[#1e3a8a] flex items-center justify-center hover:bg-[#1e3a8a] hover:text-white transition-colors"
+                                    >
+                                        <ShoppingCart className="w-4 h-4" />
+                                    </button>
                                 </div>
                             </div>
                         </div>

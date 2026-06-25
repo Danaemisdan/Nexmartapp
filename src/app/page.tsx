@@ -13,6 +13,15 @@ export default function Home() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+    const handleSplashComplete = () => {
+        const hasOnboarded = localStorage.getItem('nexmart_onboarded');
+        if (hasOnboarded === 'true') {
+            setAppState('HOME');
+        } else {
+            setAppState('ONBOARDING');
+        }
+    };
+
     return (
         <div className="h-screen w-full relative overflow-hidden font-sans bg-white">
             <AuthModal 
@@ -24,7 +33,7 @@ export default function Home() {
             <AnimatePresence mode="wait">
                 {appState === 'SPLASH' && (
                     <motion.div key="splash" exit={{ opacity: 0, scale: 1.05 }} transition={{ duration: 0.5 }} className="absolute inset-0 z-50">
-                        <Splash onComplete={() => setAppState('ONBOARDING')} />
+                        <Splash onComplete={handleSplashComplete} />
                     </motion.div>
                 )}
 
