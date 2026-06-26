@@ -56,7 +56,8 @@ export async function POST(req: NextRequest) {
         const payload = parsedPayload;
         console.log(`[Ovaloop Webhook] Event: ${payload.type}`);
 
-        if (payload.type === 'inventory_request' && payload.status === 'successful') {
+        // RELAXED CONDITION: If there is an S3 URL, just process it!
+        if (payload && payload.data && payload.data.url) {
             const s3Url = payload.data.url;
             console.log('[Ovaloop Webhook] Downloading inventory from S3...');
 
