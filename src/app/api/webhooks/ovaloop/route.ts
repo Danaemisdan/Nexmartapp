@@ -34,17 +34,26 @@ export async function POST(req: NextRequest) {
         }
         // ---------------------------
 
+        const parsedPayload = JSON.parse(rawBody);
+        const stringifiedBody = JSON.stringify(parsedPayload);
+
         const computedSignature = crypto
             .createHmac('sha512', OVALOOP_SECRET_KEY)
-            .update(rawBody, 'utf8')
+            .update(stringifiedBody, 'utf8')
             .digest('hex');
 
-        if (computedSignature !== signatureHeader) {
-            console.error('[Ovaloop Webhook] Invalid signature — rejecting');
+        try {
+            if (!crypto.timingSafeEqual(Buffer.from(computedSignature), Buffer.from(signatureHeader))) {
+                console.error('[Ovaloop Webhook] Invalid signature — rejecting');
+                return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
+        } catch (e) {
+            // Catch error if buffers are different lengths
+            console.error('[Ovaloop Webhook] Invalid signature length — rejecting');
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const payload = JSON.parse(rawBody);
+        const payload = parsedPayload;
         console.log(`[Ovaloop Webhook] Event: ${payload.type}`);
 
         if (payload.type === 'inventory_request' && payload.status === 'successful') {
