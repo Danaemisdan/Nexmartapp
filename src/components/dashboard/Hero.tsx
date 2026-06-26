@@ -53,26 +53,50 @@ export default function Hero({ children }: HeroProps) {
                 </div>
 
                 {/* The Hero Image Graphic */}
-                <motion.div 
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="relative w-full max-w-[1200px] mx-auto mt-4 md:-mt-10 z-10 flex justify-center"
-                >
-                    {/* I'm trying the Untitled design image first, falling back to naira_hero_bg if needed */}
-                    <img 
-                        src="/hero/Untitled design (83).png" 
-                        alt="Nexmart AI Showcase" 
-                        className="w-full h-auto object-contain mix-blend-multiply drop-shadow-2xl"
-                        onError={(e) => {
-                            if (e.currentTarget.src.includes("Untitled")) {
-                                e.currentTarget.src = "/hero/naira_hero_bg.png";
-                            } else {
-                                e.currentTarget.style.display = 'none';
-                            }
+                <div className="relative w-full max-w-[1400px] mx-auto mt-10 md:mt-16 h-[500px] flex items-center justify-center z-10">
+                    
+                    {/* The Scattered Cards Background */}
+                    <div 
+                        className="absolute inset-0 opacity-80 mix-blend-multiply"
+                        style={{ 
+                            backgroundImage: "url('/hero/naira_hero_bg.png')",
+                            backgroundSize: "contain",
+                            backgroundPosition: "center",
+                            backgroundRepeat: "no-repeat"
                         }}
                     />
-                </motion.div>
+
+                    {/* Top Blue Beam */}
+                    <motion.div 
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "50%", opacity: 1 }}
+                        transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
+                        className="absolute top-0 w-[8px] md:w-[12px] bg-gradient-to-b from-transparent to-[#2563EB] blur-[1px] rounded-b-full"
+                    />
+
+                    {/* Central X Logo */}
+                    <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ type: "spring", stiffness: 100, delay: 0.8 }}
+                        className="relative z-30 w-28 h-28 md:w-36 md:h-36 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(37,99,235,0.4)] border border-white/50 bg-white"
+                    >
+                        <img 
+                            src="/hero/ChatGPT Image May 31, 2026, 02_24_03 PM.png" 
+                            alt="Nexmart Logo" 
+                            className="w-full h-full object-cover scale-110"
+                        />
+                    </motion.div>
+
+                    {/* Bottom Blue Beam (Expanding) */}
+                    <motion.div 
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "50%", opacity: 1 }}
+                        transition={{ duration: 1.5, delay: 1, ease: "easeOut" }}
+                        className="absolute bottom-0 w-[120px] md:w-[200px] bg-gradient-to-t from-transparent to-[#2563EB] blur-md opacity-80"
+                        style={{ clipPath: 'polygon(45% 0%, 55% 0%, 100% 100%, 0% 100%)' }}
+                    />
+                </div>
                 
             </div>
             
