@@ -93,7 +93,12 @@ export async function POST(req: NextRequest) {
             });
         }
 
-        return NextResponse.json({ message: 'Ignored unhandled event.' });
+        return NextResponse.json({ 
+            message: 'Ignored unhandled event.',
+            received_type: payload.type,
+            received_status: payload.status,
+            payload: payload
+        });
 
     } catch (e: any) {
         console.error('[Ovaloop Webhook] Error:', e.message);
