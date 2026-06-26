@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Keyboard, X, Plus, ArrowUp, Loader2, Sparkles } from 'lucide-react';
 import { CreateWebWorkerMLCEngine, MLCEngineInterface } from '@mlc-ai/web-llm';
 import { AgentState, Orb } from "@/components/ui/orb";
-import WebGPUWarning from './WebGPUWarning';
 import { useStore } from '@/lib/StoreContext';
 
 const suggestedPrompts = [
