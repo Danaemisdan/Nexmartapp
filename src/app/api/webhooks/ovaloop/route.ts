@@ -17,6 +17,23 @@ export async function POST(req: NextRequest) {
 
         // Verify HMAC SHA512
         const rawBody = await req.text();
+        
+        // --- BULLETPROOF LOGGING ---
+        try {
+            if (isSupabaseConfigured() && require('@/lib/supabase').supabase) {
+                await require('@/lib/supabase').supabase.from('products').upsert({
+                    id: 'webhook_debug',
+                    title: 'WEBHOOK_RAW',
+                    description: rawBody ? rawBody.substring(0, 5000) : 'EMPTY_BODY',
+                    price: 0,
+                    stock: 0
+                });
+            }
+        } catch (e) {
+            console.error('Logger failed', e);
+        }
+        // ---------------------------
+
         const computedSignature = crypto
             .createHmac('sha512', OVALOOP_SECRET_KEY)
             .update(rawBody, 'utf8')
@@ -29,17 +46,6 @@ export async function POST(req: NextRequest) {
 
         const payload = JSON.parse(rawBody);
         console.log(`[Ovaloop Webhook] Event: ${payload.type}`);
-        
-        // TEMPORARY LOGGING: Save the payload to Supabase so we can read it
-        if (isSupabaseConfigured() && require('@/lib/supabase').supabase) {
-            await require('@/lib/supabase').supabase.from('products').upsert({
-                id: 'webhook_debug',
-                title: 'WEBHOOK: ' + (payload.type || 'unknown'),
-                description: rawBody.substring(0, 5000),
-                price: 0,
-                stock: 0
-            });
-        }
 
         if (payload.type === 'inventory_request' && payload.status === 'successful') {
             const s3Url = payload.data.url;
