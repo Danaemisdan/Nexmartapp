@@ -12,6 +12,8 @@ export async function GET(req: NextRequest) {
     }
 
     try {
+        if (!supabase) throw new Error('Supabase is not configured');
+
         const { data, error } = await supabase
             .from('reviews')
             .select('*')
@@ -36,6 +38,8 @@ export async function POST(req: NextRequest) {
         if (!product_id || !user_name || !rating || !comment) {
             return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
         }
+        
+        if (!supabase) throw new Error('Supabase is not configured');
 
         const { data, error } = await supabase
             .from('reviews')
