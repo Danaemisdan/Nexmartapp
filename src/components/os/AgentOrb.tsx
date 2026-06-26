@@ -86,8 +86,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
               const adapter = await (navigator as any).gpu.requestAdapter();
               if (!adapter) throw new Error("No Adapter");
           } catch (e) {
-              // Proceed anyway to use WASM fallback, but show a warning
-              setShowGpuWarning(true);
+              // Proceed anyway to use WASM fallback silently
           }
 
           workerRef.current = new Worker(new URL('@/lib/worker.ts', import.meta.url), { type: 'module' });
@@ -399,10 +398,6 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
   if (isListening) agentState = "listening";
 
   return (
-    <>
-      <AnimatePresence>
-          {showGpuWarning && <WebGPUWarning onClose={() => setShowGpuWarning(false)} />}
-      </AnimatePresence>
       <div className={`${inline ? 'relative' : 'fixed top-[20px] md:top-[10px] left-1/2 -translate-x-1/2'} z-[60] flex flex-col items-center transition-all duration-500`}>
       
       <div className="relative flex items-center justify-center">
@@ -518,6 +513,5 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
         )}
       </AnimatePresence>
     </div>
-    </>
   );
 }
