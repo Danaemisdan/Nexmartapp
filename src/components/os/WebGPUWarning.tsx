@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { AlertTriangle, Globe, Smartphone, Settings, Compass, LayoutPanelTop, Check, ArrowRight, MousePointer2, Pointer } from 'lucide-react';
 import { Orb } from '@/components/ui/orb';
 
-export default function WebGPUWarning() {
+export default function WebGPUWarning({ onClose }: { onClose?: () => void }) {
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     const [toggleState, setToggleState] = useState(false);
 
@@ -21,6 +21,15 @@ export default function WebGPUWarning() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 className="bg-[#fafafa] p-8 rounded-[2rem] shadow-2xl max-w-2xl w-full border border-white/60 relative overflow-hidden flex flex-col md:flex-row gap-8"
             >
+                {onClose && (
+                    <button 
+                        onClick={onClose}
+                        className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 transition-colors bg-gray-100 hover:bg-gray-200 rounded-full p-2 z-50"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
+                )}
+
                 {/* Left Side: The Warning Context */}
                 <div className="flex-1 flex flex-col justify-center">
                     <div className="w-24 h-24 mb-4 relative flex items-center justify-center rounded-full bg-blue-50/50 shadow-inner">
@@ -31,7 +40,7 @@ export default function WebGPUWarning() {
                         Nexmart runs a massive neural network entirely on your device for absolute privacy and zero latency. Your current browser is blocking the necessary connection to your graphics card (WebGPU).
                     </p>
 
-                    <div className="bg-blue-600 text-white rounded-2xl p-5 shadow-[0_10px_30px_rgba(37,99,235,0.3)] relative overflow-hidden group">
+                    <div className="bg-blue-600 text-white rounded-2xl p-5 shadow-[0_10px_30px_rgba(37,99,235,0.3)] relative overflow-hidden group mb-4">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-700" />
                         <div className="flex items-center gap-3 mb-2 relative z-10">
                             {isIOS ? <Smartphone className="w-6 h-6 text-blue-200" /> : <Globe className="w-6 h-6 text-blue-200" />}
@@ -57,6 +66,15 @@ export default function WebGPUWarning() {
                             </a>
                         )}
                     </div>
+                    
+                    {onClose && (
+                        <button 
+                            onClick={onClose}
+                            className="text-gray-500 hover:text-gray-800 text-sm font-semibold underline underline-offset-4 text-left transition-colors"
+                        >
+                            Continue without Hardware Acceleration (Slower)
+                        </button>
+                    )}
                 </div>
 
                 {/* Right Side: The Visual Guide */}
