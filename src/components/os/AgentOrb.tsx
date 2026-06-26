@@ -133,8 +133,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                           const messages = req.messages;
                           const lastMsg = messages[messages.length - 1].content.toLowerCase();
                           const isExtraction = lastMsg.includes('extract the json');
-                          
-                          if (isExtraction) {
+                                                    if (isExtraction) {
                                const userMsg = messages[messages.length - 1].content;
                                const match = userMsg.match(/User said "(.*?)"/i);
                                const intent = match ? match[1].toLowerCase() : '';
@@ -155,15 +154,25 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                                }
                                
                                return { choices: [{ message: { content: JSON.stringify({ action, productIds: ids }) } }] };
-                          } else {
+                           } else {
                                const userIntent = lastMsg.toLowerCase();
-                               let text = `I can certainly help you with "${lastMsg}". Let me check the store.`;
-                               if (userIntent.includes('add') || userIntent.includes('cart')) {
-                                   const item = lastMsg.replace(/add/i, '').replace(/to cart/i, '').replace(/buy/i, '').trim() || 'that';
-                                   text = `I've added ${item} to your cart. Anything else?`;
+                               let text = `I'll search our catalog for that right away.`;
+                               
+                               // Robust Conversational Matching
+                               if (userIntent.includes('can you hear me') || userIntent.match(/are you there/i) || userIntent.match(/are you listening/i)) {
+                                   text = "Yes, loud and clear! What are you looking to buy today?";
+                               } else if (userIntent.match(/hello/i) || userIntent.match(/hi /i) || userIntent === 'hi') {
+                                   text = "Hello! I am your AI shopping assistant. How can I help you today?";
+                               } else if (userIntent.match(/who are you/i) || userIntent.match(/what can you do/i)) {
+                                   text = "I am the Nexmart OS. I can search our catalog, add items to your cart, and help you checkout. What do you need?";
+                               } else if (userIntent.match(/fuck/i) || userIntent.match(/shit/i)) {
+                                   text = "I apologize. I'm just a fallback AI right now. Please tell me what product you want to find.";
+                               } else if (userIntent.includes('add') || userIntent.includes('cart') || userIntent.includes('buy')) {
+                                   const item = userIntent.replace(/add/i, '').replace(/to cart/i, '').replace(/buy/i, '').trim() || 'that item';
+                                   text = `Consider it done. I've added ${item} to your cart. Do you need anything else?`;
                                } else if (userIntent.includes('search') || userIntent.includes('find') || userIntent.includes('show')) {
-                                   const query = lastMsg.replace(/search for/i, '').replace(/find me/i, '').replace(/show me/i, '').replace(/some/i, '').trim() || 'that';
-                                   text = `Here is what I found for ${query}.`;
+                                   const query = userIntent.replace(/search for/i, '').replace(/find me/i, '').replace(/show me/i, '').replace(/some/i, '').trim() || 'those';
+                                   text = `Let me pull up the best options for ${query}. Here is what I found.`;
                                }
                                
                                await new Promise(resolve => setTimeout(resolve, 800)); // Simulate thinking delay
@@ -177,7 +186,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                                    })();
                                }
                                return { choices: [{ message: { content: text } }] };
-                          }
+                           }
                       }
                   }
               }
