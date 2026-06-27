@@ -12,7 +12,6 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
     const cartCount = getCartCount();
 
     return (
-        <>
         <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 pb-2 md:pb-0">
             {/* Top Announcement Bar */}
             <div className="bg-black text-white text-[10px] md:text-xs font-bold py-1.5 md:py-2 text-center flex items-center justify-center gap-2 tracking-wider">
