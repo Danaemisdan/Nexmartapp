@@ -14,8 +14,7 @@ export default function Home() {
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
     const handleSplashComplete = () => {
-        // Temporarily force onboarding every time for testing
-        setAppState('ONBOARDING');
+        setAppState('HOME');
     };
 
     return (

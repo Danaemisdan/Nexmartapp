@@ -43,7 +43,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
                         className="relative z-10 flex items-center justify-center"
                     >
                         <img 
-                            src="/logo-icon.png" 
+                            src="/logo-full.png" 
                             alt="Nexmart" 
                             className="w-32 h-32 md:w-48 md:h-48 object-contain drop-shadow-[0_0_30px_rgba(255,204,0,0.5)]" 
                         />
