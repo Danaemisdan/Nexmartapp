@@ -90,8 +90,8 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
 
           workerRef.current = new Worker(new URL('@/lib/worker.ts', import.meta.url), { type: 'module' });
           
-          // Force Qwen2.5-0.5B on all devices for absolute maximum speed and stability
-          const modelToLoad = 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC';
+          // Force SmolLM2-135M on all devices for absolute maximum speed and stability
+          const modelToLoad = 'SmolLM2-135M-Instruct-q0f16-MLC';
 
           const newEngine = await CreateWebWorkerMLCEngine(
               workerRef.current,

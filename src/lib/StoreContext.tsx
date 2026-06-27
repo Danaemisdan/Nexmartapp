@@ -55,7 +55,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         if (currency === 'NGN') {
             return `₦${price.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
-        return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        const usdPrice = price / 1500;
+        return `$${usdPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     };
 
     const navigate = (view: ViewState, product?: Product) => {
