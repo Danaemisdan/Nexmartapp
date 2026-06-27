@@ -37,17 +37,18 @@ function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
             <Header 
                 isLoggedIn={isLoggedIn} 
                 onOpenAuth={onOpenAuth} 
-                agentProps={{
-                    workflowState,
-                    setWorkflowState,
-                    setCurrentTask,
-                    setAiProducts,
-                    setIsAiReady,
-                    setAiProgress,
-                    aiProgress,
-                    isAiReady,
-                    inline: true
-                }}
+            />
+            
+            <AgentOrb
+                workflowState={workflowState}
+                setWorkflowState={setWorkflowState}
+                setCurrentTask={setCurrentTask}
+                setAiProducts={setAiProducts}
+                setIsAiReady={setIsAiReady}
+                setAiProgress={setAiProgress}
+                aiProgress={aiProgress}
+                isAiReady={isAiReady}
+                inline={false}
             />
             
             <main className="flex-1 flex flex-col relative">

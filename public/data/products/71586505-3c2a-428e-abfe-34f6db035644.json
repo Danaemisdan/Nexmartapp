@@ -1,0 +1,15 @@
+{
+  "id": "71586505-3c2a-428e-abfe-34f6db035644",
+  "title": "HP Elitebook",
+  "description": "",
+  "price": 300000,
+  "originalPrice": 360000,
+  "discount": "-17%",
+  "rating": 4.6,
+  "reviews": 386,
+  "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
+  "category": "35092dcc-850a-49b4-9b89-57a6e597b74e",
+  "brand": "",
+  "stock": 14,
+  "sku": "2260408006452"
+}

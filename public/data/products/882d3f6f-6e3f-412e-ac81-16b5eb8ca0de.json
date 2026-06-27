@@ -1,0 +1,15 @@
+{
+  "id": "882d3f6f-6e3f-412e-ac81-16b5eb8ca0de",
+  "title": "Test Product",
+  "description": "",
+  "price": 4200,
+  "originalPrice": 5040,
+  "discount": "-17%",
+  "rating": 4.6,
+  "reviews": 11,
+  "image": "https://ovaloopbucket12.s3.amazonaws.com/media/product_images/e4d3f198-22a2-48d6-8702-edc6ba76f0b0.png",
+  "category": "446b32b8-1f62-466c-bed6-af6ad2bacf20",
+  "brand": "",
+  "stock": 10,
+  "sku": "17817671380351"
+}

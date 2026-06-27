@@ -1,0 +1,15 @@
+{
+  "id": "3d510a65-2b79-4494-8c2a-baa7dcf15521",
+  "title": "Consultation",
+  "description": "",
+  "price": 5000,
+  "originalPrice": 6000,
+  "discount": "-17%",
+  "rating": 4.8,
+  "reviews": 63,
+  "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
+  "category": "5f833377-cca1-4aa8-b60d-add0d12554b6",
+  "brand": "",
+  "stock": 0,
+  "sku": "CONSULTATION"
+}

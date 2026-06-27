@@ -1,0 +1,15 @@
+{
+  "id": "2f29fcf1-9549-48dc-b591-b0446bf00c2e",
+  "title": "TIFLOX",
+  "description": "",
+  "price": 52000,
+  "originalPrice": 62400,
+  "discount": "-17%",
+  "rating": 4.7,
+  "reviews": 467,
+  "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
+  "category": "4587b055-42dd-48ca-95d5-dd335ab52d50",
+  "brand": "",
+  "stock": 200,
+  "sku": "5012616170201"
+}

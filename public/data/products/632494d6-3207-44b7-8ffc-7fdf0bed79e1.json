@@ -1,0 +1,15 @@
+{
+  "id": "632494d6-3207-44b7-8ffc-7fdf0bed79e1",
+  "title": "PEPSI",
+  "description": "",
+  "price": 1500,
+  "originalPrice": 1800,
+  "discount": "-17%",
+  "rating": 4.8,
+  "reviews": 428,
+  "image": "https://ovaloopbucket12.s3.amazonaws.com/media/product_images/7a2be407-cad1-4651-afaf-bfc5dc2f0d34.png",
+  "category": "7e2a30e9-6b5f-4a59-a0fb-c9897fa709b5",
+  "brand": "",
+  "stock": 0,
+  "sku": "6271140065924"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "9035ac49-1675-4548-b0e8-f23dc22946fa",
+  "title": "CocaCola Xtra Large",
+  "description": "",
+  "price": 650,
+  "originalPrice": 780,
+  "discount": "-17%",
+  "rating": 4.9,
+  "reviews": 206,
+  "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
+  "category": "e95bf8fa-f17a-4ad5-b10f-e55f56903f4d",
+  "brand": "",
+  "stock": 50,
+  "sku": "5012616170201"
+}

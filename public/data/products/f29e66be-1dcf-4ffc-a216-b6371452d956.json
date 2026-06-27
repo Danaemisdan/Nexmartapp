@@ -1,0 +1,15 @@
+{
+  "id": "f29e66be-1dcf-4ffc-a216-b6371452d956",
+  "title": "Grey",
+  "description": "",
+  "price": 35,
+  "originalPrice": 42,
+  "discount": "-17%",
+  "rating": 4.6,
+  "reviews": 187,
+  "image": "https://ovaloopbucket12.s3.amazonaws.com/media/product_images/8529dcd1-bbcc-4915-99f3-bc5b1df8153f_rjTOVVi.png",
+  "category": "446b32b8-1f62-466c-bed6-af6ad2bacf20",
+  "brand": "",
+  "stock": 10,
+  "sku": "3037275407236"
+}

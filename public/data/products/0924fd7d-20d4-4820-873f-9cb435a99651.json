@@ -1,0 +1,15 @@
+{
+  "id": "0924fd7d-20d4-4820-873f-9cb435a99651",
+  "title": "Cocacola",
+  "description": "",
+  "price": 6500,
+  "originalPrice": 7800,
+  "discount": "-17%",
+  "rating": 4.6,
+  "reviews": 43,
+  "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
+  "category": "e95bf8fa-f17a-4ad5-b10f-e55f56903f4d",
+  "brand": "",
+  "stock": 1,
+  "sku": "7112406569140"
+}

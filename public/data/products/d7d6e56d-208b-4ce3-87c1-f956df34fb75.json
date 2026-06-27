@@ -1,0 +1,15 @@
+{
+  "id": "d7d6e56d-208b-4ce3-87c1-f956df34fb75",
+  "title": "dog",
+  "description": "",
+  "price": 5555.55,
+  "originalPrice": 6666.66,
+  "discount": "-17%",
+  "rating": 4.5,
+  "reviews": 196,
+  "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
+  "category": "c4fb7369-f6f6-4599-9004-73f861a486f2",
+  "brand": "",
+  "stock": 2,
+  "sku": "69374301013"
+}

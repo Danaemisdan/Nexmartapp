@@ -1,0 +1,15 @@
+{
+  "id": "f9a1c55b-f71a-4fbc-9914-99b7096ede13",
+  "title": "REMOTE",
+  "description": "",
+  "price": 7000,
+  "originalPrice": 8400,
+  "discount": "-17%",
+  "rating": 4.6,
+  "reviews": 298,
+  "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
+  "category": "48e7072a-d09d-45b2-b54b-6d22f3e18b49",
+  "brand": "",
+  "stock": 0,
+  "sku": "7139227071396"
+}

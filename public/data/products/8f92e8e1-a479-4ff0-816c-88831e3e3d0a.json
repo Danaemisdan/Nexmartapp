@@ -1,0 +1,15 @@
+{
+  "id": "8f92e8e1-a479-4ff0-816c-88831e3e3d0a",
+  "title": "Tooth Extraction",
+  "description": "",
+  "price": 50000,
+  "originalPrice": 60000,
+  "discount": "-17%",
+  "rating": 4.7,
+  "reviews": 209,
+  "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
+  "category": "5f833377-cca1-4aa8-b60d-add0d12554b6",
+  "brand": "",
+  "stock": 35,
+  "sku": "EXTRACTION"
+}

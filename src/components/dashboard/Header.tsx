@@ -1,15 +1,13 @@
 import React from 'react';
 import { Search, ShoppingCart, Heart, User, Sparkles, Menu, Package } from 'lucide-react';
 import { useStore } from '@/lib/StoreContext';
-import AgentOrb from '../os/AgentOrb';
 
 interface HeaderProps {
     isLoggedIn: boolean;
     onOpenAuth: () => void;
-    agentProps: any;
 }
 
-export default function Header({ isLoggedIn, onOpenAuth, agentProps }: HeaderProps) {
+export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
     const { getCartCount, navigate, currency, setCurrency } = useStore();
     const cartCount = getCartCount();
 
@@ -117,8 +115,5 @@ export default function Header({ isLoggedIn, onOpenAuth, agentProps }: HeaderPro
                 </div>
             </div>
         </header>
-        {/* Render Orb outside header DOM to prevent backdrop-blur overflow clipping on mobile Safari */}
-        <AgentOrb {...agentProps} />
-        </>
     );
 }

@@ -1,0 +1,15 @@
+{
+  "id": "3200b4a3-66b5-4f02-802f-6f0b57f3d8c5",
+  "title": "Cucumber",
+  "description": "",
+  "price": 10000,
+  "originalPrice": 12000,
+  "discount": "-17%",
+  "rating": 4.6,
+  "reviews": 169,
+  "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
+  "category": "584178a3-aad5-4c98-b461-4cd8f31c435b",
+  "brand": "",
+  "stock": 4,
+  "sku": "5385149196884"
+}

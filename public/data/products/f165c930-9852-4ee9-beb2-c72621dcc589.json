@@ -1,0 +1,15 @@
+{
+  "id": "f165c930-9852-4ee9-beb2-c72621dcc589",
+  "title": "COKE",
+  "description": "",
+  "price": 4000,
+  "originalPrice": 4800,
+  "discount": "-17%",
+  "rating": 4.5,
+  "reviews": 216,
+  "image": "https://ovaloopbucket12.s3.amazonaws.com/media/product_images/d5125665-340b-4bad-aa28-7fdd48a71827.png",
+  "category": "446b32b8-1f62-466c-bed6-af6ad2bacf20",
+  "brand": "",
+  "stock": 15,
+  "sku": "4784431049508"
+}
