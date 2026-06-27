@@ -19,8 +19,6 @@ export default function HomeView({ aiProducts }: HomeViewProps) {
     return (
         <div className="flex flex-col pb-24 md:pb-10">
             <AmazonStyleCarousel />
-            <CategoriesRow />
-            <TrustBadges />
 
             {/* If AI has outputted products from a search, show those, otherwise show Deals and Picks */}
             {aiProducts.length > 0 ? (
@@ -41,6 +39,9 @@ export default function HomeView({ aiProducts }: HomeViewProps) {
                         onProductClick={(p) => navigate('product', p)}
                         onAddToCart={(p) => addToCart(p)}
                     />
+                    
+                    <CategoriesRow />
+                    
                     <ProductCarousel 
                         title={<span>✨ AI Picks for You</span>} 
                         subtitle="Handpicked by Nexmart AI based on your preferences"
@@ -51,6 +52,8 @@ export default function HomeView({ aiProducts }: HomeViewProps) {
                     />
                 </>
             )}
+            
+            <TrustBadges />
         </div>
     );
 }
