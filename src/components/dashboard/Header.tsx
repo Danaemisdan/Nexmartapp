@@ -14,6 +14,7 @@ export default function Header({ isLoggedIn, onOpenAuth, agentProps }: HeaderPro
     const cartCount = getCartCount();
 
     return (
+        <>
         <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 pb-2 md:pb-0">
             {/* Top Announcement Bar */}
             <div className="bg-black text-white text-[10px] md:text-xs font-bold py-1.5 md:py-2 text-center flex items-center justify-center gap-2 tracking-wider">
@@ -50,11 +51,9 @@ export default function Header({ isLoggedIn, onOpenAuth, agentProps }: HeaderPro
                         </div>
                     </div>
 
-                    {/* Center: Agent Orb */}
+                    {/* Center: Agent Orb Placeholder (Orb rendered outside to prevent clipping) */}
                     <div className="flex justify-center items-center relative z-[60]">
-                        <div className="absolute -top-4 md:-top-8">
-                            <AgentOrb {...agentProps} />
-                        </div>
+                        {/* Empty to preserve grid layout */}
                     </div>
 
                     {/* Right: Actions */}
@@ -118,5 +117,8 @@ export default function Header({ isLoggedIn, onOpenAuth, agentProps }: HeaderPro
                 </div>
             </div>
         </header>
+        {/* Render Orb outside header DOM to prevent backdrop-blur overflow clipping on mobile Safari */}
+        <AgentOrb {...agentProps} />
+        </>
     );
 }
