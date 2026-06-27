@@ -26,6 +26,7 @@ export interface NexmartProduct {
   brand: string;
   stock: number;
   sku: string;
+  business_id?: string;
 }
 
 export interface ProductIndexEntry {
@@ -38,6 +39,7 @@ export interface ProductIndexEntry {
   category: string;
   rating: number;
   reviews: number;
+  business_id?: string;
 }
 
 // ─── Paths (For Local Fallback) ──────────────────────────────────────────────
@@ -67,6 +69,7 @@ export function mapToNexmart(p: any, index: number = 0): NexmartProduct {
     brand: p.brand || p.manufacturer || '',
     stock,
     sku: String(p.sku || id),
+    business_id: p.business_id || p.business || '',
   };
 }
 
@@ -97,7 +100,7 @@ export async function getAllProducts(limit = 100, offset = 0): Promise<ProductIn
   if (isSupabaseConfigured() && supabase) {
     const { data, error } = await supabase
       .from('products')
-      .select('id, title, price, originalPrice, discount, image, category, rating, reviews')
+      .select('id, title, price, originalPrice, discount, image, category, rating, reviews, business_id')
       .range(offset, offset + limit - 1)
       .order('price', { ascending: false }); // Sort by price or however you want
       
@@ -107,7 +110,7 @@ export async function getAllProducts(limit = 100, offset = 0): Promise<ProductIn
     return data.map((d: any) => ({
         id: d.id, title: d.title, price: d.price, originalPrice: d.originalPrice, 
         discount: d.discount, image: d.image, category: d.category, 
-        rating: d.rating, reviews: d.reviews
+        rating: d.rating, reviews: d.reviews, business_id: d.business_id
     }));
   }
 

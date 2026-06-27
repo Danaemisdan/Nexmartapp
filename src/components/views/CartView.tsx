@@ -11,14 +11,36 @@ export default function CartView() {
     const tax = subtotal * 0.08; // 8% tax
     const total = subtotal + tax;
 
-    const handleCheckout = () => {
+    const handleCheckout = async () => {
         setIsCheckingOut(true);
-        setTimeout(() => {
-            clearCart();
+        try {
+            const customer = {
+                firstname: "Test",
+                lastname: "User",
+                phone: "08012345678",
+                address: "Nexmart Delivery Location"
+            };
+            
+            const res = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cart, customer })
+            });
+            
+            const data = await res.json();
+            
+            if (res.ok && data.success) {
+                clearCart();
+                alert(`Checkout Successful! Your AI has processed the order.\nRef: ${data.group_order_reference}`);
+                navigate('home');
+            } else {
+                alert(`Checkout Failed: ${data.error || 'Unknown error'}`);
+            }
+        } catch (e: any) {
+            alert(`Checkout Error: ${e.message}`);
+        } finally {
             setIsCheckingOut(false);
-            alert("Checkout Successful! Your AI has processed the order.");
-            navigate('home');
-        }, 1500);
+        }
     };
 
     if (cart.length === 0) {

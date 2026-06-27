@@ -14,6 +14,7 @@ export interface Product {
     stock?: number;
     thumbnail?: string;
     discountPercentage?: number;
+    business_id?: string;
 }
 
 export async function fetchProducts(): Promise<Product[]> {
@@ -38,7 +39,8 @@ export async function fetchProducts(): Promise<Product[]> {
                         images: [isMapped ? p.image : (p.image_path || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80')],
                         category: isMapped ? p.category : (p.category_name || 'General'),
                         brand: isMapped ? p.brand : (p.business_name || ''),
-                        stock: isMapped ? p.stock : (parseFloat(p.stock_unit) || 0)
+                        stock: isMapped ? p.stock : (parseFloat(p.stock_unit) || 0),
+                        business_id: p.business_id || ''
                     };
                 });
             }
