@@ -11,6 +11,7 @@ import ProductDetailsView from '../views/ProductDetailsView';
 import CategoriesView from '../views/CategoriesView';
 import DealsView from '../views/DealsView';
 import { AnimatePresence, motion } from 'framer-motion';
+import SplashScreen from './SplashScreen';
 
 export type WorkflowState = 'IDLE' | 'RESEARCHING' | 'NEGOTIATING' | 'READY' | 'TALKING' | 'LISTENING';
 
@@ -29,10 +30,15 @@ function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
     const [isAiReady, setIsAiReady] = useState(false);
     const [aiProgress, setAiProgress] = useState('Booting OS...');
 
+    // Splash Screen State
+    const [showSplash, setShowSplash] = useState(true);
+
     const { activeView } = useStore();
 
     return (
-        <div className="h-full w-full overflow-y-auto bg-white flex flex-col hide-scrollbar relative">
+        <>
+        {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+        <div className={`h-full w-full overflow-y-auto bg-white flex flex-col hide-scrollbar relative transition-opacity duration-700 ${showSplash ? 'opacity-0' : 'opacity-100'}`}>
             <Header 
                 isLoggedIn={isLoggedIn} 
                 onOpenAuth={onOpenAuth} 
@@ -87,6 +93,7 @@ function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
             
             <BottomNav />
         </div>
+        </>
     );
 }
 
