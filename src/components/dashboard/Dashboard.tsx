@@ -30,15 +30,10 @@ function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
     const [isAiReady, setIsAiReady] = useState(false);
     const [aiProgress, setAiProgress] = useState('Booting OS...');
 
-    // Splash Screen State
-    const [showSplash, setShowSplash] = useState(true);
-
     const { activeView } = useStore();
 
     return (
-        <>
-        {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
-        <div className={`h-full w-full overflow-y-auto bg-white flex flex-col hide-scrollbar relative transition-opacity duration-700 ${showSplash ? 'opacity-0' : 'opacity-100'}`}>
+        <div className="h-full w-full overflow-y-auto bg-white flex flex-col hide-scrollbar relative">
             <Header 
                 isLoggedIn={isLoggedIn} 
                 onOpenAuth={onOpenAuth} 
@@ -93,7 +88,6 @@ function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
             
             <BottomNav />
         </div>
-        </>
     );
 }
 

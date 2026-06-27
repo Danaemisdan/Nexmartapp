@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react';
-import Splash from '@/components/onboarding/Splash';
+import SplashScreen from '@/components/dashboard/SplashScreen';
 import Onboarding from '@/components/onboarding/Onboarding';
 import Dashboard from '@/components/dashboard/Dashboard';
 import AuthModal from '@/components/auth/AuthModal';
@@ -28,8 +28,8 @@ export default function Home() {
 
             <AnimatePresence mode="wait">
                 {appState === 'SPLASH' && (
-                    <motion.div key="splash" exit={{ opacity: 0, scale: 1.05 }} transition={{ duration: 0.5 }} className="absolute inset-0 z-50">
-                        <Splash onComplete={handleSplashComplete} />
+                    <motion.div key="splash" exit={{ opacity: 0 }} transition={{ duration: 0.8 }} className="absolute inset-0 z-50 bg-black">
+                        <SplashScreen onComplete={handleSplashComplete} />
                     </motion.div>
                 )}
 
