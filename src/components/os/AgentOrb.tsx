@@ -90,8 +90,8 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
 
           workerRef.current = new Worker(new URL('@/lib/worker.ts', import.meta.url), { type: 'module' });
           
-          // Force SmolLM2-135M on all devices for absolute maximum speed and stability
-          const modelToLoad = 'SmolLM2-135M-Instruct-q4f16_1-MLC';
+          // Force Qwen2.5-0.5B on all devices for absolute maximum speed and stability
+          const modelToLoad = 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC';
 
           const newEngine = await CreateWebWorkerMLCEngine(
               workerRef.current,
@@ -171,7 +171,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                                    const item = userIntent.replace(/add/i, '').replace(/to cart/i, '').replace(/buy/i, '').trim() || 'that item';
                                    text = `Consider it done. I've added ${item} to your cart. Do you need anything else?`;
                                } else if (userIntent.includes('search') || userIntent.includes('find') || userIntent.includes('show')) {
-                                   const query = userIntent.replace(/search for/i, '').replace(/find me/i, '').replace(/show me/i, '').replace(/some/i, '').trim() || 'those';
+                                   const query = userIntent.replace(/can you/i, '').replace(/please/i, '').replace(/search for/i, '').replace(/find me/i, '').replace(/show me/i, '').replace(/some/i, '').trim() || 'those';
                                    text = `Let me pull up the best options for ${query}. Here is what I found.`;
                                }
                                

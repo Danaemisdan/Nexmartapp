@@ -59,10 +59,10 @@ export default function ProductCarousel({ title, subtitle, products, type, onPro
                             <h3 className="text-sm font-bold text-gray-800 leading-tight mb-2 line-clamp-2">{product.title}</h3>
                             
                             <div className="mt-auto flex flex-col">
-                                <div className="flex items-end gap-2 mb-2">
-                                    <span className="text-lg font-black text-gray-900">{formatPrice(product.price)}</span>
+                                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 mb-2">
+                                    <span className="text-base sm:text-lg font-black text-gray-900 leading-none">{formatPrice(product.price)}</span>
                                     {product.originalPrice && (
-                                        <span className="text-xs text-gray-400 font-bold line-through mb-1">{formatPrice(product.originalPrice)}</span>
+                                        <span className="text-[10px] sm:text-xs text-gray-400 font-bold line-through leading-none">{formatPrice(product.originalPrice)}</span>
                                     )}
                                 </div>
                                 

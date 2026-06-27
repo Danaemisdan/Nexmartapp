@@ -26,7 +26,7 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
                     
                     {/* Left: Logo & Search */}
                     <div className="flex items-center gap-4 justify-start">
-                        <button className="md:hidden p-2 -ml-2 text-gray-600">
+                        <button onClick={() => navigate('categories')} className="md:hidden p-2 -ml-2 text-gray-600 hover:text-[#1e3a8a] transition-colors">
                             <Menu className="w-6 h-6" />
                         </button>
                         <div 
