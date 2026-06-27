@@ -23,29 +23,21 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
             {isVisible && (
                 <motion.div
                     key="splash-screen"
-                    initial={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.8, ease: "easeInOut" }}
-                    className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center overflow-hidden"
+                    initial={{ opacity: 1, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, filter: 'blur(10px)' }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                    className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden"
                 >
-                    {/* The "X" Logo with Netflix-style cinematic zoom/scale */}
                     <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ 
-                            scale: [0.8, 1.2, 2.5], 
-                            opacity: [0, 1, 0] 
-                        }}
-                        transition={{ 
-                            duration: 2.5, 
-                            times: [0, 0.4, 1],
-                            ease: "easeInOut"
-                        }}
+                        initial={{ opacity: 0, filter: 'blur(10px)' }}
+                        animate={{ opacity: 1, filter: 'blur(0px)' }}
+                        transition={{ duration: 1, ease: "easeOut" }}
                         className="relative z-10 flex items-center justify-center"
                     >
                         <img 
                             src="/logo-full.png" 
                             alt="Nexmart" 
-                            className="w-32 h-32 md:w-48 md:h-48 object-contain drop-shadow-[0_0_30px_rgba(255,204,0,0.5)]" 
+                            className="w-32 h-32 md:w-48 md:h-48 object-contain" 
                         />
                     </motion.div>
                 </motion.div>
