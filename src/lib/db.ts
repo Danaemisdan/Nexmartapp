@@ -100,7 +100,7 @@ export async function getAllProducts(limit = 100, offset = 0): Promise<ProductIn
   if (isSupabaseConfigured() && supabase) {
     const { data, error } = await supabase
       .from('products')
-      .select('id, title, price, originalPrice, discount, image, category, rating, reviews, business_id')
+      .select('*')
       .range(offset, offset + limit - 1)
       .order('price', { ascending: false }); // Sort by price or however you want
       
