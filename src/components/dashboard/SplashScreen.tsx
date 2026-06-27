@@ -32,18 +32,18 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
                         initial={{ opacity: 0, filter: 'blur(10px)' }}
                         animate={{ opacity: 1, filter: 'blur(0px)' }}
                         transition={{ duration: 1, ease: "easeOut" }}
-                        className="relative z-10 flex items-center justify-center"
+                        className="relative z-10 flex flex-col items-center justify-center"
                     >
                         <img 
                             src="/logo-full.png" 
                             alt="Nexmart" 
-                            className="w-48 h-48 md:w-64 md:h-64 object-contain mb-6" 
+                            className="h-32 md:h-48 object-contain" 
                         />
                         <motion.p 
                             initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
                             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                             transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
-                            className="text-gray-500 font-medium text-lg md:text-xl tracking-wide absolute -bottom-8 whitespace-nowrap"
+                            className="text-gray-500 font-medium text-lg md:text-xl tracking-wide -mt-4 md:-mt-8"
                         >
                             AI Commerce, Simplified
                         </motion.p>
