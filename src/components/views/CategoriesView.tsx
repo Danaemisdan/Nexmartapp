@@ -4,7 +4,7 @@ import { ArrowLeft, Grid } from 'lucide-react';
 import ProductCarousel from '../dashboard/ProductCarousel';
 
 export default function CategoriesView() {
-    const { products, navigate, addToCart } = useStore();
+    const { products, navigate, addToCart, formatPrice } = useStore();
     
     // Group products by category
     const categories = Array.from(new Set(products.map(p => p.category)));
@@ -38,7 +38,7 @@ export default function CategoriesView() {
                                     <div className="flex flex-col flex-1">
                                         <h3 className="text-sm font-bold text-gray-800 leading-tight mb-1 line-clamp-2">{product.title}</h3>
                                         <div className="mt-auto pt-2 flex items-center justify-between">
-                                            <span className="text-lg font-black text-gray-900">${product.price.toFixed(2)}</span>
+                                            <span className="text-lg font-black text-gray-900">{formatPrice(product.price)}</span>
                                         </div>
                                     </div>
                                 </div>

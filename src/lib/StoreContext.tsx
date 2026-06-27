@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, fetchProducts } from './api';
 
 export type ViewState = 'home' | 'cart' | 'wishlist' | 'product' | 'categories' | 'deals';
+export type Currency = 'NGN' | 'USD';
 
 interface CartItem {
     product: Product;
@@ -16,6 +17,7 @@ interface StoreContextType {
     activeView: ViewState;
     selectedProduct: Product | null;
     isApiReady: boolean;
+    currency: Currency;
     
     navigate: (view: ViewState, product?: Product) => void;
     addToCart: (product: Product, quantity?: number) => void;
@@ -24,7 +26,10 @@ interface StoreContextType {
     clearCart: () => void;
     toggleWishlist: (productId: string) => void;
     getCartCount: () => number;
+    setCurrency: (currency: Currency) => void;
+    formatPrice: (price: number) => string;
 }
+
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
@@ -35,6 +40,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [cart, setCart] = useState<CartItem[]>([]);
     const [wishlist, setWishlist] = useState<string[]>([]);
+    const [currency, setCurrency] = useState<Currency>('NGN');
 
     useEffect(() => {
         async function load() {
@@ -44,6 +50,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         }
         load();
     }, []);
+
+    const formatPrice = (price: number) => {
+        if (currency === 'NGN') {
+            return `₦${price.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+        return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    };
 
     const navigate = (view: ViewState, product?: Product) => {
         if (product) setSelectedProduct(product);
@@ -79,8 +92,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <StoreContext.Provider value={{
-            products, cart, wishlist, activeView, selectedProduct, isApiReady,
-            navigate, addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist, getCartCount
+            products, cart, wishlist, activeView, selectedProduct, isApiReady, currency,
+            navigate, addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist, getCartCount,
+            setCurrency, formatPrice
         }}>
             {children}
         </StoreContext.Provider>

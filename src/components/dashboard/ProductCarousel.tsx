@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowRight, Star, ShoppingCart, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Product } from '@/lib/api';
+import { useStore } from '@/lib/StoreContext';
 
 interface ProductCarouselProps {
     title: string | React.ReactNode;
@@ -14,6 +15,7 @@ interface ProductCarouselProps {
 }
 
 export default function ProductCarousel({ title, subtitle, products, type, onProductClick, onAddToCart }: ProductCarouselProps) {
+    const { formatPrice } = useStore();
     return (
         <section className="max-w-7xl mx-auto w-full px-4 md:px-6 py-8 md:py-10">
             <div className="flex items-end justify-between mb-4 md:mb-6">
@@ -58,9 +60,9 @@ export default function ProductCarousel({ title, subtitle, products, type, onPro
                             
                             <div className="mt-auto flex flex-col">
                                 <div className="flex items-end gap-2 mb-2">
-                                    <span className="text-lg font-black text-gray-900">${product.price.toFixed(2)}</span>
+                                    <span className="text-lg font-black text-gray-900">{formatPrice(product.price)}</span>
                                     {product.originalPrice && (
-                                        <span className="text-xs text-gray-400 font-bold line-through mb-1">${product.originalPrice.toFixed(2)}</span>
+                                        <span className="text-xs text-gray-400 font-bold line-through mb-1">{formatPrice(product.originalPrice)}</span>
                                     )}
                                 </div>
                                 

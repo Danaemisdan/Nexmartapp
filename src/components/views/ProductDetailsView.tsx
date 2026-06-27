@@ -4,7 +4,7 @@ import { ArrowLeft, Star, ShoppingCart, Heart, ShieldCheck, Truck, RotateCcw } f
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProductDetailsView() {
-    const { selectedProduct, navigate, addToCart, toggleWishlist, wishlist } = useStore();
+    const { selectedProduct, navigate, addToCart, toggleWishlist, wishlist, formatPrice } = useStore();
     const [currentImage, setCurrentImage] = useState(0);
 
     if (!selectedProduct) {
@@ -95,9 +95,9 @@ export default function ProductDetailsView() {
                     </div>
 
                     <div className="flex items-end gap-4 mb-8">
-                        <span className="text-5xl font-black text-gray-900">${selectedProduct.price.toFixed(2)}</span>
+                        <span className="text-5xl font-black text-gray-900">{formatPrice(selectedProduct.price)}</span>
                         {selectedProduct.originalPrice && (
-                            <span className="text-xl text-gray-400 font-bold line-through mb-1">${selectedProduct.originalPrice.toFixed(2)}</span>
+                            <span className="text-xl text-gray-400 font-bold line-through mb-1">{formatPrice(selectedProduct.originalPrice)}</span>
                         )}
                         {selectedProduct.discount && (
                             <span className="bg-red-500 text-white px-2 py-1 rounded font-black text-sm mb-2">{selectedProduct.discount}</span>

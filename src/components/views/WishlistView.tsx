@@ -4,7 +4,7 @@ import { ArrowLeft, Heart, ShoppingCart, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function WishlistView() {
-    const { products, wishlist, toggleWishlist, addToCart, navigate } = useStore();
+    const { products, wishlist, toggleWishlist, addToCart, navigate, formatPrice } = useStore();
 
     const wishlistProducts = products.filter(p => wishlist.includes(p.id));
 
@@ -62,7 +62,7 @@ export default function WishlistView() {
                             <p className="text-xs text-gray-400 mb-2">{product.category}</p>
                             
                             <div className="mt-auto flex items-center justify-between">
-                                <span className="text-lg font-black text-gray-900">${product.price.toFixed(2)}</span>
+                                <span className="text-lg font-black text-gray-900">{formatPrice(product.price)}</span>
                                 <button 
                                     onClick={(e) => { e.stopPropagation(); addToCart(product); }}
                                     className="w-8 h-8 rounded-full border-2 border-[#1e3a8a] text-[#1e3a8a] flex items-center justify-center hover:bg-[#1e3a8a] hover:text-white transition-colors"

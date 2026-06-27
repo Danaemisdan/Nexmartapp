@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Box, CheckCircle2 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useStore } from '@/lib/StoreContext';
 
 const inventory = [
     { id: 't1', title: '5KVA Solar Inverter', price: 1200, category: 'Tech', image: 'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=400&auto=format&fit=crop', top: '15%', left: '10%' },
@@ -14,6 +15,7 @@ const inventory = [
 
 export default function DesktopDeals({ activeStore, workflowState, currentTask, aiProducts }: any) {
     const { addToCart } = useCart();
+    const { formatPrice } = useStore();
     
     const displayedItems = useMemo(() => {
         if (workflowState !== 'IDLE' && aiProducts && aiProducts.length > 0) {
@@ -51,7 +53,7 @@ export default function DesktopDeals({ activeStore, workflowState, currentTask, 
                             <div>
                                 <p className="text-white/50 text-xs uppercase tracking-widest font-bold">Total Execution Value</p>
                                 <p className="text-5xl font-extrabold text-white mt-1 tracking-tighter">
-                                    ${displayedItems.reduce((acc: number, item: any) => acc + (item.price * 0.9), 0).toFixed(0)}
+                                    {formatPrice(displayedItems.reduce((acc: number, item: any) => acc + (item.price * 0.9), 0))}
                                 </p>
                             </div>
                             <span className="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold px-4 py-2 rounded-xl text-sm shadow-[0_0_20px_rgba(16,185,129,0.2)]">
@@ -105,7 +107,7 @@ export default function DesktopDeals({ activeStore, workflowState, currentTask, 
                                         <div>
                                             <p className="text-white/50 text-[10px] uppercase font-bold tracking-widest mb-1">Current Price</p>
                                             <p className="text-white font-extrabold text-2xl flex items-center gap-2 drop-shadow-lg">
-                                                ${isNegotiated ? (item.price * 0.9).toFixed(0) : item.price}
+                                                {formatPrice(isNegotiated ? (item.price * 0.9) : item.price)}
                                                 {isNegotiated && <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded uppercase tracking-widest animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.4)]">Negotiated</span>}
                                             </p>
                                         </div>

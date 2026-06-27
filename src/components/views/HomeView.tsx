@@ -1,5 +1,5 @@
 import React from 'react';
-import Hero from '../dashboard/Hero';
+import AmazonStyleCarousel from '../dashboard/AmazonStyleCarousel';
 import CategoriesRow from '../dashboard/CategoriesRow';
 import TrustBadges from '../dashboard/TrustBadges';
 import ProductCarousel from '../dashboard/ProductCarousel';
@@ -18,7 +18,7 @@ export default function HomeView({ aiProducts }: HomeViewProps) {
 
     return (
         <div className="flex flex-col pb-24 md:pb-10">
-            <Hero />
+            <AmazonStyleCarousel />
             <CategoriesRow />
             <TrustBadges />
 

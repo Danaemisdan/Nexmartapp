@@ -1,6 +1,7 @@
 'use client'
 import React from 'react';
 import { useCart } from '@/context/CartContext';
+import { useStore } from '@/lib/StoreContext';
 import { Handshake } from 'lucide-react';
 
 const inventory = [
@@ -17,6 +18,7 @@ const inventory = [
 
 export default function CatalogGrid({ activeCategory, searchResults, isSearching }: { activeCategory: string, searchResults: any[] | null, isSearching: boolean }) {
   const { addToCart } = useCart();
+  const { formatPrice } = useStore();
 
   let displayedItems = inventory;
   if (searchResults) {
@@ -55,7 +57,7 @@ export default function CatalogGrid({ activeCategory, searchResults, isSearching
             <div className="p-5 flex flex-col flex-1">
               <h3 className="text-lg font-semibold text-gray-900 mb-2 leading-tight">{item.title}</h3>
               <div className="mt-auto flex flex-col gap-3">
-                <span className="text-xl font-bold text-blue-600">${item.price.toFixed(2)}</span>
+                <span className="text-xl font-bold text-blue-600">{formatPrice(item.price)}</span>
                 <div className="flex gap-2 w-full">
                     <button 
                       onClick={() => addToCart(item)}

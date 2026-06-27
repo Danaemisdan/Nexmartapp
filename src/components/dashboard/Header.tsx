@@ -10,7 +10,7 @@ interface HeaderProps {
 }
 
 export default function Header({ isLoggedIn, onOpenAuth, agentProps }: HeaderProps) {
-    const { getCartCount, navigate } = useStore();
+    const { getCartCount, navigate, currency, setCurrency } = useStore();
     const cartCount = getCartCount();
 
     return (
@@ -23,43 +23,59 @@ export default function Header({ isLoggedIn, onOpenAuth, agentProps }: HeaderPro
             </div>
 
             <div className="max-w-7xl mx-auto w-full px-4 md:px-6">
-                <div className="flex items-center justify-between h-14 md:h-20 gap-4">
-                    {/* Logo & Mobile Menu */}
-                    <div className="flex items-center gap-3">
+                {/* 3-Column Header Layout */}
+                <div className="grid grid-cols-3 items-center h-16 md:h-20 gap-4">
+                    
+                    {/* Left: Logo & Search */}
+                    <div className="flex items-center gap-4 justify-start">
                         <button className="md:hidden p-2 -ml-2 text-gray-600">
                             <Menu className="w-6 h-6" />
                         </button>
                         <div 
                             onClick={() => navigate('home')}
-                            className="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity"
+                            className="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity shrink-0"
                         >
                             <img src="/logo-full.png" alt="Nexmart" className="h-8 md:h-10" />
                         </div>
-                    </div>
-
-                    {/* Search Bar - Hidden on mobile, handled by AgentOrb */}
-                    <div className="hidden md:flex flex-1 max-w-2xl mx-8 relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Search className="h-5 w-5 text-gray-400 group-focus-within:text-[#1e3a8a] transition-colors" />
+                        
+                        <div className="hidden lg:flex flex-1 max-w-[300px] relative group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <Search className="h-4 w-4 text-gray-400 group-focus-within:text-[#1e3a8a] transition-colors" />
+                            </div>
+                            <input 
+                                type="text" 
+                                className="w-full bg-gray-50 border-2 border-gray-100 text-gray-900 text-xs rounded-full focus:ring-0 focus:border-[#1e3a8a] block pl-10 p-2.5 transition-all placeholder:text-gray-400 font-medium" 
+                                placeholder="Ask AI..." 
+                            />
                         </div>
-                        <input 
-                            type="text" 
-                            className="w-full bg-gray-50 border-2 border-gray-100 text-gray-900 text-sm rounded-full focus:ring-0 focus:border-[#1e3a8a] block pl-12 p-3 transition-all placeholder:text-gray-400 font-medium" 
-                            placeholder="Ask AI to find anything..." 
-                        />
-                        <button className="absolute inset-y-1 right-1 bg-[#1e3a8a] text-white px-4 rounded-full text-xs font-bold hover:bg-[#172554] transition-colors">
-                            Search
-                        </button>
                     </div>
 
-                    {/* Desktop Actions */}
-                    <div className="hidden md:flex items-center gap-6">
-                        <button onClick={() => navigate('wishlist')} className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
+                    {/* Center: Agent Orb */}
+                    <div className="flex justify-center items-center relative z-[60]">
+                        <div className="absolute -top-4 md:-top-8">
+                            <AgentOrb {...agentProps} />
+                        </div>
+                    </div>
+
+                    {/* Right: Actions */}
+                    <div className="flex items-center justify-end gap-3 md:gap-6">
+                        {/* Currency Toggle */}
+                        <button 
+                            onClick={() => setCurrency(currency === 'NGN' ? 'USD' : 'NGN')}
+                            className="hidden md:flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group"
+                        >
+                            <div className="w-6 h-6 font-black text-sm flex items-center justify-center group-hover:scale-110 transition-transform">
+                                {currency === 'NGN' ? '₦' : '$'}
+                            </div>
+                            <span className="text-[10px] font-bold">{currency}</span>
+                        </button>
+
+                        <button onClick={() => navigate('wishlist')} className="hidden md:flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
                             <Heart className="w-6 h-6 group-hover:scale-110 transition-transform" />
                             <span className="text-[10px] font-bold">Wishlist</span>
                         </button>
                         
-                        <button onClick={() => navigate('cart')} className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors relative group">
+                        <button onClick={() => navigate('cart')} className="flex flex-col items-center md:gap-1 text-gray-900 md:text-gray-500 hover:text-[#1e3a8a] transition-colors relative group">
                             <div className="relative">
                                 <ShoppingCart className="w-6 h-6 group-hover:scale-110 transition-transform" />
                                 {cartCount > 0 && (
@@ -68,32 +84,20 @@ export default function Header({ isLoggedIn, onOpenAuth, agentProps }: HeaderPro
                                     </span>
                                 )}
                             </div>
-                            <span className="text-[10px] font-bold">Cart</span>
+                            <span className="hidden md:block text-[10px] font-bold">Cart</span>
                         </button>
                         
                         {isLoggedIn ? (
-                            <button className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
+                            <button className="hidden md:flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
                                 <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs group-hover:scale-110 transition-transform">JD</div>
                                 <span className="text-[10px] font-bold">Profile</span>
                             </button>
                         ) : (
-                            <button onClick={onOpenAuth} className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
+                            <button onClick={onOpenAuth} className="hidden md:flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
                                 <User className="w-6 h-6 group-hover:scale-110 transition-transform" />
                                 <span className="text-[10px] font-bold">Sign In</span>
                             </button>
                         )}
-                    </div>
-
-                    {/* Mobile Actions (Right aligned) */}
-                    <div className="flex md:hidden items-center gap-4">
-                        <button onClick={() => navigate('cart')} className="relative text-gray-900">
-                            <ShoppingCart className="w-6 h-6" />
-                            {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1.5 bg-[#1e3a8a] text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white">
-                                    {cartCount}
-                                </span>
-                            )}
-                        </button>
                     </div>
                 </div>
 
@@ -110,13 +114,6 @@ export default function Header({ isLoggedIn, onOpenAuth, agentProps }: HeaderPro
                         </span>
                         <span onClick={() => navigate('deals')} className="cursor-pointer hover:text-gray-900">Deals</span>
                         <span onClick={() => {}} className="cursor-pointer hover:text-gray-900 flex items-center gap-1"><Package className="w-4 h-4"/> Track Order</span>
-                    </div>
-                </div>
-
-                {/* Center Notch for the AgentOrb (Mobile & Desktop) */}
-                <div className="flex justify-center items-center flex-shrink-0 z-[60] relative">
-                    <div className="absolute -top-6 md:-top-10 left-1/2 -translate-x-1/2">
-                        <AgentOrb {...agentProps} />
                     </div>
                 </div>
             </div>
