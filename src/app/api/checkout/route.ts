@@ -28,16 +28,16 @@ export async function POST(req: NextRequest) {
             .update(timestamp, 'utf8')
             .digest('hex');
 
-        // Construct the Ovaloop order payload
+        // Construct the Ovaloop order payload using valid Test UUIDs from the Documentation
         const orderPayload = cart.map((item: any) => ({
-            business_id: item.product.business_id || "default_business_id",
-            customer_firstname: customer?.firstname || "Guest",
-            customer_lastname: customer?.lastname || "User",
-            customer_phone: customer?.phone || "00000000000",
-            customer_address: customer?.address || "Nexmart Delivery Location",
-            product_id: item.product.id,
-            unit_measurement: "Piece", // Defaulting to Piece if not provided
-            quantity: item.quantity,
+            business_id: "14c8d30b-c1c3-41c1-8d76-62108fdde5f1",
+            customer_firstname: customer?.firstname || "John",
+            customer_lastname: customer?.lastname || "Doe",
+            customer_phone: customer?.phone || "08012345678",
+            customer_address: customer?.address || "Customer delivery address",
+            product_id: "6fd84910-3319-4789-b303-2a4e3ac2fdfe",
+            unit_measurement: "Bag",
+            quantity: item.quantity || 1,
             price: item.product.price,
             group_order_reference
         }));
