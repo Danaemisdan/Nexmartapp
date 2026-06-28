@@ -42,8 +42,7 @@ export async function POST(req: NextRequest) {
             group_order_reference
         }));
 
-        // Fire the request to Ovaloop API
-        const ovaloopEndpoint = process.env.OVALOOP_API_URL || 'https://api.ovaloop.com';
+        const ovaloopEndpoint = process.env.OVALOOP_API_URL || 'https://devapi.ovaloop.app';
         
         console.log(`[Checkout] Sending order to ${ovaloopEndpoint}/partner/orders/`);
         

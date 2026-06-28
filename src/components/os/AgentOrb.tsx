@@ -406,9 +406,9 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
   if (isListening) agentState = "listening";
 
   return (
-      <div className={`${inline ? 'relative' : 'fixed top-[20px] md:top-[10px] left-1/2 -translate-x-1/2'} z-[60] flex flex-col items-center transition-all duration-500`}>
+      <div className={`${inline ? 'relative' : 'fixed top-[20px] md:top-[10px] left-1/2 -translate-x-1/2'} z-[60] flex flex-col items-center transition-all duration-500 pointer-events-none`}>
       
-      <div className="relative flex items-center justify-center">
+      <div className="relative flex items-center justify-center pointer-events-auto">
           <motion.div 
             onClick={handleOrbClick}
             animate={{ scale: isWorking || isTalking ? 1.15 : 1 }}
