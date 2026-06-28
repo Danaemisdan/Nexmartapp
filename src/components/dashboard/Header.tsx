@@ -17,8 +17,7 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
             {/* Top Announcement Bar */}
             <div className="bg-black text-white text-[10px] md:text-xs font-bold py-1.5 md:py-2 text-center flex items-center justify-center gap-2 tracking-wider">
                 <Sparkles className="w-3 h-3 text-yellow-400" /> 
-                AI Picks Just for You - Smarter Shopping, Better Choices! 
-                <span onClick={() => {}} className="hidden md:inline cursor-pointer ml-4 hover:text-gray-300">Download App 📱</span>
+                AI Picks Just for You - Smarter Shopping, Better Choices!
             </div>
 
             <div className="max-w-7xl mx-auto w-full px-4 md:px-6">
