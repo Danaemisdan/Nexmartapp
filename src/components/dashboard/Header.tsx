@@ -8,7 +8,7 @@ interface HeaderProps {
 }
 
 export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
-    const { getCartCount, navigate, currency, setCurrency } = useStore();
+    const { getCartCount, navigate, currency, setCurrency, activeView } = useStore();
     const cartCount = getCartCount();
 
     return (
@@ -104,12 +104,12 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
                     </button>
                     
                     <div className="flex items-center gap-8 text-sm font-bold text-gray-600">
-                        <span onClick={() => navigate('home')} className="cursor-pointer text-[#1e3a8a] border-b-2 border-[#1e3a8a] pb-1">Home</span>
-                        <span onClick={() => navigate('home')} className="cursor-pointer hover:text-gray-900 flex items-center gap-1">
+                        <span onClick={() => navigate('home')} className={`cursor-pointer pb-1 ${activeView === 'home' ? 'text-[#1e3a8a] border-b-2 border-[#1e3a8a]' : 'hover:text-gray-900'}`}>Home</span>
+                        <span onClick={() => navigate('home')} className={`cursor-pointer flex items-center gap-1 ${activeView === 'home' ? 'text-gray-900' : 'hover:text-gray-900'}`}>
                             AI Picks <span className="bg-[#1e3a8a] text-white text-[9px] px-1.5 py-0.5 rounded-sm">NEW</span>
                         </span>
-                        <span onClick={() => navigate('deals')} className="cursor-pointer hover:text-gray-900">Deals</span>
-                        <span onClick={() => {}} className="cursor-pointer hover:text-gray-900 flex items-center gap-1"><Package className="w-4 h-4"/> Track Order</span>
+                        <span onClick={() => navigate('deals')} className={`cursor-pointer pb-1 ${activeView === 'deals' ? 'text-[#1e3a8a] border-b-2 border-[#1e3a8a]' : 'hover:text-gray-900'}`}>Deals</span>
+                        <span onClick={() => alert('Track Order functionality is coming soon!')} className="cursor-pointer hover:text-gray-900 flex items-center gap-1"><Package className="w-4 h-4"/> Track Order</span>
                     </div>
                 </div>
             </div>
