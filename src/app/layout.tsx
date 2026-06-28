@@ -2,6 +2,7 @@ import { Inter, Outfit, Geist } from 'next/font/google'
 import './globals.css'
 import { CartProvider } from '@/context/CartContext'
 import { cn } from "@/lib/utils";
+import { Toaster } from 'sonner';
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -31,6 +32,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased">
         <CartProvider>
           {children}
+          <Toaster position="top-center" richColors theme="light" />
         </CartProvider>
       </body>
     </html>

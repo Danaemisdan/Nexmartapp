@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, ShoppingCart, Heart, User, Sparkles, Menu, Package } from 'lucide-react';
 import { useStore } from '@/lib/StoreContext';
+import { toast } from 'sonner';
 
 interface HeaderProps {
     isLoggedIn: boolean;
@@ -109,7 +110,7 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
                             AI Picks <span className="bg-[#1e3a8a] text-white text-[9px] px-1.5 py-0.5 rounded-sm">NEW</span>
                         </span>
                         <span onClick={() => navigate('deals')} className={`cursor-pointer pb-1 ${activeView === 'deals' ? 'text-[#1e3a8a] border-b-2 border-[#1e3a8a]' : 'hover:text-gray-900'}`}>Deals</span>
-                        <span onClick={() => alert('Track Order functionality is coming soon!')} className="cursor-pointer hover:text-gray-900 flex items-center gap-1"><Package className="w-4 h-4"/> Track Order</span>
+                        <span onClick={() => toast.info('Track Order functionality is coming soon!')} className="cursor-pointer hover:text-gray-900 flex items-center gap-1"><Package className="w-4 h-4"/> Track Order</span>
                     </div>
                 </div>
             </div>

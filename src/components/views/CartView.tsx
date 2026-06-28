@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useStore } from '@/lib/StoreContext';
 import { Minus, Plus, Trash2, ArrowLeft, CreditCard, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 export default function CartView() {
     const { cart, updateCartQuantity, removeFromCart, clearCart, navigate, formatPrice } = useStore();
@@ -31,13 +32,13 @@ export default function CartView() {
             
             if (res.ok && data.success) {
                 clearCart();
-                alert(`Checkout Successful! Your AI has processed the order.\nRef: ${data.group_order_reference}`);
+                toast.success(`Checkout Successful! Your AI has processed the order.\nRef: ${data.group_order_reference}`);
                 navigate('home');
             } else {
-                alert(`Checkout Failed: ${data.error || 'Unknown error'}`);
+                toast.error(`Checkout Failed: ${data.error || 'Unknown error'}`);
             }
         } catch (e: any) {
-            alert(`Checkout Error: ${e.message}`);
+            toast.error(`Checkout Error: ${e.message}`);
         } finally {
             setIsCheckingOut(false);
         }

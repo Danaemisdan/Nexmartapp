@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Keyboard, X, Plus, ArrowUp, Loader2, Sparkles } from 'lucide-react';
+import { toast } from 'sonner';
 import { CreateWebWorkerMLCEngine, MLCEngineInterface } from '@mlc-ai/web-llm';
 import { AgentState, Orb } from "@/components/ui/orb";
 import { useStore } from '@/lib/StoreContext';
@@ -251,7 +252,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
 
           recognitionRef.current.start();
       } else {
-          alert("Voice recognition is not supported in this browser. Please use Chrome or Edge.");
+          toast.error("Voice recognition is not supported in this browser. Please use Chrome or Edge.");
       }
   };
 

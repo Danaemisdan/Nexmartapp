@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useStore } from '@/lib/StoreContext';
 import { ArrowLeft, Star, ShoppingCart, Heart, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 export default function ProductDetailsView() {
     const { selectedProduct, navigate, addToCart, toggleWishlist, wishlist, formatPrice } = useStore();
@@ -121,7 +122,7 @@ export default function ProductDetailsView() {
                         <button 
                             onClick={() => {
                                 addToCart(selectedProduct);
-                                alert(`${selectedProduct.title} added to cart!`);
+                                toast.success(`${selectedProduct.title} added to cart!`);
                             }}
                             className="sm:w-32 bg-white text-black border-2 border-gray-200 px-8 py-5 rounded-2xl font-bold flex items-center justify-center hover:border-black transition-all hover:scale-[1.02] active:scale-95"
                         >
