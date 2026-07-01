@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '@/lib/StoreContext';
-import { ArrowLeft, Star, ShoppingCart, Heart, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Star, ShoppingCart, Heart, ShieldCheck, Truck, RotateCcw, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -109,24 +109,34 @@ export default function ProductDetailsView() {
                         {selectedProduct.description}
                     </p>
 
-                    <div className="flex flex-col sm:flex-row gap-4 mb-12">
+                    <div className="flex flex-col gap-3 mb-12">
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <button 
+                                onClick={() => {
+                                    addToCart(selectedProduct);
+                                    navigate('cart');
+                                }}
+                                className="flex-1 bg-black text-white px-8 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-gray-800 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-black/10"
+                            >
+                                Buy Now
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    addToCart(selectedProduct);
+                                    toast.success(`${selectedProduct.title} added to cart!`);
+                                }}
+                                className="sm:w-32 bg-white text-black border-2 border-gray-200 px-8 py-5 rounded-2xl font-bold flex items-center justify-center hover:border-black transition-all hover:scale-[1.02] active:scale-95"
+                            >
+                                <ShoppingCart className="w-6 h-6" />
+                            </button>
+                        </div>
                         <button 
-                            onClick={() => {
-                                addToCart(selectedProduct);
-                                navigate('cart');
-                            }}
-                            className="flex-1 bg-black text-white px-8 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-gray-800 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-black/10"
+                            onClick={() => toast.success('Checking your Nexmart Credit limit...', { icon: '✨' })}
+                            className="w-full relative overflow-hidden group bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white px-8 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-purple-500/30"
                         >
-                            Buy Now
-                        </button>
-                        <button 
-                            onClick={() => {
-                                addToCart(selectedProduct);
-                                toast.success(`${selectedProduct.title} added to cart!`);
-                            }}
-                            className="sm:w-32 bg-white text-black border-2 border-gray-200 px-8 py-5 rounded-2xl font-bold flex items-center justify-center hover:border-black transition-all hover:scale-[1.02] active:scale-95"
-                        >
-                            <ShoppingCart className="w-6 h-6" />
+                            <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out skew-x-12"></div>
+                            <Sparkles className="w-5 h-5 text-yellow-200 drop-shadow-md" />
+                            Buy Now, Pay Later
                         </button>
                     </div>
 
