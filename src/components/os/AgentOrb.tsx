@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Keyboard, X, Plus, ArrowUp, Loader2, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { CreateWebWorkerMLCEngine, MLCEngineInterface } from '@mlc-ai/web-llm';
-import { AgentState, Orb } from "@/components/ui/orb";
+import { AgentState } from "@/components/ui/orb";
+import { CSSOrb } from "@/components/ui/css-orb";
 import { useStore } from '@/lib/StoreContext';
 
 const suggestedPrompts = [
@@ -417,7 +418,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
             className={`relative cursor-pointer transition-shadow duration-700 !w-[96px] !h-[96px] md:!w-[144px] md:!h-[144px] shrink-0 aspect-square flex items-center justify-center rounded-full overflow-hidden ${isWorking || isTalking ? 'drop-shadow-[0_0_60px_rgba(59,130,246,0.5)]' : 'drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:scale-105 hover:drop-shadow-[0_15px_35px_rgba(0,0,0,0.4)]'}`}
           >
              {/* Native ElevenLabs Orb with clipping mask restored now that it is outside Header */}
-             <Orb agentState={agentState} />
+             <CSSOrb isListening={isListening} isTalking={isTalking} isWorking={isWorking} progress={aiProgress} />
           </motion.div>
 
           {/* Status Pill */}
