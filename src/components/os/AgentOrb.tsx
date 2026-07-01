@@ -91,8 +91,8 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
 
           workerRef.current = new Worker(new URL('@/lib/worker.ts', import.meta.url), { type: 'module' });
           
-          // Force SmolLM2-135M on all devices for absolute maximum speed and stability
-          const modelToLoad = 'SmolLM2-135M-Instruct-q0f16-MLC';
+          // Force SmolLM2-135M Q4 on all devices for absolute maximum speed and stability
+          const modelToLoad = 'SmolLM2-135M-Instruct-q4f16_1-MLC';
 
           const newEngine = await CreateWebWorkerMLCEngine(
               workerRef.current,
@@ -414,7 +414,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
             onClick={handleOrbClick}
             animate={{ scale: isWorking || isTalking ? 1.15 : 1 }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className={`relative cursor-pointer transition-shadow duration-700 w-24 h-24 md:w-36 md:h-36 shrink-0 aspect-square min-w-[96px] min-h-[96px] md:min-w-[144px] md:min-h-[144px] flex items-center justify-center rounded-full overflow-hidden ${isWorking || isTalking ? 'drop-shadow-[0_0_60px_rgba(59,130,246,0.5)]' : 'drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:scale-105 hover:drop-shadow-[0_15px_35px_rgba(0,0,0,0.4)]'}`}
+            className={`relative cursor-pointer transition-shadow duration-700 w-32 h-32 md:w-48 md:h-48 shrink-0 flex items-center justify-center rounded-full overflow-hidden ${isWorking || isTalking ? 'drop-shadow-[0_0_60px_rgba(59,130,246,0.5)]' : 'drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:scale-105 hover:drop-shadow-[0_15px_35px_rgba(0,0,0,0.4)]'}`}
           >
              {/* Native ElevenLabs Orb with clipping mask restored now that it is outside Header */}
              <Orb agentState={agentState} />
