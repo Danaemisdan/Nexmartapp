@@ -28,7 +28,7 @@ export function CSSOrb({ isListening, isTalking, isWorking, progress }: CSSOrbPr
     }
 
     return (
-        <div className="relative w-full h-full flex items-center justify-center">
+        <div className="relative w-32 h-32 flex items-center justify-center">
             {/* Outer Glow */}
             <motion.div
                 className="absolute inset-0 rounded-full blur-2xl opacity-60 mix-blend-multiply dark:mix-blend-screen"
@@ -45,7 +45,7 @@ export function CSSOrb({ isListening, isTalking, isWorking, progress }: CSSOrbPr
             
             {/* Inner Core */}
             <motion.div
-                className="relative w-[80%] h-[80%] rounded-full shadow-[inset_0_-10px_20px_rgba(0,0,0,0.2),_0_10px_20px_rgba(0,0,0,0.2)] bg-gradient-to-tr overflow-hidden flex items-center justify-center"
+                className="relative w-20 h-20 rounded-full shadow-[inset_0_-10px_20px_rgba(0,0,0,0.2),_0_10px_20px_rgba(0,0,0,0.2)] bg-gradient-to-tr overflow-hidden flex items-center justify-center"
                 animate={{
                     scale: [1, 1.05, 1],
                     backgroundImage: `linear-gradient(to top right, ${colors[1]}, ${colors[0]})`
