@@ -120,15 +120,15 @@ export default async function ProductPage({ params }: { params: { id: string } }
           {/* Price */}
           <div className="flex items-baseline gap-3">
             <span className="text-4xl font-black text-gray-900">
-              ${product.price.toFixed(2)}
+              ₦{product.price.toFixed(2)}
             </span>
             {discountPct > 0 && (
               <span className="text-lg text-gray-400 line-through font-medium">
-                ${product.originalPrice.toFixed(2)}
+                ₦{product.originalPrice.toFixed(2)}
               </span>
             )}
             {discountPct > 0 && (
-              <span className="text-sm font-bold text-green-600">Save ${(product.originalPrice - product.price).toFixed(2)}</span>
+              <span className="text-sm font-bold text-green-600">Save ₦{(product.originalPrice - product.price).toFixed(2)}</span>
             )}
           </div>
 

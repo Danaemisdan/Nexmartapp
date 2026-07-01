@@ -10,7 +10,7 @@ import { useStore } from '@/lib/StoreContext';
 const suggestedPrompts = [
     "Find me the best smart home products",
     "Show me top rated tech gadgets",
-    "Find cheap electronics under $50",
+    "Find cheap electronics under ₦50,000",
     "I need some new furniture...",
     "Show me beauty and skincare"
 ];

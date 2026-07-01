@@ -9,7 +9,7 @@ interface HeaderProps {
 }
 
 export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
-    const { getCartCount, navigate, currency, setCurrency, activeView } = useStore();
+    const { getCartCount, navigate, activeView } = useStore();
     const cartCount = getCartCount();
 
     return (
@@ -55,17 +55,6 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
 
                     {/* Right: Actions */}
                     <div className="flex items-center justify-end gap-3 md:gap-6">
-                        {/* Currency Toggle */}
-                        <button 
-                            onClick={() => setCurrency(currency === 'NGN' ? 'USD' : 'NGN')}
-                            className="hidden md:flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group"
-                        >
-                            <div className="w-6 h-6 font-black text-sm flex items-center justify-center group-hover:scale-110 transition-transform">
-                                {currency === 'NGN' ? '₦' : '$'}
-                            </div>
-                            <span className="text-[10px] font-bold">{currency}</span>
-                        </button>
-
                         <button onClick={() => navigate('wishlist')} className="hidden md:flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
                             <Heart className="w-6 h-6 group-hover:scale-110 transition-transform" />
                             <span className="text-[10px] font-bold">Wishlist</span>
