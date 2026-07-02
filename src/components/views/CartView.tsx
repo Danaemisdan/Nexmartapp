@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 export default function CartView() {
-    const { cart, updateCartQuantity, removeFromCart, clearCart, navigate, formatPrice } = useStore();
+    const { cart, updateCartQuantity, removeFromCart, clearCart, navigate, formatPrice, addOrder } = useStore();
     const [isCheckingOut, setIsCheckingOut] = useState(false);
 
     const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
@@ -30,10 +30,11 @@ export default function CartView() {
             
             const data = await res.json();
             
-            if (res.ok && data.success) {
-                clearCart();
+            if (res.ok && data.success && data.group_order_reference) {
                 toast.success(`Checkout Successful! Your AI has processed the order.\nRef: ${data.group_order_reference}`);
-                navigate('home');
+                addOrder(data.group_order_reference);
+                clearCart();
+                setTimeout(() => navigate('orders'), 1500);
             } else {
                 toast.error(`Checkout Failed: ${data.error || 'Unknown error'}`);
             }

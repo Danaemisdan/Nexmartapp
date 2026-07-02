@@ -73,9 +73,9 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
                         </button>
                         
                         {isLoggedIn ? (
-                            <button className="hidden md:flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
-                                <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs group-hover:scale-110 transition-transform">JD</div>
-                                <span className="text-[10px] font-bold">Profile</span>
+                            <button onClick={() => navigate('orders')} className={`hidden md:flex flex-col items-center gap-1 transition-colors group ${activeView === 'orders' ? 'text-[#1e3a8a]' : 'text-gray-500 hover:text-[#1e3a8a]'}`}>
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs group-hover:scale-110 transition-transform ${activeView === 'orders' ? 'bg-[#1e3a8a] text-white' : 'bg-blue-100 text-blue-600'}`}>JD</div>
+                                <span className="text-[10px] font-bold">Orders</span>
                             </button>
                         ) : (
                             <button onClick={onOpenAuth} className="hidden md:flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
@@ -98,7 +98,7 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
                             AI Picks <span className="bg-[#1e3a8a] text-white text-[9px] px-1.5 py-0.5 rounded-sm">NEW</span>
                         </span>
                         <span onClick={() => navigate('deals')} className={`cursor-pointer pb-1 ${activeView === 'deals' ? 'text-[#1e3a8a] border-b-2 border-[#1e3a8a]' : 'hover:text-gray-900'}`}>Deals</span>
-                        <span onClick={() => toast.info('Track Order functionality is coming soon!')} className="cursor-pointer hover:text-gray-900 flex items-center gap-1"><Package className="w-4 h-4"/> Track Order</span>
+                        <span onClick={() => navigate('orders')} className={`cursor-pointer hover:text-gray-900 flex items-center gap-1 ${activeView === 'orders' ? 'text-[#1e3a8a] border-b-2 border-[#1e3a8a]' : ''}`}><Package className="w-4 h-4"/> Track Order</span>
                     </div>
                 </div>
             </div>

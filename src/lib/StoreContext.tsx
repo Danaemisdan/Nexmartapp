@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, fetchProducts } from './api';
 
-export type ViewState = 'home' | 'cart' | 'wishlist' | 'product' | 'categories' | 'deals';
+export type ViewState = 'home' | 'cart' | 'wishlist' | 'product' | 'categories' | 'deals' | 'orders';
 
 interface CartItem {
     product: Product;
@@ -13,6 +13,7 @@ interface StoreContextType {
     products: Product[];
     cart: CartItem[];
     wishlist: string[];
+    orders: string[];
     activeView: ViewState;
     selectedProduct: Product | null;
     isApiReady: boolean;
@@ -25,6 +26,7 @@ interface StoreContextType {
     toggleWishlist: (productId: string) => void;
     getCartCount: () => number;
     formatPrice: (price: number) => string;
+    addOrder: (orderId: string) => void;
 }
 
 
@@ -37,6 +39,24 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [cart, setCart] = useState<CartItem[]>([]);
     const [wishlist, setWishlist] = useState<string[]>([]);
+    const [orders, setOrders] = useState<string[]>([]);
+
+    useEffect(() => {
+        const storedOrders = localStorage.getItem('nexmart_orders');
+        if (storedOrders) {
+            try {
+                setOrders(JSON.parse(storedOrders));
+            } catch (e) {
+                console.error('Failed to parse stored orders', e);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        if (orders.length > 0) {
+            localStorage.setItem('nexmart_orders', JSON.stringify(orders));
+        }
+    }, [orders]);
 
     useEffect(() => {
         async function load() {
@@ -83,11 +103,18 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
     const getCartCount = () => cart.reduce((total, item) => total + item.quantity, 0);
 
+    const addOrder = (orderId: string) => {
+        setOrders(prev => {
+            if (prev.includes(orderId)) return prev;
+            return [orderId, ...prev];
+        });
+    };
+
     return (
         <StoreContext.Provider value={{
-            products, cart, wishlist, activeView, selectedProduct, isApiReady,
+            products, cart, wishlist, orders, activeView, selectedProduct, isApiReady,
             navigate, addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist, getCartCount,
-            formatPrice
+            formatPrice, addOrder
         }}>
             {children}
         </StoreContext.Provider>

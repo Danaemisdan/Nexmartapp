@@ -9,6 +9,7 @@ import CartView from '../views/CartView';
 import WishlistView from '../views/WishlistView';
 import ProductDetailsView from '../views/ProductDetailsView';
 import CategoriesView from '../views/CategoriesView';
+import OrdersView from '../views/OrdersView';
 import DealsView from '../views/DealsView';
 import { AnimatePresence, motion } from 'framer-motion';
 import SplashScreen from './SplashScreen';
@@ -77,6 +78,11 @@ function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
                     {activeView === 'categories' && (
                         <motion.div key="categories" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="flex-1">
                             <CategoriesView />
+                        </motion.div>
+                    )}
+                    {activeView === 'orders' && (
+                        <motion.div key="orders" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="flex-1">
+                            <OrdersView />
                         </motion.div>
                     )}
                     {activeView === 'deals' && (

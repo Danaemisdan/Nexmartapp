@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, ShoppingCart, Heart, User, Home } from 'lucide-react';
+import { Search, ShoppingCart, Heart, User, Home, Package } from 'lucide-react';
 import { useStore } from '@/lib/StoreContext';
 
 export default function BottomNav() {
@@ -12,9 +12,9 @@ export default function BottomNav() {
                 <Home className={`w-6 h-6 ${activeView === 'home' ? 'fill-current' : ''}`} />
                 <span className="text-[10px] font-bold">Home</span>
             </button>
-            <button className="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 transition-colors">
-                <Search className="w-6 h-6" />
-                <span className="text-[10px] font-bold">Search</span>
+            <button onClick={() => navigate('orders')} className={`flex flex-col items-center gap-1 transition-colors ${activeView === 'orders' ? 'text-[#1e3a8a]' : 'text-gray-400 hover:text-gray-600'}`}>
+                <Package className={`w-6 h-6 ${activeView === 'orders' ? 'fill-current' : ''}`} />
+                <span className="text-[10px] font-bold">Orders</span>
             </button>
             
             {/* Center space for AgentOrb notch */}
