@@ -31,7 +31,19 @@ function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
     const [isAiReady, setIsAiReady] = useState(false);
     const [aiProgress, setAiProgress] = useState('Booting OS...');
 
-    const { activeView } = useStore();
+    const { activeView, navigate } = useStore();
+
+    // Check for payment redirect on load
+    React.useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('payment') === 'success') {
+                navigate('orders');
+                // Clean up URL without reloading
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+    }, [navigate]);
 
     return (
         <div className="h-full w-full overflow-y-auto bg-white flex flex-col hide-scrollbar relative">
