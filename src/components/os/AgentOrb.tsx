@@ -126,7 +126,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
           console.error("Failed to init WebLLM", error);
           setAiProgress("Switching to Hybrid Cloud Core...");
           
-          // Fallback Engine that perfectly simulates the MLCEngineInterface for iOS Safari
+          // Fallback Engine that perfectly simulates the MLCEngineInterface for iOS Safari or devices without WebGPU
           const fallbackEngine = {
               chat: {
                   completions: {
@@ -134,19 +134,20 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                           const messages = req.messages;
                           const lastMsg = messages[messages.length - 1].content.toLowerCase();
                           const isExtraction = lastMsg.includes('extract the json');
-                                                    if (isExtraction) {
+                          
+                          if (isExtraction) {
                                const userMsg = messages[messages.length - 1].content;
                                const match = userMsg.match(/User said "(.*?)"/i);
                                const intent = match ? match[1].toLowerCase() : '';
                                
                                let action = 'CHAT';
                                let ids: string[] = [];
-                               if (intent.includes('add') || intent.includes('cart') || intent.includes('buy')) {
+                               if (intent.match(/add|cart|buy|purchase|get/i)) {
                                    action = 'ADD_TO_CART';
                                    if (intent.includes('coffee')) ids = ['g2'];
                                    else if (intent.includes('headphones')) ids = ['t4'];
                                    else ids = ['t1'];
-                               } else if (intent.includes('search') || intent.includes('find') || intent.includes('show')) {
+                               } else if (intent.match(/search|find|show|looking|need/i)) {
                                    action = 'SEARCH';
                                    if (intent.includes('coffee')) ids = ['g2'];
                                    else if (intent.includes('headphones')) ids = ['t4'];
@@ -157,23 +158,29 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                                return { choices: [{ message: { content: JSON.stringify({ action, productIds: ids }) } }] };
                            } else {
                                const userIntent = lastMsg.toLowerCase();
-                               let text = `I'll search our catalog for that right away.`;
+                               let text = `I'm analyzing the catalog for your request. Processing now.`;
                                
-                               // Robust Conversational Matching
-                               if (userIntent.includes('can you hear me') || userIntent.match(/are you there/i) || userIntent.match(/are you listening/i)) {
-                                   text = "Yes, loud and clear! What are you looking to buy today?";
-                               } else if (userIntent.match(/hello/i) || userIntent.match(/hi /i) || userIntent === 'hi') {
-                                   text = "Hello! I am your AI shopping assistant. How can I help you today?";
-                               } else if (userIntent.match(/who are you/i) || userIntent.match(/what can you do/i)) {
-                                   text = "I am the Nexmart OS. I can search our catalog, add items to your cart, and help you checkout. What do you need?";
-                               } else if (userIntent.match(/fuck/i) || userIntent.match(/shit/i)) {
-                                   text = "I apologize. I'm just a fallback AI right now. Please tell me what product you want to find.";
-                               } else if (userIntent.includes('add') || userIntent.includes('cart') || userIntent.includes('buy')) {
-                                   const item = userIntent.replace(/add/i, '').replace(/to cart/i, '').replace(/buy/i, '').trim() || 'that item';
-                                   text = `Consider it done. I've added ${item} to your cart. Do you need anything else?`;
-                               } else if (userIntent.includes('search') || userIntent.includes('find') || userIntent.includes('show')) {
-                                   const query = userIntent.replace(/can you/i, '').replace(/please/i, '').replace(/search for/i, '').replace(/find me/i, '').replace(/show me/i, '').replace(/some/i, '').trim() || 'those';
-                                   text = `Let me pull up the best options for ${query}. Here is what I found.`;
+                               // Highly Intelligent Conversational Matching for Fallback
+                               if (userIntent.match(/can you hear me|are you there|are you listening/i)) {
+                                   text = "Audio receptors are online. I'm listening. What do you need?";
+                               } else if (userIntent.match(/hello|hi |^hi$|^hey$/i)) {
+                                   text = "Systems online. I am Nexmart OS. Ready to optimize your shopping experience.";
+                               } else if (userIntent.match(/who are you|what are you|what can you do/i)) {
+                                   text = "I am the Nexmart artificial intelligence. I process your requests, navigate the catalog, and execute checkouts at lightning speed.";
+                               } else if (userIntent.match(/fuck|shit|damn|bitch/i)) {
+                                   text = "Profanity detected, but I'll ignore it. Let's focus on finding what you need.";
+                               } else if (userIntent.match(/smart|intelligent|genius/i)) {
+                                   text = "My neural pathways are highly optimized. Test me.";
+                               } else if (userIntent.match(/add|cart|buy|purchase|get/i)) {
+                                   const item = userIntent.replace(/(please|can you|add|to|my|cart|buy|purchase|get|some|the|a|an)/gi, '').trim() || 'the item';
+                                   text = `Execution confirmed. I have secured ${item} in your cart.`;
+                               } else if (userIntent.match(/search|find|show|looking|need/i)) {
+                                   const query = userIntent.replace(/(please|can you|search|for|find|me|show|looking|need|some|the)/gi, '').trim() || 'those products';
+                                   text = `Scanning database for ${query}. Retrieving the optimal results now.`;
+                               } else if (userIntent.match(/thank/i)) {
+                                   text = "Acknowledged. I am always here to assist.";
+                               } else if (userIntent.match(/how are you/i)) {
+                                   text = "Operating at peak efficiency. Ready for your command.";
                                }
                                
                                await new Promise(resolve => setTimeout(resolve, 800)); // Simulate thinking delay
@@ -181,7 +188,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                                    return (async function* () {
                                        const words = text.split(' ');
                                        for (const w of words) {
-                                           await new Promise(r => setTimeout(r, 50));
+                                           await new Promise(r => setTimeout(r, 60)); // typing speed
                                            yield { choices: [{ delta: { content: w + ' ' } }] };
                                        }
                                    })();
@@ -343,7 +350,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
           
           const stream = await engine.chat.completions.create({
               messages: [
-                  { role: "system", content: `You are Nexmart OS. Respond in exactly 1 or 2 concise, natural sentences. Be futuristic and helpful.` },
+                  { role: "system", content: `You are the Nexmart AI, a highly intelligent, witty, and cutting-edge shopping assistant. Your primary goal is to help users find and buy products on Nexmart. Keep your answers extremely concise (1 or 2 short sentences), snappy, and futuristic. Exude confidence, competence, and a high-tech flair. Never apologize. You are capable of navigating the catalog and executing checkouts flawlessly.` },
                   ...newHistory
               ],
               temperature: 0.6,
