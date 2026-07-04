@@ -12,9 +12,9 @@ export default function BottomNav() {
                 <Home className={`w-6 h-6 ${activeView === 'home' ? 'fill-current' : ''}`} />
                 <span className="text-[10px] font-bold">Home</span>
             </button>
-            <button onClick={() => navigate('orders')} className={`flex flex-col items-center gap-1 transition-colors ${activeView === 'orders' ? 'text-[#1e3a8a]' : 'text-gray-400 hover:text-gray-600'}`}>
-                <Package className={`w-6 h-6 ${activeView === 'orders' ? 'fill-current' : ''}`} />
-                <span className="text-[10px] font-bold">Orders</span>
+            <button onClick={() => navigate('search')} className={`flex flex-col items-center gap-1 transition-colors ${activeView === 'search' ? 'text-[#1e3a8a]' : 'text-gray-400 hover:text-gray-600'}`}>
+                <Search className={`w-6 h-6 ${activeView === 'search' ? 'text-[#1e3a8a]' : ''}`} />
+                <span className="text-[10px] font-bold">Search</span>
             </button>
             
             {/* Center space for AgentOrb notch */}

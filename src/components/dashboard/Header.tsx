@@ -60,7 +60,7 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
                             <span className="text-[10px] font-bold">Wishlist</span>
                         </button>
                         
-                        <button onClick={() => navigate('cart')} className="flex flex-col items-center md:gap-1 text-gray-900 md:text-gray-500 hover:text-[#1e3a8a] transition-colors relative group">
+                        <button onClick={() => navigate('cart')} className="hidden md:flex flex-col items-center md:gap-1 text-gray-900 md:text-gray-500 hover:text-[#1e3a8a] transition-colors relative group">
                             <div className="relative">
                                 <ShoppingCart className="w-6 h-6 group-hover:scale-110 transition-transform" />
                                 {cartCount > 0 && (
@@ -69,18 +69,18 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
                                     </span>
                                 )}
                             </div>
-                            <span className="hidden md:block text-[10px] font-bold">Cart</span>
+                            <span className="text-[10px] font-bold">Cart</span>
                         </button>
                         
                         {isLoggedIn ? (
-                            <button onClick={() => navigate('orders')} className={`hidden md:flex flex-col items-center gap-1 transition-colors group ${activeView === 'orders' ? 'text-[#1e3a8a]' : 'text-gray-500 hover:text-[#1e3a8a]'}`}>
+                            <button onClick={() => navigate('orders')} className={`flex flex-col items-center gap-1 transition-colors group ${activeView === 'orders' ? 'text-[#1e3a8a]' : 'text-gray-500 hover:text-[#1e3a8a]'}`}>
                                 <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs group-hover:scale-110 transition-transform ${activeView === 'orders' ? 'bg-[#1e3a8a] text-white' : 'bg-blue-100 text-blue-600'}`}>JD</div>
-                                <span className="text-[10px] font-bold">Orders</span>
+                                <span className="hidden md:block text-[10px] font-bold">Orders</span>
                             </button>
                         ) : (
-                            <button onClick={onOpenAuth} className="hidden md:flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
+                            <button onClick={onOpenAuth} className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
                                 <User className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                                <span className="text-[10px] font-bold">Sign In</span>
+                                <span className="hidden md:block text-[10px] font-bold">Sign In</span>
                             </button>
                         )}
                     </div>

@@ -11,6 +11,7 @@ import ProductDetailsView from '../views/ProductDetailsView';
 import CategoriesView from '../views/CategoriesView';
 import OrdersView from '../views/OrdersView';
 import DealsView from '../views/DealsView';
+import SearchView from '../views/SearchView';
 import { AnimatePresence, motion } from 'framer-motion';
 import SplashScreen from './SplashScreen';
 
@@ -100,6 +101,11 @@ function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
                     {activeView === 'deals' && (
                         <motion.div key="deals" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="flex-1">
                             <DealsView />
+                        </motion.div>
+                    )}
+                    {activeView === 'search' && (
+                        <motion.div key="search" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="flex-1">
+                            <SearchView />
                         </motion.div>
                     )}
                 </AnimatePresence>

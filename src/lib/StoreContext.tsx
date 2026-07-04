@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, fetchProducts } from './api';
 
-export type ViewState = 'home' | 'cart' | 'wishlist' | 'product' | 'categories' | 'deals' | 'orders';
+export type ViewState = 'home' | 'cart' | 'wishlist' | 'product' | 'categories' | 'deals' | 'orders' | 'search';
 
 interface CartItem {
     product: Product;
