@@ -17,11 +17,7 @@ interface StoreContextType {
     activeView: ViewState;
     selectedProduct: Product | null;
     isApiReady: boolean;
-    isLoggedIn: boolean;
-    isAuthModalOpen: boolean;
     
-    setIsLoggedIn: (status: boolean) => void;
-    setIsAuthModalOpen: (status: boolean) => void;
     navigate: (view: ViewState, product?: Product) => void;
     addToCart: (product: Product, quantity?: number) => void;
     removeFromCart: (productId: string) => void;
@@ -44,8 +40,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const [cart, setCart] = useState<CartItem[]>([]);
     const [wishlist, setWishlist] = useState<string[]>([]);
     const [orders, setOrders] = useState<string[]>([]);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
     useEffect(() => {
         const storedOrders = localStorage.getItem('nexmart_orders');
@@ -119,7 +113,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     return (
         <StoreContext.Provider value={{
             products, cart, wishlist, orders, activeView, selectedProduct, isApiReady,
-            isLoggedIn, isAuthModalOpen, setIsLoggedIn, setIsAuthModalOpen,
             navigate, addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist, getCartCount,
             formatPrice, addOrder
         }}>

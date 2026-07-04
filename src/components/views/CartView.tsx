@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useStore } from '@/lib/StoreContext';
-import { Minus, Plus, Trash2, ArrowLeft, CreditCard, Sparkles } from 'lucide-react';
+import { Minus, Plus, Trash2, ArrowLeft, CreditCard, Sparkles, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { useAuth, SignInButton } from '@clerk/nextjs';
 
 export default function CartView() {
-    const { cart, removeFromCart, updateCartQuantity, formatPrice, navigate, isLoggedIn, setIsAuthModalOpen } = useStore();
+    const { cart, removeFromCart, updateCartQuantity, formatPrice, navigate } = useStore();
+    const { isSignedIn } = useAuth();
     const [isCheckingOut, setIsCheckingOut] = useState(false);
 
     const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
@@ -13,10 +15,7 @@ export default function CartView() {
     const total = subtotal + tax;
 
     const handleCheckout = async () => {
-        if (!isLoggedIn) {
-            setIsAuthModalOpen(true);
-            return;
-        }
+        if (!isSignedIn) return;
 
         setIsCheckingOut(true);
         try {
@@ -145,17 +144,25 @@ export default function CartView() {
                             </div>
                         </div>
 
-                        <button 
-                            onClick={handleCheckout}
-                            disabled={isCheckingOut}
-                            className="w-full bg-black text-white py-4 rounded-2xl font-bold text-lg hover:bg-gray-800 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:scale-100 shadow-xl shadow-black/10"
-                        >
-                            {isCheckingOut ? (
-                                <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Processing...</>
-                            ) : (
-                                <><CreditCard className="w-5 h-5" /> Checkout Securely</>
-                            )}
-                        </button>
+                        {isSignedIn ? (
+                            <button 
+                                onClick={handleCheckout}
+                                disabled={isCheckingOut}
+                                className="w-full bg-black text-white py-4 rounded-2xl font-bold text-lg hover:bg-gray-800 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:scale-100 shadow-xl shadow-black/10"
+                            >
+                                {isCheckingOut ? (
+                                    <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Processing...</>
+                                ) : (
+                                    <><CreditCard className="w-5 h-5" /> Checkout Securely</>
+                                )}
+                            </button>
+                        ) : (
+                            <SignInButton mode="modal" forceRedirectUrl="/?payment=success">
+                                <button className="w-full bg-black text-white py-4 rounded-2xl font-bold text-lg hover:bg-gray-800 transition-all active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-black/10">
+                                    <User className="w-5 h-5" /> Sign in to Checkout
+                                </button>
+                            </SignInButton>
+                        )}
                         
                         <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-gray-400 font-medium">
                             <Sparkles className="w-3 h-3 text-emerald-500" /> AI verified secure checkout

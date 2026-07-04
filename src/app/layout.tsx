@@ -3,6 +3,7 @@ import './globals.css'
 import { CartProvider } from '@/context/CartContext'
 import { cn } from "@/lib/utils";
 import { Toaster } from 'sonner';
+import { ClerkProvider } from '@clerk/nextjs';
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -30,10 +31,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn(inter.variable, outfit.variable, "font-sans", geist.variable)}>
       <body className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased">
-        <CartProvider>
-          {children}
-          <Toaster position="top-center" richColors theme="light" />
-        </CartProvider>
+        <ClerkProvider>
+          <CartProvider>
+            {children}
+            <Toaster position="top-center" richColors theme="light" />
+          </CartProvider>
+        </ClerkProvider>
       </body>
     </html>
   )

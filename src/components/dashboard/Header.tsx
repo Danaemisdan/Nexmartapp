@@ -1,9 +1,11 @@
 import React from 'react';
 import { Search, ShoppingCart, Heart, User, Sparkles, Menu, Package } from 'lucide-react';
 import { useStore } from '@/lib/StoreContext';
+import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 
 export default function Header() {
-    const { getCartCount, activeView, navigate, isLoggedIn, setIsAuthModalOpen } = useStore();
+    const { getCartCount, activeView, navigate } = useStore();
+    const { isSignedIn } = useAuth();
     const cartCount = getCartCount();
 
     return (
@@ -66,16 +68,21 @@ export default function Header() {
                             <span className="text-[10px] font-bold">Cart</span>
                         </button>
                         
-                        {isLoggedIn ? (
-                            <button onClick={() => navigate('orders')} className={`flex flex-col items-center gap-1 transition-colors group ${activeView === 'orders' ? 'text-[#1e3a8a]' : 'text-gray-500 hover:text-[#1e3a8a]'}`}>
-                                <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs group-hover:scale-110 transition-transform ${activeView === 'orders' ? 'bg-[#1e3a8a] text-white' : 'bg-blue-100 text-blue-600'}`}>JD</div>
-                                <span className="hidden md:block text-[10px] font-bold">Orders</span>
-                            </button>
+                        {isSignedIn ? (
+                            <>
+                                <button onClick={() => navigate('orders')} className={`flex flex-col items-center gap-1 transition-colors group ${activeView === 'orders' ? 'text-[#1e3a8a]' : 'text-gray-500 hover:text-[#1e3a8a]'}`}>
+                                    <Package className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                                    <span className="hidden md:block text-[10px] font-bold">Orders</span>
+                                </button>
+                                <UserButton />
+                            </>
                         ) : (
-                            <button onClick={() => setIsAuthModalOpen(true)} className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
-                                <User className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                                <span className="hidden md:block text-[10px] font-bold">Sign In</span>
-                            </button>
+                            <SignInButton mode="modal">
+                                <button className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
+                                    <User className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                                    <span className="hidden md:block text-[10px] font-bold">Sign In</span>
+                                </button>
+                            </SignInButton>
                         )}
                     </div>
                 </div>
