@@ -22,19 +22,20 @@ export default function CartView() {
                 address: "Nexmart Delivery Location"
             };
             
-            const res = await fetch('/api/checkout', {
+            const res = await fetch('/api/payment/initialize', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cart, customer })
+                body: JSON.stringify({ cart, customer, totalAmount: total })
             });
             
             const data = await res.json();
             
-            if (res.ok && data.success && data.group_order_reference) {
-                toast.success(`Checkout Successful! Your AI has processed the order.\nRef: ${data.group_order_reference}`);
-                addOrder(data.group_order_reference);
-                clearCart();
-                setTimeout(() => navigate('orders'), 1500);
+            if (res.ok && data.success && data.checkoutUrl) {
+                toast.success('Redirecting to secure payment gateway...');
+                // Redirect user to GlobalPay!
+                setTimeout(() => {
+                    window.location.href = data.checkoutUrl;
+                }, 800);
             } else {
                 toast.error(`Checkout Failed: ${data.error || 'Unknown error'}`);
             }
