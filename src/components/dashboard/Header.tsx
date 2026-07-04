@@ -1,10 +1,10 @@
 import React from 'react';
 import { Search, ShoppingCart, Heart, User, Sparkles, Menu, Package } from 'lucide-react';
 import { useStore } from '@/lib/StoreContext';
-import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
+import { UserButton, useAuth } from '@clerk/nextjs';
 
 export default function Header() {
-    const { getCartCount, activeView, navigate } = useStore();
+    const { getCartCount, activeView, navigate, setIsAuthModalOpen } = useStore();
     const { isSignedIn } = useAuth();
     const cartCount = getCartCount();
 
@@ -77,12 +77,10 @@ export default function Header() {
                                 <UserButton />
                             </>
                         ) : (
-                            <SignInButton mode="modal">
-                                <button className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
-                                    <User className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                                    <span className="hidden md:block text-[10px] font-bold">Sign In</span>
-                                </button>
-                            </SignInButton>
+                            <button onClick={() => setIsAuthModalOpen(true)} className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
+                                <User className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                                <span className="hidden md:block text-[10px] font-bold">Sign In</span>
+                            </button>
                         )}
                     </div>
                 </div>

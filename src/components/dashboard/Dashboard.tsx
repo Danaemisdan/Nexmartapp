@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Header from './Header';
 import BottomNav from './BottomNav';
+import AuthModal from '@/components/auth/AuthModal';
 import AgentOrb from '../os/AgentOrb';
 import { StoreProvider, useStore } from '@/lib/StoreContext';
 import HomeView from '../views/HomeView';
@@ -27,7 +28,7 @@ function DashboardContent() {
     const [isAiReady, setIsAiReady] = useState(false);
     const [aiProgress, setAiProgress] = useState('Booting OS...');
 
-    const { activeView, navigate } = useStore();
+    const { activeView, navigate, isAuthModalOpen, setIsAuthModalOpen } = useStore();
 
     // Check for payment redirect on load
     React.useEffect(() => {
@@ -43,6 +44,11 @@ function DashboardContent() {
 
     return (
         <div className="h-full w-full overflow-y-auto bg-white flex flex-col hide-scrollbar relative">
+            <AuthModal 
+                isOpen={isAuthModalOpen} 
+                onClose={() => setIsAuthModalOpen(false)} 
+            />
+            
             <Header />
             
             <AgentOrb

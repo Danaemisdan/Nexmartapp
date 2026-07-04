@@ -3,10 +3,10 @@ import { useStore } from '@/lib/StoreContext';
 import { Minus, Plus, Trash2, ArrowLeft, CreditCard, Sparkles, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { useAuth, SignInButton } from '@clerk/nextjs';
+import { useAuth } from '@clerk/nextjs';
 
 export default function CartView() {
-    const { cart, removeFromCart, updateCartQuantity, formatPrice, navigate } = useStore();
+    const { cart, removeFromCart, updateCartQuantity, formatPrice, navigate, setIsAuthModalOpen } = useStore();
     const { isSignedIn } = useAuth();
     const [isCheckingOut, setIsCheckingOut] = useState(false);
 
@@ -157,11 +157,9 @@ export default function CartView() {
                                 )}
                             </button>
                         ) : (
-                            <SignInButton mode="modal" forceRedirectUrl="/?payment=success">
-                                <button className="w-full bg-black text-white py-4 rounded-2xl font-bold text-lg hover:bg-gray-800 transition-all active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-black/10">
-                                    <User className="w-5 h-5" /> Sign in to Checkout
-                                </button>
-                            </SignInButton>
+                            <button onClick={() => setIsAuthModalOpen(true)} className="w-full bg-black text-white py-4 rounded-2xl font-bold text-lg hover:bg-gray-800 transition-all active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-black/10">
+                                <User className="w-5 h-5" /> Sign in to Checkout
+                            </button>
                         )}
                         
                         <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-gray-400 font-medium">
