@@ -154,3 +154,19 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+/* Force Hide Clerk Watermark (Bypass Free Tier Restrictions) */
+div:has(> a[href^="https://clerk.com"]),
+div:has(> a[href^="https://clerk.dev"]),
+.cl-internal-b3al4t,
+.cl-internal-1dauvpw,
+.cl-internal-phsm31,
+.cl-footer,
+.cl-watermark {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    position: absolute !important;
+    pointer-events: none !important;
+}
