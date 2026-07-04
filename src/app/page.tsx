@@ -3,15 +3,12 @@ import React, { useState } from 'react';
 import SplashScreen from '@/components/dashboard/SplashScreen';
 import Onboarding from '@/components/onboarding/Onboarding';
 import Dashboard from '@/components/dashboard/Dashboard';
-import AuthModal from '@/components/auth/AuthModal';
 import { AnimatePresence, motion } from 'framer-motion';
 
 type AppState = 'SPLASH' | 'ONBOARDING' | 'HOME';
 
 export default function Home() {
     const [appState, setAppState] = useState<AppState>('SPLASH');
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
     const handleSplashComplete = () => {
         setAppState('HOME');
@@ -19,11 +16,6 @@ export default function Home() {
 
     return (
         <div className="h-screen w-full relative overflow-hidden font-sans bg-white">
-            <AuthModal 
-                isOpen={isAuthModalOpen} 
-                onClose={() => setIsAuthModalOpen(false)} 
-                onLoginSuccess={() => setIsLoggedIn(true)} 
-            />
 
             <AnimatePresence mode="wait">
                 {appState === 'SPLASH' && (
@@ -40,10 +32,7 @@ export default function Home() {
 
                 {appState === 'HOME' && (
                     <motion.div key="home" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="absolute inset-0 z-30">
-                        <Dashboard 
-                            isLoggedIn={isLoggedIn}
-                            onOpenAuth={() => setIsAuthModalOpen(true)}
-                        />
+                        <Dashboard />
                     </motion.div>
                 )}
             </AnimatePresence>

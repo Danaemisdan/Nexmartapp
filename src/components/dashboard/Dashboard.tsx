@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Header from './Header';
 import BottomNav from './BottomNav';
+import AuthModal from '@/components/auth/AuthModal';
 import AgentOrb from '../os/AgentOrb';
 import { StoreProvider, useStore } from '@/lib/StoreContext';
 import HomeView from '../views/HomeView';
@@ -17,13 +18,8 @@ import SplashScreen from './SplashScreen';
 
 export type WorkflowState = 'IDLE' | 'RESEARCHING' | 'NEGOTIATING' | 'READY' | 'TALKING' | 'LISTENING';
 
-interface DashboardProps {
-    isLoggedIn: boolean;
-    onOpenAuth: () => void;
-}
-
 // Internal component that uses the Store context
-function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
+function DashboardContent() {
     const [workflowState, setWorkflowState] = useState<WorkflowState>('IDLE');
     const [currentTask, setCurrentTask] = useState('');
     const [aiProducts, setAiProducts] = useState<any[]>([]);
@@ -32,7 +28,7 @@ function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
     const [isAiReady, setIsAiReady] = useState(false);
     const [aiProgress, setAiProgress] = useState('Booting OS...');
 
-    const { activeView, navigate } = useStore();
+    const { activeView, navigate, isAuthModalOpen, setIsAuthModalOpen, setIsLoggedIn } = useStore();
 
     // Check for payment redirect on load
     React.useEffect(() => {
@@ -48,10 +44,13 @@ function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
 
     return (
         <div className="h-full w-full overflow-y-auto bg-white flex flex-col hide-scrollbar relative">
-            <Header 
-                isLoggedIn={isLoggedIn} 
-                onOpenAuth={onOpenAuth} 
+            <AuthModal 
+                isOpen={isAuthModalOpen} 
+                onClose={() => setIsAuthModalOpen(false)} 
+                onLoginSuccess={() => setIsLoggedIn(true)} 
             />
+            
+            <Header />
             
             <AgentOrb
                 workflowState={workflowState}
@@ -117,10 +116,10 @@ function DashboardContent({ isLoggedIn, onOpenAuth }: DashboardProps) {
 }
 
 // Export the wrapper
-export default function Dashboard(props: DashboardProps) {
+export default function Dashboard() {
     return (
         <StoreProvider>
-            <DashboardContent {...props} />
+            <DashboardContent />
         </StoreProvider>
     );
 }

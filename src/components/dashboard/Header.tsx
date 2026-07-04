@@ -1,15 +1,9 @@
 import React from 'react';
 import { Search, ShoppingCart, Heart, User, Sparkles, Menu, Package } from 'lucide-react';
 import { useStore } from '@/lib/StoreContext';
-import { toast } from 'sonner';
 
-interface HeaderProps {
-    isLoggedIn: boolean;
-    onOpenAuth: () => void;
-}
-
-export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
-    const { getCartCount, navigate, activeView } = useStore();
+export default function Header() {
+    const { getCartCount, activeView, navigate, isLoggedIn, setIsAuthModalOpen } = useStore();
     const cartCount = getCartCount();
 
     return (
@@ -78,7 +72,7 @@ export default function Header({ isLoggedIn, onOpenAuth }: HeaderProps) {
                                 <span className="hidden md:block text-[10px] font-bold">Orders</span>
                             </button>
                         ) : (
-                            <button onClick={onOpenAuth} className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
+                            <button onClick={() => setIsAuthModalOpen(true)} className="flex flex-col items-center gap-1 text-gray-500 hover:text-[#1e3a8a] transition-colors group">
                                 <User className="w-6 h-6 group-hover:scale-110 transition-transform" />
                                 <span className="hidden md:block text-[10px] font-bold">Sign In</span>
                             </button>

@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Smartphone, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AuthModalProps {
     isOpen: boolean;
@@ -30,6 +31,15 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
 
     const handleSendCode = () => {
         if (!contactInfo) return;
+
+        const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactInfo);
+        const isPhone = /^\+[1-9]\d{6,14}$/.test(contactInfo.replace(/\s+/g, ''));
+
+        if (!isEmail && !isPhone) {
+            toast.error("Please enter a valid email or phone number starting with '+' (e.g., +234...)");
+            return;
+        }
+
         setIsLoading(true);
         setTimeout(() => {
             setIsLoading(false);
@@ -118,7 +128,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModal
                                     </div>
                                     <input 
                                         type="text"
-                                        placeholder="Email or Phone Number"
+                                        placeholder="Email or Phone Number (e.g. +234...)"
                                         value={contactInfo}
                                         onChange={(e) => setContactInfo(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleSendCode()}

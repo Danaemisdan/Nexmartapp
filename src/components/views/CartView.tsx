@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 export default function CartView() {
-    const { cart, updateCartQuantity, removeFromCart, clearCart, navigate, formatPrice, addOrder } = useStore();
+    const { cart, removeFromCart, updateCartQuantity, formatPrice, navigate, isLoggedIn, setIsAuthModalOpen } = useStore();
     const [isCheckingOut, setIsCheckingOut] = useState(false);
 
     const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
@@ -13,6 +13,11 @@ export default function CartView() {
     const total = subtotal + tax;
 
     const handleCheckout = async () => {
+        if (!isLoggedIn) {
+            setIsAuthModalOpen(true);
+            return;
+        }
+
         setIsCheckingOut(true);
         try {
             const customer = {

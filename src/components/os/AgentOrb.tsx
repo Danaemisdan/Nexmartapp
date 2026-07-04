@@ -421,7 +421,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
             onClick={handleOrbClick}
             animate={{ scale: isWorking || isTalking ? 1.15 : 1 }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className={`relative cursor-pointer transition-shadow duration-700 w-32 h-32 md:w-48 md:h-48 shrink-0 flex items-center justify-center rounded-full overflow-hidden ${isWorking || isTalking ? 'drop-shadow-[0_0_60px_rgba(59,130,246,0.5)]' : 'drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:scale-105 hover:drop-shadow-[0_15px_35px_rgba(0,0,0,0.4)]'}`}
+            className={`relative cursor-pointer transition-shadow duration-700 w-32 h-32 md:w-48 md:h-48 aspect-square min-w-[128px] min-h-[128px] md:min-w-[192px] md:min-h-[192px] shrink-0 flex items-center justify-center rounded-full overflow-hidden ${isWorking || isTalking ? 'drop-shadow-[0_0_60px_rgba(59,130,246,0.5)]' : 'drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:scale-105 hover:drop-shadow-[0_15px_35px_rgba(0,0,0,0.4)]'}`}
           >
              {/* Native ElevenLabs Orb with clipping mask restored now that it is outside Header */}
              <Orb agentState={agentState} />
