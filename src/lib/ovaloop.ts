@@ -20,7 +20,7 @@ export function generateRequestHeaders() {
 }
 
 export async function requestInventoryExport() {
-    const response = await fetch('https://devapi.ovaloop.app/partner/request_inventory/', {
+    const response = await fetch('https://apiv2.ovaloop.app/partner/request_inventory/', {
         method: 'POST',
         headers: generateRequestHeaders(),
         body: JSON.stringify({})

@@ -1,6 +1,7 @@
 'use client'
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, fetchProducts } from './api';
+import { supabaseClient } from './supabaseClient';
 
 export type ViewState = 'home' | 'cart' | 'wishlist' | 'product' | 'categories' | 'deals' | 'orders' | 'search';
 
@@ -65,6 +66,42 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
             setIsApiReady(true);
         }
         load();
+        
+        // Setup Supabase Realtime Subscription
+        if (supabaseClient) {
+            const channel = supabaseClient
+                .channel('public:products')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'products' },
+                    (payload) => {
+                        console.log('[Supabase Realtime] Product change received:', payload);
+                        
+                        setProducts((currentProducts) => {
+                            if (payload.eventType === 'INSERT') {
+                                // Add new product
+                                const exists = currentProducts.some(p => p.id === payload.new.id);
+                                if (!exists) return [payload.new as Product, ...currentProducts];
+                                return currentProducts;
+                            } else if (payload.eventType === 'UPDATE') {
+                                // Update existing product
+                                return currentProducts.map(p => p.id === payload.new.id ? { ...p, ...payload.new } : p);
+                            } else if (payload.eventType === 'DELETE') {
+                                // Remove deleted product
+                                return currentProducts.filter(p => p.id !== payload.old.id);
+                            }
+                            return currentProducts;
+                        });
+                    }
+                )
+                .subscribe((status) => {
+                    console.log('[Supabase Realtime] Subscription status:', status);
+                });
+                
+            return () => {
+                supabaseClient?.removeChannel(channel);
+            };
+        }
     }, []);
 
     const formatPrice = (price: number) => {
