@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 
         const computedSignature = crypto
             .createHmac('sha512', OVALOOP_SECRET_KEY)
-            .update(stringifiedBody, 'utf8')
+            .update(rawBody, 'utf8')
             .digest('hex');
 
         try {
