@@ -11,8 +11,8 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' })
 
 export const metadata = {
-  title: 'Nexmart OS',
-  description: 'AI Autonomous Proxy',
+  title: "Nexmart AI : World's first AI that shops for you",
+  description: "The world's first large-scale Agentic Commerce platform powered by intelligent AI agents that discover, compare, negotiate, purchase, and manage products on your behalf.",
 }
 
 export const viewport = {
