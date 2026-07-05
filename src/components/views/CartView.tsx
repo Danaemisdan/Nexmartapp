@@ -3,11 +3,12 @@ import { useStore } from '@/lib/StoreContext';
 import { Minus, Plus, Trash2, ArrowLeft, CreditCard, Sparkles, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { useAuth, SignInButton } from '@clerk/nextjs';
+import { useAuth, useUser, SignInButton } from '@clerk/nextjs';
 
 export default function CartView() {
     const { cart, removeFromCart, updateCartQuantity, formatPrice, navigate } = useStore();
     const { isSignedIn } = useAuth();
+    const { user } = useUser();
     const [isCheckingOut, setIsCheckingOut] = useState(false);
 
     const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
@@ -20,9 +21,9 @@ export default function CartView() {
         setIsCheckingOut(true);
         try {
             const customer = {
-                firstname: "Test",
-                lastname: "User",
-                phone: "08012345678",
+                firstname: user?.firstName || "Guest",
+                lastname: user?.lastName || "User",
+                phone: user?.primaryPhoneNumber?.phoneNumber || user?.primaryEmailAddress?.emailAddress || "0000000000",
                 address: "Nexmart Delivery Location"
             };
             

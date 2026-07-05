@@ -10,15 +10,12 @@ export async function POST(req: NextRequest) {
         const GLOBALPAY_PUBLIC = process.env.GLOBALPAY_PUBLIC_KEY;
 
         if (!GLOBALPAY_SECRET || !GLOBALPAY_PUBLIC) {
-            console.warn('[GlobalPay] Keys missing, running in TEST/MOCK mode');
-            // If the user hasn't put in their API keys yet, we simulate a successful redirect
-            // back to the frontend ?payment=success URL so they can test the UI flow!
+            console.warn('[GlobalPay] MOCK MODE ACTIVE: Keys missing, simulating successful payment redirect...');
             const protocol = req.headers.get('x-forwarded-proto') || 'http';
             const host = req.headers.get('host');
             const baseUrl = `${protocol}://${host}`;
             
-            // Pass the cart via a secure cookie or webhook simulation in a real app,
-            // but for this mock, we just trigger the checkout endpoint directly so testing still works.
+            // Trigger the internal checkout endpoint directly to simulate webhook
             await fetch(`${baseUrl}/api/checkout`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

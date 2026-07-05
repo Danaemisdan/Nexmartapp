@@ -28,43 +28,32 @@ export async function POST(req: NextRequest) {
             .update(timestamp, 'utf8')
             .digest('hex');
 
-        // Construct the Ovaloop order payload using valid Test UUIDs from the Documentation
+        // Construct the Ovaloop order payload using actual Cart data
         const orderPayload = cart.map((item: any) => ({
-            business_id: "14c8d30b-c1c3-41c1-8d76-62108fdde5f1",
-            customer_firstname: customer?.firstname || "John",
-            customer_lastname: customer?.lastname || "Doe",
-            customer_phone: customer?.phone || "08012345678",
-            customer_address: customer?.address || "Customer delivery address",
-            product_id: "6fd84910-3319-4789-b303-2a4e3ac2fdfe",
-            unit_measurement: "Bag",
+            business_id: item.product.business_id || "MISSING_BUSINESS_ID",
+            customer_firstname: customer?.firstname || "Guest",
+            customer_lastname: customer?.lastname || "User",
+            customer_phone: customer?.phone || "0000000000",
+            customer_address: customer?.address || "Nexmart Delivery",
+            product_id: item.product.id,
+            unit_measurement: "Unit",
             quantity: item.quantity || 1,
             price: item.product.price,
             group_order_reference
         }));
 
-        const ovaloopEndpoint = process.env.OVALOOP_API_URL || 'https://devapi.ovaloop.app';
+        const ovaloopEndpoint = process.env.OVALOOP_API_URL || 'https://apiv2.ovaloop.app';
         
-        console.log(`[Checkout] Sending order to ${ovaloopEndpoint}/partner/orders/`);
-        
-        const response = await fetch(`${ovaloopEndpoint}/partner/orders/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-OVALOOP-PARTNER-KEY': OVALOOP_PUBLIC_KEY,
-                'X-OVALOOP-TIMESTAMP': timestamp,
-                'X-OVALOOP-SIGNATURE': signature
-            },
-            body: JSON.stringify(orderPayload)
+        console.log(`[Checkout] MOCK MODE ACTIVE: Order would have been sent to ${ovaloopEndpoint}/partner/orders/`);
+        console.log('[Checkout] Payload:', JSON.stringify(orderPayload, null, 2));
+
+        // Return a mock success response instead of actually hitting the API
+        return NextResponse.json({ 
+            success: true, 
+            message: "MOCK_MODE_ACTIVE - Order was safely mocked and not sent to production.",
+            data: orderPayload,
+            group_order_reference 
         });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('[Checkout] Ovaloop API Error:', response.status, errorText);
-            return NextResponse.json({ error: 'Failed to process order with provider' }, { status: response.status });
-        }
-
-        const data = await response.json();
-        return NextResponse.json({ success: true, data, group_order_reference });
 
     } catch (error: any) {
         console.error('[Checkout] Internal Server Error:', error.message);
