@@ -91,8 +91,8 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
 
           workerRef.current = new Worker(new URL('@/lib/worker.ts', import.meta.url), { type: 'module' });
           
-          // Force SmolLM2-135M Q4 on all devices for absolute maximum speed and stability
-          const modelToLoad = 'SmolLM2-135M-Instruct-q4f16_1-MLC';
+          // Use Llama 3.2 1B for semantic intelligence and fast loading
+          const modelToLoad = 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
 
           const newEngine = await CreateWebWorkerMLCEngine(
               workerRef.current,
@@ -374,13 +374,27 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
           let action = 'CHAT';
           let matchingProducts: any[] = [];
           
-          // Basic dynamic NLP over the API products array
-          const searchKeywords = lower.replace(/find|show|me|some|the|best|top|rated|cheap|expensive/g, '').trim().split(' ').filter(k => k.length > 2);
+          // Semantic NLP over the API products array using the LLM
+          let generatedKeywords: string[] = [];
+          try {
+              const kwResponse = await engine.chat.completions.create({
+                  messages: [
+                      { role: "system", content: "You are a shopping assistant. Extract 3-5 concise product search keywords based on the user's input. For example, if they say 'I have a fever', output 'medicine, paracetamol, health'. Output ONLY a comma-separated list of keywords. No explanations." },
+                      { role: "user", content: userMessage }
+                  ],
+                  temperature: 0.1,
+                  max_tokens: 30,
+              });
+              const rawKw = kwResponse.choices[0]?.message?.content || "";
+              generatedKeywords = rawKw.toLowerCase().split(',').map((k: string) => k.trim()).filter((k: string) => k.length > 2);
+          } catch(e) {
+              generatedKeywords = lower.replace(/find|show|me|some|the|best|top|rated|cheap|expensive/g, '').trim().split(' ').filter((k: string) => k.length > 2);
+          }
           
-          if (searchKeywords.length > 0) {
+          if (generatedKeywords.length > 0) {
               matchingProducts = products.filter(p => {
                   const str = `${p.title} ${p.description} ${p.category} ${p.brand}`.toLowerCase();
-                  return searchKeywords.some(keyword => str.includes(keyword));
+                  return generatedKeywords.some((keyword: string) => str.includes(keyword));
               });
           }
 
