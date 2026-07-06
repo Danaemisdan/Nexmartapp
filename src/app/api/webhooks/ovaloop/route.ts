@@ -10,12 +10,6 @@ export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
     try {
-        const signatureHeader = req.headers.get('x-ovaloop-signature');
-        if (!signatureHeader) {
-            return NextResponse.json({ error: 'Missing signature' }, { status: 401 });
-        }
-
-        // Verify HMAC SHA512
         const rawBody = await req.text();
         
         // --- BULLETPROOF LOGGING ---
@@ -33,6 +27,11 @@ export async function POST(req: NextRequest) {
             console.error('Logger failed', e);
         }
         // ---------------------------
+
+        const signatureHeader = req.headers.get('x-ovaloop-signature');
+        if (!signatureHeader) {
+            return NextResponse.json({ error: 'Missing signature' }, { status: 401 });
+        }
 
         const parsedPayload = JSON.parse(rawBody);
         const stringifiedBody = JSON.stringify(parsedPayload);
