@@ -65,7 +65,7 @@ export function mapToNexmart(p: any, index: number = 0): NexmartProduct {
     rating: Math.round((4.5 + Math.random() * 0.5) * 10) / 10,
     reviews: Math.floor(Math.random() * 490) + 10,
     image: p.image_path || p.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80',
-    category: p.category || 'General',
+    category: p.category_name || p.category || 'General',
     brand: p.brand || p.manufacturer || '',
     stock,
     sku: String(p.sku || id),
@@ -165,7 +165,7 @@ export async function bulkUpsert(
     while (true) {
       const { data, error } = await supabase
         .from('products')
-        .select('id, price, stock, rating, reviews')
+        .select('id, price, stock, rating, reviews, category')
         .range(offset, offset + fetchLimit - 1);
         
       if (error) {
@@ -188,9 +188,10 @@ export async function bulkUpsert(
 
       const priceChanged = !existing || existing.price !== product.price;
       const stockChanged = !existing || existing.stock !== product.stock;
+      const categoryChanged = !existing || existing.category !== product.category;
       const isNew = !existing;
       
-      if (isNew || priceChanged || stockChanged) {
+      if (isNew || priceChanged || stockChanged || categoryChanged) {
         if (existing) {
           // Preserve existing rating/reviews
           product.rating = existing.rating;
