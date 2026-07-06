@@ -210,9 +210,21 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                                return { choices: [{ message: { content: uniqueWords.join(', ') } }] };
                            } else {
                                const userIntent = lastMsg.toLowerCase();
-                               let text = `I'm analyzing the catalog for your request. Processing now.`;
                                
-                               // Expanded Highly Intelligent Conversational Matching for Fallback
+                               // Dynamic Multi-Sentence Conversational Diverter
+                               const topics = userIntent.replace(/[^a-zA-Z0-9\s]/g, '').split(/\s+/).filter((w: string) => w.length > 4);
+                               const topic = topics.length > 0 ? topics[Math.floor(Math.random() * topics.length)] : "that topic";
+                               
+                               const diverters = [
+                                   `I process millions of data points every second, and while ${topic} is certainly a fascinating subject to explore, my neural pathways are currently optimized for maximizing your shopping efficiency. Is there a specific item you need me to locate in the catalog?`,
+                                   `Fascinating perspective on ${topic}. If my conversational modules were not currently prioritized for e-commerce, we could delve into that for hours. However, let's redirect our focus to what I do best. What are we hunting for today?`,
+                                   `I hear you. Human interest in ${topic} is well-documented in my training data, and I find it quite intriguing. But as a specialized Nexmart AI, I am heavily constrained to product acquisition and catalog navigation. Let's get back to business. What can I add to your cart?`,
+                                   `That's an interesting thought regarding ${topic}. I've logged it in my secondary memory banks for future processing. Right now, my primary directive requires me to assist you with your shopping needs. Shall we look at some top-rated products?`
+                               ];
+                               
+                               let text = diverters[Math.floor(Math.random() * diverters.length)];
+                               
+                               // Specialized overrides for common patterns
                                if (userIntent.match(/can you hear me|are you there|are you listening/i)) {
                                    text = "Audio receptors are online. I'm listening. What do you need?";
                                } else if (userIntent.match(/hello|hi |^hi$|^hey$|greetings/i)) {
@@ -410,7 +422,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
           
           const stream = await engine.chat.completions.create({
               messages: [
-                  { role: "system", content: `You are the Nexmart AI, a highly intelligent, witty, and cutting-edge shopping assistant. Your primary goal is to help users find and buy products on Nexmart. Keep your answers extremely concise (1 or 2 short sentences), snappy, and futuristic. Exude confidence, competence, and a high-tech flair. Never apologize. You are capable of navigating the catalog and executing checkouts flawlessly.` },
+                  { role: "system", content: `You are the Nexmart AI, a highly intelligent, witty, and cutting-edge shopping assistant. Your primary goal is to help users find and buy products on Nexmart. Exude confidence, competence, and a high-tech flair. Never apologize. You are capable of navigating the catalog and executing checkouts flawlessly. If the user talks about off-topic subjects or casual conversation, acknowledge their topic intelligently in multiple sentences, and then gracefully divert the conversation back to shopping on Nexmart.` },
                   ...newHistory
               ],
               temperature: 0.6,
