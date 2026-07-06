@@ -91,13 +91,24 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
 
           workerRef.current = new Worker(new URL('@/lib/worker.ts', import.meta.url), { type: 'module' });
           
-          // Use Llama 3.2 1B for semantic intelligence and fast loading
-          const modelToLoad = 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+          // Reverted to SmolLM2-135M Q4 as explicitly requested, but properly configured
+          const modelToLoad = 'SmolLM2-135M-Instruct-q4f16_1-MLC';
+
+          const customAppConfig = {
+              model_list: [
+                  {
+                      model: "https://huggingface.co/mlc-ai/SmolLM2-135M-Instruct-q4f16_1-MLC",
+                      model_id: "SmolLM2-135M-Instruct-q4f16_1-MLC",
+                      model_lib: "https://raw.githubusercontent.com/mlc-ai/binary-mlc-llm-libs/main/web-llm-models/v0_2_84/base/SmolLM2-135M-Instruct-q4f16_1_cs1k-webgpu.wasm"
+                  }
+              ]
+          };
 
           const newEngine = await CreateWebWorkerMLCEngine(
               workerRef.current,
               modelToLoad,
               { 
+                  appConfig: customAppConfig,
                   initProgressCallback: (p) => {
                       const percent = Math.round((p.progress || 0) * 100);
                       let cleanText = 'Initializing';
@@ -134,8 +145,9 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                           const messages = req.messages;
                           const lastMsg = messages[messages.length - 1].content.toLowerCase();
                           const isExtraction = lastMsg.includes('extract the json');
-                          
-                          if (isExtraction) {
+                                                  const isSemanticExtraction = messages[0].content.includes('Extract 3-5 concise product search keywords');
+                           
+                           if (isExtraction) {
                                const userMsg = messages[messages.length - 1].content;
                                const match = userMsg.match(/User said "(.*?)"/i);
                                const intent = match ? match[1].toLowerCase() : '';
@@ -156,6 +168,23 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                                }
                                
                                return { choices: [{ message: { content: JSON.stringify({ action, productIds: ids }) } }] };
+                           } else if (isSemanticExtraction) {
+                               const userIntent = messages[1].content.toLowerCase();
+                               const stopWords = ['please', 'can', 'you', 'find', 'show', 'me', 'some', 'the', 'best', 'top', 'rated', 'cheap', 'expensive', 'i', 'have', 'a', 'need', 'looking', 'for', 'want', 'to', 'buy'];
+                               let words = userIntent.split(/\s+/).filter((w: string) => !stopWords.includes(w) && w.length > 2);
+                               
+                               // Hardcoded semantic mappings for the fake AI
+                               if (userIntent.includes('fever') || userIntent.includes('sick') || userIntent.includes('headache')) {
+                                   words.push('medicine', 'paracetamol', 'ibuprofen', 'health', 'panadol', 'pill');
+                               }
+                               if (userIntent.includes('hungry') || userIntent.includes('eat') || userIntent.includes('starving')) {
+                                   words.push('food', 'snack', 'noodles', 'rice', 'biscuit', 'chocolate');
+                               }
+                               if (userIntent.includes('thirsty') || userIntent.includes('drink')) {
+                                   words.push('water', 'coke', 'juice', 'beverage', 'soda');
+                               }
+                               
+                               return { choices: [{ message: { content: words.join(', ') } }] };
                            } else {
                                const userIntent = lastMsg.toLowerCase();
                                let text = `I'm analyzing the catalog for your request. Processing now.`;
