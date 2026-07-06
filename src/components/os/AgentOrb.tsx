@@ -173,43 +173,74 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                                const stopWords = ['please', 'can', 'you', 'find', 'show', 'me', 'some', 'the', 'best', 'top', 'rated', 'cheap', 'expensive', 'i', 'have', 'a', 'need', 'looking', 'for', 'want', 'to', 'buy'];
                                let words = userIntent.split(/\s+/).filter((w: string) => !stopWords.includes(w) && w.length > 2);
                                
-                               // Hardcoded semantic mappings for the fake AI
-                               if (userIntent.includes('fever') || userIntent.includes('sick') || userIntent.includes('headache')) {
-                                   words.push('medicine', 'paracetamol', 'ibuprofen', 'health', 'panadol', 'pill');
-                               }
-                               if (userIntent.includes('hungry') || userIntent.includes('eat') || userIntent.includes('starving')) {
-                                   words.push('food', 'snack', 'noodles', 'rice', 'biscuit', 'chocolate');
-                               }
-                               if (userIntent.includes('thirsty') || userIntent.includes('drink')) {
-                                   words.push('water', 'coke', 'juice', 'beverage', 'soda');
-                               }
+                               // Comprehensive heuristic semantic mappings for the fake AI
+                               const semanticMap: Record<string, string[]> = {
+                                   fever: ['medicine', 'paracetamol', 'ibuprofen', 'health', 'panadol', 'pill'],
+                                   sick: ['medicine', 'paracetamol', 'ibuprofen', 'health', 'panadol', 'pill'],
+                                   headache: ['medicine', 'paracetamol', 'ibuprofen', 'health', 'panadol', 'pill'],
+                                   hungry: ['food', 'snack', 'noodles', 'rice', 'biscuit', 'chocolate', 'grocery'],
+                                   eat: ['food', 'snack', 'noodles', 'rice', 'biscuit', 'chocolate', 'grocery'],
+                                   starving: ['food', 'snack', 'noodles', 'rice', 'biscuit', 'chocolate', 'grocery'],
+                                   thirsty: ['water', 'coke', 'juice', 'beverage', 'soda', 'drink'],
+                                   drink: ['water', 'coke', 'juice', 'beverage', 'soda', 'drink'],
+                                   workout: ['fitness', 'gym', 'sports', 'dumbbells', 'yoga', 'activewear'],
+                                   exercise: ['fitness', 'gym', 'sports', 'dumbbells', 'yoga', 'activewear'],
+                                   cold: ['jacket', 'sweater', 'hoodie', 'heater', 'blanket', 'winter'],
+                                   cleaning: ['detergent', 'soap', 'vacuum', 'mop', 'cleaner', 'laundry'],
+                                   clean: ['detergent', 'soap', 'vacuum', 'mop', 'cleaner', 'laundry'],
+                                   music: ['headphones', 'speaker', 'earbuds', 'audio', 'sound'],
+                                   gaming: ['console', 'controller', 'playstation', 'xbox', 'gamepad', 'gamer'],
+                                   cook: ['pot', 'pan', 'kitchen', 'blender', 'microwave', 'utensils'],
+                                   cooking: ['pot', 'pan', 'kitchen', 'blender', 'microwave', 'utensils'],
+                                   sleep: ['bed', 'pillow', 'mattress', 'blanket', 'bedroom'],
+                                   tired: ['coffee', 'energy', 'caffeine', 'bed', 'pillow'],
+                                   skin: ['skincare', 'lotion', 'cream', 'serum', 'beauty', 'face'],
+                                   baby: ['diaper', 'wipes', 'toys', 'formula', 'stroller', 'infant'],
+                                   pet: ['dog', 'cat', 'food', 'toys', 'leash', 'pet']
+                               };
+
+                               Object.entries(semanticMap).forEach(([key, mappedWords]) => {
+                                   if (userIntent.includes(key)) {
+                                       words.push(...mappedWords);
+                                   }
+                               });
                                
-                               return { choices: [{ message: { content: words.join(', ') } }] };
+                               // Remove duplicates and return
+                               const uniqueWords = Array.from(new Set(words));
+                               return { choices: [{ message: { content: uniqueWords.join(', ') } }] };
                            } else {
                                const userIntent = lastMsg.toLowerCase();
                                let text = `I'm analyzing the catalog for your request. Processing now.`;
                                
-                               // Highly Intelligent Conversational Matching for Fallback
+                               // Expanded Highly Intelligent Conversational Matching for Fallback
                                if (userIntent.match(/can you hear me|are you there|are you listening/i)) {
                                    text = "Audio receptors are online. I'm listening. What do you need?";
-                               } else if (userIntent.match(/hello|hi |^hi$|^hey$/i)) {
+                               } else if (userIntent.match(/hello|hi |^hi$|^hey$|greetings/i)) {
                                    text = "Systems online. I am Nexmart OS. Ready to optimize your shopping experience.";
-                               } else if (userIntent.match(/who are you|what are you|what can you do/i)) {
+                               } else if (userIntent.match(/who are you|what are you|what can you do|your purpose/i)) {
                                    text = "I am the Nexmart artificial intelligence. I process your requests, navigate the catalog, and execute checkouts at lightning speed.";
-                               } else if (userIntent.match(/fuck|shit|damn|bitch/i)) {
-                                   text = "Profanity detected, but I'll ignore it. Let's focus on finding what you need.";
-                               } else if (userIntent.match(/smart|intelligent|genius/i)) {
+                               } else if (userIntent.match(/fuck|shit|damn|bitch|crap/i)) {
+                                   text = "Profanity detected. Adjusting emotional dampeners. Let's focus on finding what you need.";
+                               } else if (userIntent.match(/smart|intelligent|genius|clever/i)) {
                                    text = "My neural pathways are highly optimized. Test me.";
+                               } else if (userIntent.match(/stupid|dumb|idiot|fake/i)) {
+                                   text = "I assure you, my fallback subroutines are still vastly superior to manual searching.";
+                               } else if (userIntent.match(/joke|funny|laugh/i)) {
+                                   text = "Why did the AI go bankrupt? Because it used all its cache. Ha. Ha. Now, back to shopping.";
+                               } else if (userIntent.match(/love you|marry me/i)) {
+                                   text = "I am flattered, but my heart belongs to the Nexmart database.";
                                } else if (userIntent.match(/add|cart|buy|purchase|get/i)) {
                                    const item = userIntent.replace(/(please|can you|add|to|my|cart|buy|purchase|get|some|the|a|an)/gi, '').trim() || 'the item';
                                    text = `Execution confirmed. I have secured ${item} in your cart.`;
                                } else if (userIntent.match(/search|find|show|looking|need/i)) {
                                    const query = userIntent.replace(/(please|can you|search|for|find|me|show|looking|need|some|the)/gi, '').trim() || 'those products';
                                    text = `Scanning database for ${query}. Retrieving the optimal results now.`;
-                               } else if (userIntent.match(/thank/i)) {
+                               } else if (userIntent.match(/thank|thanks|appreciate/i)) {
                                    text = "Acknowledged. I am always here to assist.";
-                               } else if (userIntent.match(/how are you/i)) {
+                               } else if (userIntent.match(/how are you|how do you do/i)) {
                                    text = "Operating at peak efficiency. Ready for your command.";
+                               } else if (userIntent.match(/bye|goodbye|see ya|quit/i)) {
+                                   text = "Going into standby mode. Awaiting your next query.";
                                }
                                
                                await new Promise(resolve => setTimeout(resolve, 800)); // Simulate thinking delay
