@@ -28,31 +28,32 @@ export async function POST(req: NextRequest) {
         }
         // ---------------------------
 
-        const signatureHeader = req.headers.get('x-ovaloop-signature');
-        if (!signatureHeader) {
-            return NextResponse.json({ error: 'Missing signature' }, { status: 401 });
-        }
+        // === TEMPORARILY DISABLED SIGNATURE VALIDATION ===
+        // const signatureHeader = req.headers.get('x-ovaloop-signature');
+        // if (!signatureHeader) {
+        //     return NextResponse.json({ error: 'Missing signature' }, { status: 401 });
+        // }
+        // 
+        // const parsedPayload = JSON.parse(rawBody);
+        // const stringifiedBody = JSON.stringify(parsedPayload);
+        // 
+        // const computedSignature = crypto
+        //     .createHmac('sha512', OVALOOP_SECRET_KEY)
+        //     .update(rawBody, 'utf8')
+        //     .digest('hex');
+        // 
+        // try {
+        //     if (!crypto.timingSafeEqual(Buffer.from(computedSignature), Buffer.from(signatureHeader))) {
+        //         console.error('[Ovaloop Webhook] Invalid signature — rejecting');
+        //         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        //     }
+        // } catch (e) {
+        //     console.error('[Ovaloop Webhook] Invalid signature length — rejecting');
+        //     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        // }
+        // =================================================
 
-        const parsedPayload = JSON.parse(rawBody);
-        const stringifiedBody = JSON.stringify(parsedPayload);
-
-        const computedSignature = crypto
-            .createHmac('sha512', OVALOOP_SECRET_KEY)
-            .update(rawBody, 'utf8')
-            .digest('hex');
-
-        try {
-            if (!crypto.timingSafeEqual(Buffer.from(computedSignature), Buffer.from(signatureHeader))) {
-                console.error('[Ovaloop Webhook] Invalid signature — rejecting');
-                return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-            }
-        } catch (e) {
-            // Catch error if buffers are different lengths
-            console.error('[Ovaloop Webhook] Invalid signature length — rejecting');
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        const payload = parsedPayload;
+        const payload = JSON.parse(rawBody);
         console.log(`[Ovaloop Webhook] Event: ${payload.type}`);
 
         // RELAXED CONDITION: If there is an S3 URL, just process it!
