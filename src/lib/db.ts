@@ -96,7 +96,7 @@ export async function getProduct(id: string): Promise<NexmartProduct | null> {
 }
 
 // ─── Read All (paginated) ────────────────────────────────────────────────────
-export async function getAllProducts(limit = 100, offset = 0): Promise<ProductIndexEntry[]> {
+export async function getAllProducts(limit = 10000, offset = 0): Promise<ProductIndexEntry[]> {
   if (isSupabaseConfigured() && supabase) {
     const { data, error } = await supabase
       .from('products')
