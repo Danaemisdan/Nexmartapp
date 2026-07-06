@@ -18,7 +18,9 @@ interface StoreContextType {
     activeView: ViewState;
     selectedProduct: Product | null;
     isApiReady: boolean;
+    hasMore: boolean;
     
+    loadMoreProducts: () => Promise<void>;
     navigate: (view: ViewState, product?: Product) => void;
     addToCart: (product: Product, quantity?: number) => void;
     removeFromCart: (productId: string) => void;
@@ -41,6 +43,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const [cart, setCart] = useState<CartItem[]>([]);
     const [wishlist, setWishlist] = useState<string[]>([]);
     const [orders, setOrders] = useState<string[]>([]);
+    const [pageOffset, setPageOffset] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const LIMIT = 100;
 
     useEffect(() => {
         const storedOrders = localStorage.getItem('nexmart_orders');
@@ -61,8 +66,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         async function load() {
-            const data = await fetchProducts();
+            const data = await fetchProducts(LIMIT, 0);
             setProducts(data);
+            setPageOffset(LIMIT);
+            if (data.length < LIMIT) setHasMore(false);
             setIsApiReady(true);
         }
         load();
@@ -147,10 +154,27 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         });
     };
 
+    const loadMoreProducts = async () => {
+        if (!hasMore) return;
+        const newProducts = await fetchProducts(LIMIT, pageOffset);
+        if (newProducts.length > 0) {
+            setProducts(prev => {
+                // Ensure no duplicates
+                const existingIds = new Set(prev.map(p => p.id));
+                const uniqueNew = newProducts.filter(p => !existingIds.has(p.id));
+                return [...prev, ...uniqueNew];
+            });
+            setPageOffset(prev => prev + LIMIT);
+        }
+        if (newProducts.length < LIMIT) {
+            setHasMore(false);
+        }
+    };
+
     return (
         <StoreContext.Provider value={{
-            products, cart, wishlist, orders, activeView, selectedProduct, isApiReady,
-            navigate, addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist, getCartCount,
+            products, cart, wishlist, orders, activeView, selectedProduct, isApiReady, hasMore,
+            loadMoreProducts, navigate, addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist, getCartCount,
             formatPrice, addOrder
         }}>
             {children}

@@ -17,10 +17,10 @@ export interface Product {
     business_id?: string;
 }
 
-export async function fetchProducts(): Promise<Product[]> {
+export async function fetchProducts(limit = 100, offset = 0): Promise<Product[]> {
     try {
         // 1. Try to fetch from our local Ovaloop Inventory API
-        const localRes = await fetch('/api/products');
+        const localRes = await fetch(`/api/products?limit=${limit}&offset=${offset}`);
         if (localRes.ok) {
             const ovaloopData = await localRes.json();
             if (ovaloopData && ovaloopData.length > 0) {

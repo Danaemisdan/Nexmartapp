@@ -4,7 +4,7 @@ import { ArrowLeft, Grid } from 'lucide-react';
 import ProductCarousel from '../dashboard/ProductCarousel';
 
 export default function CategoriesView() {
-    const { products, navigate, addToCart, formatPrice } = useStore();
+    const { products, navigate, addToCart, formatPrice, loadMoreProducts, hasMore } = useStore();
     
     // Group products by category
     const categories = Array.from(new Set(products.map(p => p.category)));
@@ -47,6 +47,17 @@ export default function CategoriesView() {
                     </div>
                 ))}
             </div>
+
+            {hasMore && (
+                <div className="flex justify-center mt-12 w-full">
+                    <button 
+                        onClick={() => loadMoreProducts()} 
+                        className="bg-[#1e3a8a] text-white px-10 py-4 rounded-xl font-bold text-lg shadow-lg hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
+                    >
+                        Load More Products...
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
