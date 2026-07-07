@@ -16,7 +16,7 @@ const suggestedPrompts = [
 ];
 
 export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTask, setAiProducts, setIsAiReady, setAiProgress, aiProgress, isAiReady, inline = false }: any) {
-  const { products, addToCart } = useStore();
+  const { products, addToCart, navigate } = useStore();
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [input, setInput] = useState('');
   const [engine, setEngine] = useState<MLCEngineInterface | null>(null);
@@ -483,6 +483,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
 
           if (action === 'ADD_TO_CART') {
               matchingProducts.forEach(p => addToCart(p, 1));
+              navigate('cart');
           } else if (action === 'SEARCH' && matchingProducts.length > 0) {
               setAiProducts(matchingProducts);
           }

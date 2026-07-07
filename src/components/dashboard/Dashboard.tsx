@@ -27,19 +27,24 @@ function DashboardContent() {
     const [isAiReady, setIsAiReady] = useState(false);
     const [aiProgress, setAiProgress] = useState('Booting OS...');
 
-    const { activeView, navigate } = useStore();
+    const { activeView, navigate, addOrder, clearCart } = useStore();
 
     // Check for payment redirect on load
     React.useEffect(() => {
         if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
             if (params.get('payment') === 'success') {
+                const orderId = params.get('orderId');
+                if (orderId) {
+                    addOrder(orderId);
+                    clearCart();
+                }
                 navigate('orders');
                 // Clean up URL without reloading
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
-    }, [navigate]);
+    }, [navigate, addOrder, clearCart]);
 
     return (
         <div className="h-full w-full overflow-y-auto bg-white flex flex-col hide-scrollbar relative">

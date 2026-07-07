@@ -16,15 +16,16 @@ export async function POST(req: NextRequest) {
             const baseUrl = `${protocol}://${host}`;
             
             // Trigger the internal checkout endpoint directly to simulate webhook
-            await fetch(`${baseUrl}/api/checkout`, {
+            const checkoutRes = await fetch(`${baseUrl}/api/checkout`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ cart, customer })
             });
+            const checkoutData = await checkoutRes.json();
 
             return NextResponse.json({ 
                 success: true, 
-                checkoutUrl: `${baseUrl}/?payment=success` 
+                checkoutUrl: `${baseUrl}/?payment=success&orderId=${checkoutData.group_order_reference}` 
             });
         }
 
