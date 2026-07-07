@@ -147,22 +147,15 @@ export default function CartView() {
 
                         {isSignedIn ? (
                             <button 
-                                onClick={handleCheckout}
-                                disabled={isCheckingOut}
-                                className="w-full bg-black text-white py-4 rounded-2xl font-bold text-lg hover:bg-gray-800 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:scale-100 shadow-xl shadow-black/10"
+                                disabled={true}
+                                className="w-full bg-gray-300 text-gray-500 py-4 rounded-2xl font-bold text-lg cursor-not-allowed flex items-center justify-center gap-2"
                             >
-                                {isCheckingOut ? (
-                                    <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Processing...</>
-                                ) : (
-                                    <><CreditCard className="w-5 h-5" /> Checkout Securely</>
-                                )}
+                                Orders Temporarily Paused
                             </button>
                         ) : (
-                            <SignInButton mode="modal" forceRedirectUrl="/?payment=success">
-                                <button className="w-full bg-black text-white py-4 rounded-2xl font-bold text-lg hover:bg-gray-800 transition-all active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-black/10">
-                                    <User className="w-5 h-5" /> Sign in to Checkout
-                                </button>
-                            </SignInButton>
+                            <button disabled={true} className="w-full bg-gray-300 text-gray-500 py-4 rounded-2xl font-bold text-lg cursor-not-allowed flex items-center justify-center gap-2">
+                                Orders Temporarily Paused
+                            </button>
                         )}
                         
                         <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-gray-400 font-medium">
