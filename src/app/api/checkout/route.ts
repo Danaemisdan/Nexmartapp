@@ -42,21 +42,36 @@ export async function POST(req: NextRequest) {
             group_order_reference
         }));
 
-        const ovaloopEndpoint = process.env.OVALOOP_API_URL || 'https://apiv2.ovaloop.app';
+        const ovaloopEndpoint = process.env.OVALOOP_API_URL || 'https://devapi.ovaloop.app';
         
-        console.log(`[Checkout] MOCK MODE ACTIVE: Order would have been sent to ${ovaloopEndpoint}/partner/orders/`);
-        console.log('[Checkout] Payload:', JSON.stringify(orderPayload, null, 2));
+        const response = await fetch(`${ovaloopEndpoint}/partner/orders/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-OVALOOP-PARTNER-KEY': OVALOOP_PUBLIC_KEY,
+                'X-OVALOOP-TIMESTAMP': timestamp,
+                'X-OVALOOP-SIGNATURE': signature
+            },
+            body: JSON.stringify(orderPayload)
+        });
 
-        // Return a mock success response instead of actually hitting the API
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('[Checkout API] Error:', response.status, errorText);
+            return NextResponse.json({ error: 'Failed to submit order to Ovaloop' }, { status: response.status });
+        }
+
+        const data = await response.json();
+        
         return NextResponse.json({ 
             success: true, 
-            message: "MOCK_MODE_ACTIVE - Order was safely mocked and not sent to production.",
-            data: orderPayload,
+            message: "Order placed successfully",
+            data,
             group_order_reference 
         });
 
     } catch (error: any) {
-        console.error('[Checkout] Internal Server Error:', error.message);
+        console.error('[Checkout API] Internal Server Error:', error.message);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
