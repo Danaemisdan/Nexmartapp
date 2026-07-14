@@ -56,7 +56,10 @@ export default function ProductCarousel({ title, subtitle, products, type, onPro
 
                         {/* Info */}
                         <div className="flex flex-col flex-1">
-                            <h3 className="text-sm font-bold text-gray-800 leading-tight mb-2 line-clamp-2">{product.title}</h3>
+                            <h3 className="text-sm font-bold text-gray-800 leading-tight mb-1 line-clamp-2">{product.title}</h3>
+                            {product.description && (
+                                <p className="text-xs text-gray-500 line-clamp-2 leading-snug mb-2">{product.description}</p>
+                            )}
                             
                             <div className="mt-auto flex flex-col">
                                 <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 mb-2">

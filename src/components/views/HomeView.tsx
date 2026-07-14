@@ -12,7 +12,8 @@ interface HomeViewProps {
 export default function HomeView({ aiProducts }: HomeViewProps) {
     const { products, navigate, addToCart } = useStore();
 
-    // Take the first 10 for deals, and next 10 for picks
+    // Filter out the AI enriched products to showcase them
+    const newProducts = products.filter((p: any) => p.description && p.description.length > 15).slice(0, 10);
     const dealsProducts = products.slice(0, 10);
     const picksProducts = products.slice(10, 20);
 
@@ -32,6 +33,17 @@ export default function HomeView({ aiProducts }: HomeViewProps) {
                 />
             ) : (
                 <>
+                    {newProducts.length > 0 && (
+                        <ProductCarousel 
+                            title={<span>🆕 New Products</span>} 
+                            subtitle="Freshly updated with AI descriptions and images!"
+                            products={newProducts} 
+                            type="deals"
+                            onProductClick={(p) => navigate('product', p)}
+                            onAddToCart={(p) => addToCart(p)}
+                        />
+                    )}
+                    
                     <ProductCarousel 
                         title={<span>🔥 Today's Best Deals</span>} 
                         products={dealsProducts} 

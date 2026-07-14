@@ -44,3 +44,4 @@ tmp.txt
 tmp2.txt
 output.txt
 orb_scraped.txt
+*.gguf

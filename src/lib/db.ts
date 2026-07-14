@@ -32,6 +32,7 @@ export interface NexmartProduct {
 export interface ProductIndexEntry {
   id: string;
   title: string;
+  description?: string;
   price: number;
   originalPrice: number;
   discount: string;
@@ -101,14 +102,13 @@ export async function getAllProducts(limit = 100, offset = 0): Promise<ProductIn
     const { data, error } = await supabase
       .from('products')
       .select('*')
-      .range(offset, offset + limit - 1)
-      .order('price', { ascending: false }); // Sort by price or however you want
+      .range(offset, offset + limit - 1);
       
     if (error || !data) return [];
     
     // Map database result to ProductIndexEntry
     return data.map((d: any) => ({
-        id: d.id, title: d.title, price: d.price, originalPrice: d.originalPrice, 
+        id: d.id, title: d.title, description: d.description, price: d.price, originalPrice: d.originalPrice, 
         discount: d.discount, image: d.image, category: d.category, 
         rating: d.rating, reviews: d.reviews, business_id: d.business_id
     }));
