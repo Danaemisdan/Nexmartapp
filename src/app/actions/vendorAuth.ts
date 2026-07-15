@@ -39,10 +39,10 @@ export async function loginVendor(formData: FormData) {
   });
 
   // Redirect to dashboard
-  redirect("/");
+  redirect("/vendor");
 }
 
 export async function logoutVendor() {
   (await cookies()).delete("vendor_session");
-  redirect("/login");
+  redirect("/vendor/login");
 }

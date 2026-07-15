@@ -8,9 +8,9 @@ export function SidebarNav() {
   const pathname = usePathname();
 
   const links = [
-    { name: "Dashboard", href: "/", icon: LayoutDashboard },
-    { name: "Products", href: "/products", icon: Package },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Dashboard", href: "/vendor", icon: LayoutDashboard },
+    { name: "Products", href: "/vendor/products", icon: Package },
+    { name: "Settings", href: "/vendor/settings", icon: Settings },
   ];
 
   return (

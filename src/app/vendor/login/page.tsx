@@ -19,6 +19,9 @@ export default function VendorLoginPage() {
     if (result?.error) {
       setError(result.error);
       setLoading(false);
+    } else {
+      router.push("/vendor");
+      router.refresh();
     }
   }
 
