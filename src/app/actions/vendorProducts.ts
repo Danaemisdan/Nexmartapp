@@ -21,13 +21,57 @@ export async function getVendorProducts() {
   return { products: data };
 }
 
-export async function addVendorProduct(productData: any) {
+export async function addVendorProduct(formData: FormData) {
   const vendorId = (await cookies()).get("vendor_session")?.value;
   if (!vendorId) return { error: "Not logged in" };
 
+  const title = formData.get("title") as string;
+  const price = parseFloat(formData.get("price") as string);
+  const category = (formData.get("category") as string) || "General";
+  const imageFile = formData.get("imageFile") as File | null;
+  let imageUrl = "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80";
+
+  // If a file was uploaded, we save it to Supabase Storage
+  if (imageFile && imageFile.size > 0) {
+    const fileExt = imageFile.name.split('.').pop();
+    const fileName = `${vendorId}-${Date.now()}.${fileExt}`;
+    
+    // Create an admin client to bypass storage RLS for uploads
+    const { createClient } = require('@supabase/supabase-js');
+    const supabaseAdmin = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+      .from('product-images')
+      .upload(fileName, imageFile, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error("Storage upload error:", uploadError);
+      return { error: "Failed to upload image" };
+    }
+
+    const { data: { publicUrl } } = supabaseAdmin.storage
+      .from('product-images')
+      .getPublicUrl(fileName);
+      
+    imageUrl = publicUrl;
+  }
+
   const newProduct = {
-    ...productData,
-    business_id: vendorId, // Tie the product to the vendor!
+    title,
+    price,
+    category,
+    image: imageUrl,
+    originalPrice: price,
+    discount: "0%",
+    rating: 5,
+    reviews: 0,
+    business_id: vendorId, 
   };
 
   const { data, error } = await supabase

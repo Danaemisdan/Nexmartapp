@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { LayoutDashboard, Package, Settings, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { logoutVendor } from "@/app/actions/vendorAuth";
+import { SidebarNav } from "@/components/vendor/SidebarNav";
 
 export default function VendorLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,29 +14,7 @@ export default function VendorLayout({ children }: { children: React.ReactNode }
           </Link>
         </div>
         
-        <nav className="flex-1 px-4 space-y-2">
-          <Link 
-            href="/" 
-            className="flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-blue-50 text-blue-700 font-medium transition-colors"
-          >
-            <LayoutDashboard size={20} />
-            <span>Dashboard</span>
-          </Link>
-          <Link 
-            href="/products" 
-            className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 font-medium transition-colors"
-          >
-            <Package size={20} />
-            <span>Products</span>
-          </Link>
-          <Link 
-            href="/settings" 
-            className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100 font-medium transition-colors"
-          >
-            <Settings size={20} />
-            <span>Settings</span>
-          </Link>
-        </nav>
+        <SidebarNav />
 
         <div className="p-4 border-t border-gray-200">
           <form action={logoutVendor} className="flex items-center space-x-3 w-full">

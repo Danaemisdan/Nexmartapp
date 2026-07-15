@@ -26,6 +26,17 @@ export default clerkMiddleware(async (auth, req) => {
     
     // Bypass Clerk completely for vendor subdomain
     return NextResponse.next();
+  } else if (url.pathname.startsWith("/vendor")) {
+    // If accessed via path (e.g. nexmartshop.ai/vendor) instead of subdomain
+    const hasVendorSession = req.cookies.has("vendor_session");
+    
+    if (!hasVendorSession && !url.pathname.startsWith("/vendor/login")) {
+      url.pathname = "/vendor/login";
+      return NextResponse.redirect(url);
+    }
+    
+    // Bypass Clerk for the /vendor path
+    return NextResponse.next();
   }
 
   return NextResponse.next();

@@ -7,7 +7,9 @@ export default function VendorProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState({ title: "", price: "", category: "", image: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newProduct, setNewProduct] = useState({ title: "", price: "", category: "" });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -32,27 +34,27 @@ export default function VendorProductsPage() {
   async function handleAddProduct(e: React.FormEvent) {
     e.preventDefault();
     if (!newProduct.title || !newProduct.price) return;
+    setIsSubmitting(true);
     
-    const productData = {
-      title: newProduct.title,
-      price: parseFloat(newProduct.price),
-      category: newProduct.category || "General",
-      image: newProduct.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80",
-      originalPrice: parseFloat(newProduct.price),
-      discount: "0%",
-      rating: 5,
-      reviews: 0
-    };
+    const formData = new FormData();
+    formData.append("title", newProduct.title);
+    formData.append("price", newProduct.price);
+    formData.append("category", newProduct.category);
+    if (imageFile) {
+      formData.append("imageFile", imageFile);
+    }
 
-    const result = await addVendorProduct(productData);
+    const result = await addVendorProduct(formData);
     
     if (result?.error) {
       alert("Failed to add product: " + result.error);
     } else if (result?.product) {
       setProducts([result.product, ...products]);
       setIsAddModalOpen(false);
-      setNewProduct({ title: "", price: "", category: "", image: "" });
+      setNewProduct({ title: "", price: "", category: "" });
+      setImageFile(null);
     }
+    setIsSubmitting(false);
   }
 
   return (
@@ -181,20 +183,19 @@ export default function VendorProductsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Image URL (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
                 <input 
-                  type="url" 
-                  value={newProduct.image} onChange={e => setNewProduct({...newProduct, image: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none" 
-                  placeholder="https://..." 
+                  type="file" accept="image/*"
+                  onChange={e => setImageFile(e.target.files ? e.target.files[0] : null)}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
                 />
               </div>
               <div className="pt-2 flex justify-end gap-3">
                 <button type="button" onClick={() => setIsAddModalOpen(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors">
                   Cancel
                 </button>
-                <button type="submit" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-                  Save Product
+                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-medium transition-colors">
+                  {isSubmitting ? "Uploading..." : "Save Product"}
                 </button>
               </div>
             </form>
