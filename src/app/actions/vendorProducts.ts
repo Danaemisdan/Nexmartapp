@@ -105,11 +105,11 @@ export async function getVendorStats() {
   
   // Since we don't have an orders table yet, generate realistic mock revenue based on their actual inventory
   const mockOrdersCount = activeProducts * 14; 
-  const averagePrice = products.length > 0 ? products.reduce((acc, p) => acc + p.price, 0) / products.length : 0;
+  const averagePrice = products.length > 0 ? products.reduce((acc: number, p: any) => acc + p.price, 0) / products.length : 0;
   const mockRevenue = mockOrdersCount * averagePrice;
 
   // Generate 5 recent mock orders based on their actual products
-  const recentOrders = products.slice(0, 5).map((p, i) => ({
+  const recentOrders = products.slice(0, 5).map((p: any, i: number) => ({
     id: `#ORD-${920 + i}`,
     productTitle: p.title,
     customer: ["John Doe", "Alice Smith", "Michael Johnson", "Emma Davis", "David Wilson"][i % 5],

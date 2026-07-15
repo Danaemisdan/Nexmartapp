@@ -1,9 +1,11 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { loginVendor } from "@/app/actions/vendorAuth";
 import { Store, Phone, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 
 export default function VendorLoginPage() {
+  const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
