@@ -114,14 +114,51 @@ export async function getVendorStats() {
     productTitle: p.title,
     customer: ["John Doe", "Alice Smith", "Michael Johnson", "Emma Davis", "David Wilson"][i % 5],
     status: i % 2 === 0 ? "Completed" : "Processing",
-    amount: p.price
+    amount: p.price,
+    date: `May ${20 - i}, 2025`
   }));
+
+  // Generate mock chart data for the last 7 days
+  const salesData = [
+    { name: 'May 14', value: mockRevenue * 0.1 },
+    { name: 'May 15', value: mockRevenue * 0.15 },
+    { name: 'May 16', value: mockRevenue * 0.08 },
+    { name: 'May 17', value: mockRevenue * 0.12 },
+    { name: 'May 18', value: mockRevenue * 0.25 },
+    { name: 'May 19', value: mockRevenue * 0.18 },
+    { name: 'May 20', value: mockRevenue * 0.12 },
+  ];
+
+  // Top Products
+  const topProducts = products.slice(0, 4).map((p: any, i: number) => ({
+    title: p.title,
+    price: p.price,
+    units: Math.floor(activeProducts * (10 - i) * 1.5),
+    image: p.image
+  }));
+
+  // AI Agents Mock Data
+  const aiAgents = [
+    { name: "Nexi", role: "Sales Agent", icon: "Bot", s1Label: "Orders", s1Val: "128", s2Label: "Revenue", s2Val: `₦${(mockRevenue * 0.4).toLocaleString()}` },
+    { name: "Shopi", role: "Support Agent", icon: "Headset", s1Label: "Sessions", s1Val: "342", s2Label: "Resolution", s2Val: "98%" },
+    { name: "Recomi", role: "Recommendation Agent", icon: "Sparkles", s1Label: "CTR", s1Val: "24.6%", s2Label: "Revenue", s2Val: `₦${(mockRevenue * 0.2).toLocaleString()}` },
+    { name: "Tracki", role: "Logistics Agent", icon: "Truck", s1Label: "Deliveries", s1Val: "298", s2Label: "On-time", s2Val: "96%" }
+  ];
 
   return {
     activeProducts,
     totalOrders: mockOrdersCount,
     totalRevenue: mockRevenue,
     storeViews: activeProducts * 142,
-    recentOrders
+    customers: Math.floor(mockOrdersCount * 0.8),
+    conversionRate: "3.62%",
+    walletBalance: {
+      available: mockRevenue * 0.6,
+      onHold: mockRevenue * 0.1
+    },
+    recentOrders,
+    salesData,
+    topProducts,
+    aiAgents
   };
 }
