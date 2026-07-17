@@ -34,7 +34,7 @@ export default async function VendorLayout({ children }: { children: React.React
                 <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Avatar" className="h-full w-full object-cover" />
               </div>
               <div className="text-sm">
-                <div className="font-semibold text-gray-900">Good day, {profile?.customer_name?.split(" ")[0] || "Merchant"}</div>
+                <div className="font-semibold text-gray-900">Good day, {profile?.customer_name?.split(" ")[0] || profile?.store_name || "Vendor"}</div>
                 <div className="text-gray-500 text-xs">Merchant</div>
               </div>
             </div>

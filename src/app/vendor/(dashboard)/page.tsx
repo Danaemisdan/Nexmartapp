@@ -6,7 +6,14 @@ import SalesChart from "@/components/vendor/SalesChart";
 export default async function VendorDashboardPage() {
   const stats = await getVendorStats();
   const { profile } = await getVendorProfile();
-  const firstName = profile?.customer_name?.split(" ")[0] || "John";
+  
+  // Try to use first name, fallback to store name, fallback to Vendor
+  let displayName = "Vendor";
+  if (profile?.customer_name && profile.customer_name.trim() !== "") {
+    displayName = profile.customer_name.split(" ")[0];
+  } else if (profile?.store_name && profile.store_name.trim() !== "") {
+    displayName = profile.store_name;
+  }
   
   // Safe fallbacks
   const activeProducts = stats?.activeProducts || 0;
@@ -27,7 +34,7 @@ export default async function VendorDashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
-            Welcome back, {firstName}! 👋
+            Welcome back, {displayName}! 👋
           </h1>
           <p className="text-gray-500 text-sm mt-1">Here's what's happening with your store today.</p>
         </div>
