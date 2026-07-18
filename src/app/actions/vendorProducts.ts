@@ -102,51 +102,40 @@ export async function getVendorStats() {
   }
 
   let activeProducts = products.length;
-  let mockOrdersCount = 0;
-  let mockRevenue = 0;
-  let averagePrice = 0;
+  let averagePrice = products.length > 0 ? products.reduce((acc: number, p: any) => acc + p.price, 0) / products.length : 0;
+  let mockOrdersCount = activeProducts * 14; 
+  let mockRevenue = mockOrdersCount * averagePrice;
 
-  // 💥 DEMO MODE INJECTION: If they have 0 products, inject rich demo data so the dashboard looks alive!
-  if (activeProducts === 0) {
-    activeProducts = 32;
-    mockOrdersCount = 350;
-    averagePrice = 8500;
-    mockRevenue = mockOrdersCount * averagePrice;
-  } else {
-    mockOrdersCount = activeProducts * 14; 
-    averagePrice = products.length > 0 ? products.reduce((acc: number, p: any) => acc + p.price, 0) / products.length : 0;
-    mockRevenue = mockOrdersCount * averagePrice;
-  }
-
-  // Generate 20 robust dynamic mock orders for the Orders page
+  // Generate dynamic mock orders for the Orders page, based STRICTLY on activeProducts
   const generateMockOrders = (count: number) => {
+    if (activeProducts === 0) return []; // Return nothing if no products!
     return Array.from({ length: count }).map((_, i) => ({
       id: `#ORD-${12500 + i}`,
-      productTitle: products.length > 0 ? products[i % products.length].title : "Premium Widget",
+      productTitle: products[i % products.length].title,
       customer: ["John Doe", "Alice Smith", "Michael Johnson", "Emma Davis", "David Wilson", "Sarah Lee", "James Bond"][i % 7],
       status: i % 5 === 0 ? "Delivered" : i % 4 === 0 ? "Cancelled" : i % 3 === 0 ? "Shipped" : "Processing",
-      amount: products.length > 0 ? products[i % products.length].price : averagePrice,
+      amount: products[i % products.length].price,
       payment: i % 4 === 0 ? "Refunded" : "Paid",
       items: (i % 4) + 1,
       date: `May ${20 - (i % 5)}, 2025`
     }));
   };
 
-  const allOrders = generateMockOrders(20);
+  const allOrders = generateMockOrders(activeProducts === 0 ? 0 : 20);
   const recentOrders = allOrders.slice(0, 5);
 
-  // Generate mock chart data for the last 7 days
+  // Generate mock chart data for the last 7 days (all zero if no revenue)
   const salesData = [
-    { name: 'May 14', value: mockRevenue * 0.1 },
-    { name: 'May 15', value: mockRevenue * 0.15 },
-    { name: 'May 16', value: mockRevenue * 0.08 },
-    { name: 'May 17', value: mockRevenue * 0.12 },
-    { name: 'May 18', value: mockRevenue * 0.25 },
-    { name: 'May 19', value: mockRevenue * 0.18 },
-    { name: 'May 20', value: mockRevenue * 0.12 },
+    { name: 'May 14', value: activeProducts === 0 ? 0 : mockRevenue * 0.1 },
+    { name: 'May 15', value: activeProducts === 0 ? 0 : mockRevenue * 0.15 },
+    { name: 'May 16', value: activeProducts === 0 ? 0 : mockRevenue * 0.08 },
+    { name: 'May 17', value: activeProducts === 0 ? 0 : mockRevenue * 0.12 },
+    { name: 'May 18', value: activeProducts === 0 ? 0 : mockRevenue * 0.25 },
+    { name: 'May 19', value: activeProducts === 0 ? 0 : mockRevenue * 0.18 },
+    { name: 'May 20', value: activeProducts === 0 ? 0 : mockRevenue * 0.12 },
   ];
 
-  // Top Products
+  // Top Products (Empty if 0 products)
   const topProducts = products.length > 0 
     ? products.slice(0, 4).map((p: any, i: number) => ({
         title: p.title,
@@ -154,45 +143,40 @@ export async function getVendorStats() {
         units: Math.floor(activeProducts * (10 - i) * 1.5),
         image: p.image
       }))
-    : Array.from({ length: 4 }).map((_, i) => ({
-        title: `Trending Product ${i + 1}`,
-        price: averagePrice * (i + 1) * 0.5,
-        units: 140 - (i * 20),
-        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80"
-      }));
+    : [];
 
-  // AI Agents Dynamic Data (Using backend calculations so it's not strictly static)
+  // AI Agents Dynamic Data (Strictly 0 if no orders/revenue)
   const aiAgents = [
     { 
       id: "nexi-01", name: "Nexi", role: "Sales Agent", color: "indigo", status: "Active",
       kpis: [
-        { label: "Conversations", value: (mockOrdersCount * 3.5).toLocaleString() },
-        { label: "Conversion Rate", value: "14.2%" },
-        { label: "Generated Revenue", value: `₦${(mockRevenue * 0.4).toLocaleString()}` }
+        { label: "Conversations", value: activeProducts === 0 ? "0" : (mockOrdersCount * 3.5).toLocaleString() },
+        { label: "Conversion Rate", value: activeProducts === 0 ? "0%" : "14.2%" },
+        { label: "Generated Revenue", value: activeProducts === 0 ? "₦0" : `₦${(mockRevenue * 0.4).toLocaleString()}` }
       ]
     },
     { 
       id: "shopi-02", name: "Shopi", role: "Support Agent", color: "blue", status: "Active",
       kpis: [
-        { label: "Tickets Handled", value: (mockOrdersCount * 1.2).toLocaleString() },
-        { label: "Avg Response Time", value: "< 1 min" },
-        { label: "Resolution Rate", value: "98%" }
+        { label: "Tickets Handled", value: activeProducts === 0 ? "0" : (mockOrdersCount * 1.2).toLocaleString() },
+        { label: "Avg Response Time", value: activeProducts === 0 ? "-" : "< 1 min" },
+        { label: "Resolution Rate", value: activeProducts === 0 ? "0%" : "98%" }
       ]
     },
     { 
       id: "recomi-03", name: "Recomi", role: "Recommendation Engine", color: "purple", status: "Paused",
       kpis: [
-        { label: "Impressions", value: (activeProducts * 500).toLocaleString() },
-        { label: "Click-Through", value: "24.6%" },
-        { label: "Upsell Revenue", value: `₦${(mockRevenue * 0.2).toLocaleString()}` }
+        { label: "Impressions", value: activeProducts === 0 ? "0" : (activeProducts * 500).toLocaleString() },
+        { label: "Click-Through", value: activeProducts === 0 ? "0%" : "24.6%" },
+        { label: "Upsell Revenue", value: activeProducts === 0 ? "₦0" : `₦${(mockRevenue * 0.2).toLocaleString()}` }
       ]
     },
     { 
       id: "tracki-04", name: "Tracki", role: "Logistics Agent", color: "orange", status: "Active",
       kpis: [
-        { label: "Active Deliveries", value: Math.floor(mockOrdersCount * 0.3).toLocaleString() },
-        { label: "On-Time Rate", value: "96%" },
-        { label: "Customer Alerts", value: (mockOrdersCount * 2.8).toLocaleString() }
+        { label: "Active Deliveries", value: activeProducts === 0 ? "0" : Math.floor(mockOrdersCount * 0.3).toLocaleString() },
+        { label: "On-Time Rate", value: activeProducts === 0 ? "0%" : "96%" },
+        { label: "Customer Alerts", value: activeProducts === 0 ? "0" : (mockOrdersCount * 2.8).toLocaleString() }
       ]
     }
   ];
