@@ -22,10 +22,10 @@ export default async function VendorAnalyticsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: "Total Sessions", value: (stats?.storeViews || 0).toLocaleString(), inc: "+12.5%", icon: Users, color: "blue" },
-          { label: "Bounce Rate", value: "42.3%", inc: "-2.1%", icon: MousePointerClick, color: "orange" },
-          { label: "Avg. Order Value", value: `₦${Math.floor((stats?.totalRevenue || 0) / (stats?.totalOrders || 1)).toLocaleString()}`, inc: "+5.4%", icon: TrendingUp, color: "green" },
-          { label: "Conversion Goal", value: "85%", inc: "+1.2%", icon: Target, color: "purple" },
+          { label: "Total Sessions", value: (stats?.storeViews || 0).toLocaleString(), inc: stats?.activeProducts > 0 ? "+12.5%" : "0%", icon: Users, color: "blue" },
+          { label: "Bounce Rate", value: stats?.activeProducts > 0 ? "42.3%" : "0%", inc: stats?.activeProducts > 0 ? "-2.1%" : "0%", icon: MousePointerClick, color: "orange" },
+          { label: "Avg. Order Value", value: `₦${Math.floor((stats?.totalRevenue || 0) / (stats?.totalOrders || 1)).toLocaleString()}`, inc: stats?.activeProducts > 0 ? "+5.4%" : "0%", icon: TrendingUp, color: "green" },
+          { label: "Conversion Goal", value: stats?.activeProducts > 0 ? "85%" : "0%", inc: stats?.activeProducts > 0 ? "+1.2%" : "0%", icon: Target, color: "purple" },
         ].map((stat, i) => (
           <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
             <div className="flex justify-between items-start mb-4">

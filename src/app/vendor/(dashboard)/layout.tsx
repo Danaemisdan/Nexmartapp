@@ -1,13 +1,15 @@
 import { getVendorProfile } from "@/app/actions/vendorSettings";
 import { SidebarNav } from "@/components/vendor/SidebarNav";
-import { Search, Bell } from "lucide-react";
+import { Search, Bell, User } from "lucide-react";
+import { getVendorStats } from "@/app/actions/vendorProducts";
 
 export default async function VendorLayout({ children }: { children: React.ReactNode }) {
   const { profile } = await getVendorProfile();
+  const stats = await getVendorStats();
 
   return (
     <div className="flex h-screen bg-[#f8fafc] font-sans">
-      <SidebarNav profile={profile} />
+      <SidebarNav profile={profile} stats={stats} />
 
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Top Navbar */}
@@ -30,8 +32,8 @@ export default async function VendorLayout({ children }: { children: React.React
             </button>
             
             <div className="flex items-center space-x-3 border-l pl-6 border-gray-200">
-              <div className="h-9 w-9 rounded-full bg-slate-200 overflow-hidden border border-gray-200">
-                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Avatar" className="h-full w-full object-cover" />
+              <div className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center border border-gray-200">
+                <User size={20} className="text-gray-500" />
               </div>
               <div className="text-sm">
                 <div className="font-semibold text-gray-900">Good day, {profile?.customer_name?.split(" ")[0] || profile?.store_name || "Vendor"}</div>

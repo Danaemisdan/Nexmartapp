@@ -19,13 +19,15 @@ export default async function VendorInventoryPage() {
         </button>
       </div>
 
-      <div className="bg-red-50 border border-red-100 rounded-2xl p-4 flex items-start gap-3">
-        <AlertCircle className="text-red-500 mt-0.5" size={20} />
-        <div>
-          <h4 className="text-sm font-bold text-red-800">Low Stock Alert</h4>
-          <p className="text-sm text-red-600 mt-1">2 of your top-selling products have less than 10 units remaining. Restock soon to avoid losing sales.</p>
+      {(stats?.activeProducts || 0) > 0 && (
+        <div className="bg-red-50 border border-red-100 rounded-2xl p-4 flex items-start gap-3">
+          <AlertCircle className="text-red-500 mt-0.5" size={20} />
+          <div>
+            <h4 className="text-sm font-bold text-red-800">Low Stock Alert</h4>
+            <p className="text-sm text-red-600 mt-1">2 of your top-selling products have less than 10 units remaining. Restock soon to avoid losing sales.</p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-5 border-b border-gray-100 flex items-center gap-4">

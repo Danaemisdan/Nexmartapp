@@ -8,12 +8,20 @@ import {
 } from "lucide-react";
 import { logoutVendor } from "@/app/actions/vendorAuth";
 
-export function SidebarNav({ profile }: { profile: any }) {
+export function SidebarNav({ profile, stats }: { profile: any, stats?: any }) {
   const pathname = usePathname();
+
+  const walletBadge = stats?.walletBalance?.available > 0 
+    ? `₦${stats.walletBalance.available.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+    : "₦0.00";
+    
+  const ordersBadge = stats?.totalOrders > 0 
+    ? stats.totalOrders.toString()
+    : undefined;
 
   const mainLinks = [
     { name: "Dashboard", href: "/vendor", icon: LayoutDashboard },
-    { name: "Orders", href: "/vendor/orders", icon: Package, badge: "38" },
+    { name: "Orders", href: "/vendor/orders", icon: Package, badge: ordersBadge },
     { name: "Products", href: "/vendor/products", icon: Boxes },
     { name: "AI Agents", href: "/vendor/agents", icon: Bot, badge: "New", badgeColor: "bg-indigo-600" },
     { name: "Customers", href: "/vendor/customers", icon: Users },
@@ -23,7 +31,7 @@ export function SidebarNav({ profile }: { profile: any }) {
   ];
 
   const financialLinks = [
-    { name: "Wallet", href: "/vendor/wallet", icon: Wallet, badge: "₦245,680.00", badgeColor: "bg-green-900/50 text-green-400" },
+    { name: "Wallet", href: "/vendor/wallet", icon: Wallet, badge: walletBadge, badgeColor: "bg-green-900/50 text-green-400" },
     { name: "Payouts", href: "/vendor/payouts", icon: ArrowLeftRight },
     { name: "Disputes", href: "/vendor/disputes", icon: AlertCircle },
   ];

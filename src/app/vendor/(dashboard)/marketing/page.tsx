@@ -1,6 +1,11 @@
 import { Megaphone, Mail, MessageSquare, Plus, ArrowRight } from "lucide-react";
 
-export default function VendorMarketingPage() {
+import { getVendorStats } from "@/app/actions/vendorProducts";
+
+export default async function VendorMarketingPage() {
+  const stats = await getVendorStats();
+  const hasData = (stats?.activeProducts || 0) > 0;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
@@ -17,7 +22,7 @@ export default function VendorMarketingPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[
+        {hasData ? [
           { title: "Abandoned Cart Recovery", type: "Email Automation", icon: Mail, status: "Active", reach: "1,240", conv: "18.5%" },
           { title: "Weekend Flash Sale", type: "SMS Blast", icon: MessageSquare, status: "Draft", reach: "-", conv: "-" },
           { title: "VIP Customer Discount", type: "Email Campaign", icon: Mail, status: "Completed", reach: "450", conv: "24.2%" },
@@ -48,7 +53,7 @@ export default function VendorMarketingPage() {
               </div>
             </div>
           </div>
-        ))}
+        )) : []}
       </div>
     </div>
   );

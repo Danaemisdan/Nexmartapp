@@ -60,9 +60,9 @@ export default async function VendorDashboardPage() {
           </div>
           <div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">₦{totalRevenue.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}</h3>
-            <div className="flex items-center text-xs text-green-600 font-medium">
+            <div className={`flex items-center text-xs font-medium ${activeProducts > 0 ? 'text-green-600' : 'text-gray-400'}`}>
               <TrendingUp size={14} className="mr-1" />
-              <span>24.5%</span>
+              <span>{activeProducts > 0 ? '24.5%' : '0%'}</span>
             </div>
             <p className="text-xs text-gray-400 mt-1">vs May 7 - May 13, 2025</p>
           </div>
@@ -75,9 +75,9 @@ export default async function VendorDashboardPage() {
           </div>
           <div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">{totalOrders.toLocaleString()}</h3>
-            <div className="flex items-center text-xs text-green-600 font-medium">
+            <div className={`flex items-center text-xs font-medium ${activeProducts > 0 ? 'text-green-600' : 'text-gray-400'}`}>
               <TrendingUp size={14} className="mr-1" />
-              <span>18.7%</span>
+              <span>{activeProducts > 0 ? '18.7%' : '0%'}</span>
             </div>
             <p className="text-xs text-gray-400 mt-1">vs May 7 - May 13, 2025</p>
           </div>
@@ -90,9 +90,9 @@ export default async function VendorDashboardPage() {
           </div>
           <div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">{customers.toLocaleString()}</h3>
-            <div className="flex items-center text-xs text-green-600 font-medium">
+            <div className={`flex items-center text-xs font-medium ${activeProducts > 0 ? 'text-green-600' : 'text-gray-400'}`}>
               <TrendingUp size={14} className="mr-1" />
-              <span>15.3%</span>
+              <span>{activeProducts > 0 ? '15.3%' : '0%'}</span>
             </div>
             <p className="text-xs text-gray-400 mt-1">vs May 7 - May 13, 2025</p>
           </div>
@@ -105,9 +105,9 @@ export default async function VendorDashboardPage() {
           </div>
           <div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">{conversionRate}</h3>
-            <div className="flex items-center text-xs text-green-600 font-medium">
+            <div className={`flex items-center text-xs font-medium ${activeProducts > 0 ? 'text-green-600' : 'text-gray-400'}`}>
               <TrendingUp size={14} className="mr-1" />
-              <span>8.4%</span>
+              <span>{activeProducts > 0 ? '8.4%' : '0%'}</span>
             </div>
             <p className="text-xs text-gray-400 mt-1">vs May 7 - May 13, 2025</p>
           </div>
@@ -207,26 +207,22 @@ export default async function VendorDashboardPage() {
               <button className="text-green-600 text-sm font-semibold hover:text-green-700">View all</button>
             </div>
             <div className="space-y-5">
-              {[
-                { type: 'in', title: 'Order Payment', sub: '#ORD-12578', amount: '+ ₦18,450.00', date: 'May 20, 2025, 10:24 AM', color: 'text-green-600', bg: 'bg-green-50' },
-                { type: 'out', title: 'Payout to Bank', sub: 'Wema Bank **** 8821', amount: '- ₦150,000.00', date: 'May 19, 2025, 03:15 PM', color: 'text-purple-600', bg: 'bg-purple-50' },
-                { type: 'in', title: 'Order Payment', sub: '#ORD-12521', amount: '+ ₦9,850.00', date: 'May 19, 2025, 11:20 AM', color: 'text-green-600', bg: 'bg-green-50' },
-                { type: 'out', title: 'Refund to Customer', sub: '#ORD-12510', amount: '- ₦4,200.00', date: 'May 18, 2025, 09:40 PM', color: 'text-red-600', bg: 'bg-red-50' },
-                { type: 'in', title: 'Order Payment', sub: '#ORD-12495', amount: '+ ₦12,600.00', date: 'May 18, 2025, 04:32 PM', color: 'text-green-600', bg: 'bg-green-50' }
-              ].map((tx, i) => (
+              {recentOrders.length === 0 ? (
+                <p className="text-sm text-gray-400 text-center py-4">No recent transactions.</p>
+              ) : recentOrders.map((order: any, i: number) => (
                 <div key={i} className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className={`p-2 rounded-full ${tx.bg}`}>
-                      {tx.type === 'in' ? <ArrowDown size={16} className={tx.color} /> : <ArrowUp size={16} className={tx.color} />}
+                    <div className="p-2 rounded-full bg-green-50">
+                      <ArrowDown size={16} className="text-green-600" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-gray-900">{tx.title}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{tx.sub}</p>
+                      <p className="text-sm font-bold text-gray-900">Order Payment</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{order.id}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className={`text-sm font-bold ${tx.type === 'in' ? 'text-green-600' : 'text-gray-900'}`}>{tx.amount}</p>
-                    <p className="text-[10px] text-gray-400 mt-1">{tx.date}</p>
+                    <p className="text-sm font-bold text-green-600">+ ₦{order.amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    <p className="text-[10px] text-gray-400 mt-1">{order.date}</p>
                   </div>
                 </div>
               ))}
@@ -290,12 +286,14 @@ export default async function VendorDashboardPage() {
               </div>
               <div className="flex items-center justify-between mt-2 pt-4 border-t border-gray-50">
                 <div>
-                  <p className="text-[10px] text-gray-500 uppercase tracking-wider">{agent.s1Label}</p>
-                  <p className="text-sm font-bold text-gray-900 mt-0.5">{agent.s1Val}</p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider">{agent.kpis && agent.kpis[0] ? agent.kpis[0].label : "Metric 1"}</p>
+                  <p className="text-sm font-bold text-gray-900 mt-0.5">{agent.kpis && agent.kpis[0] ? agent.kpis[0].value : "0"}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] text-gray-500 uppercase tracking-wider">{agent.s2Label}</p>
-                  <p className={`text-sm font-bold mt-0.5 ${agent.s2Label === 'Resolution' || agent.s2Label === 'On-time' ? 'text-green-600' : 'text-gray-900'}`}>{agent.s2Val}</p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider">{agent.kpis && agent.kpis[1] ? agent.kpis[1].label : "Metric 2"}</p>
+                  <p className={`text-sm font-bold mt-0.5 ${(agent.kpis && agent.kpis[1] && (agent.kpis[1].label === 'Resolution Rate' || agent.kpis[1].label === 'On-Time Rate')) ? 'text-green-600' : 'text-gray-900'}`}>
+                    {agent.kpis && agent.kpis[1] ? agent.kpis[1].value : "0%"}
+                  </p>
                 </div>
               </div>
             </div>
