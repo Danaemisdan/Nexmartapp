@@ -187,7 +187,7 @@ export async function getVendorStats() {
     totalRevenue: mockRevenue,
     storeViews: activeProducts * 142,
     customers: Math.floor(mockOrdersCount * 0.8),
-    conversionRate: "3.62%",
+    conversionRate: activeProducts > 0 ? "3.62%" : "0%",
     walletBalance: {
       available: mockRevenue * 0.6,
       onHold: mockRevenue * 0.1
