@@ -1,64 +1,20 @@
 import { Bot, Sparkles, MessageSquare, Truck, Zap, Plus, Search, Settings2, Activity, Play, Pause } from "lucide-react";
+import { getVendorStats } from "@/app/actions/vendorProducts";
 
-export default function VendorAgentsPage() {
-  const agents = [
-    {
-      id: "nexi-01",
-      name: "Nexi",
-      role: "Sales Agent",
-      description: "Automatically handles customer inquiries, recommends products, and closes sales 24/7.",
-      icon: Bot,
-      color: "indigo",
-      status: "Active",
-      kpis: [
-        { label: "Conversations", value: "1,248" },
-        { label: "Conversion Rate", value: "14.2%" },
-        { label: "Generated Revenue", value: "₦456,780" }
-      ]
-    },
-    {
-      id: "shopi-02",
-      name: "Shopi",
-      role: "Support Agent",
-      description: "Resolves customer complaints, tracks orders, and handles return requests autonomously.",
-      icon: MessageSquare,
-      color: "blue",
-      status: "Active",
-      kpis: [
-        { label: "Tickets Handled", value: "342" },
-        { label: "Avg Response Time", value: "< 1 min" },
-        { label: "Resolution Rate", value: "98%" }
-      ]
-    },
-    {
-      id: "recomi-03",
-      name: "Recomi",
-      role: "Recommendation Engine",
-      description: "Analyzes customer behavior to suggest upsells and cross-sells on product pages.",
-      icon: Sparkles,
-      color: "purple",
-      status: "Paused",
-      kpis: [
-        { label: "Impressions", value: "12.4k" },
-        { label: "Click-Through", value: "24.6%" },
-        { label: "Upsell Revenue", value: "₦184,230" }
-      ]
-    },
-    {
-      id: "tracki-04",
-      name: "Tracki",
-      role: "Logistics Agent",
-      description: "Coordinates with delivery partners and updates customers on shipping status.",
-      icon: Truck,
-      color: "orange",
-      status: "Active",
-      kpis: [
-        { label: "Active Deliveries", value: "48" },
-        { label: "On-Time Rate", value: "96%" },
-        { label: "Customer Alerts", value: "1,420" }
-      ]
-    }
-  ];
+export default async function VendorAgentsPage() {
+  const stats = await getVendorStats();
+  
+  // Re-map the icon strings from the backend back to the actual Lucide components, and add descriptions
+  const agents = (stats?.aiAgents || []).map((agent: any) => ({
+    ...agent,
+    icon: agent.name === 'Nexi' ? Bot : 
+          agent.name === 'Shopi' ? MessageSquare : 
+          agent.name === 'Recomi' ? Sparkles : Truck,
+    description: agent.name === 'Nexi' ? "Automatically handles customer inquiries, recommends products, and closes sales 24/7." :
+                 agent.name === 'Shopi' ? "Resolves customer complaints, tracks orders, and handles return requests autonomously." :
+                 agent.name === 'Recomi' ? "Analyzes customer behavior to suggest upsells and cross-sells on product pages." :
+                 "Coordinates with delivery partners and updates customers on shipping status."
+  }));
 
   const getColorClasses = (color: string) => {
     switch(color) {
@@ -139,7 +95,7 @@ export default function VendorAgentsPage() {
               </p>
 
               <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 rounded-xl">
-                {agent.kpis.map((kpi, i) => (
+                {agent.kpis.map((kpi: any, i: number) => (
                   <div key={i}>
                     <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider mb-1">{kpi.label}</p>
                     <p className={`text-sm font-bold ${kpi.label.includes('Revenue') ? 'text-green-600' : 'text-gray-900'}`}>{kpi.value}</p>

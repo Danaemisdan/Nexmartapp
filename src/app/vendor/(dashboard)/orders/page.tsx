@@ -1,17 +1,11 @@
 import { Search, Filter, Download, MoreVertical, Package, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { getVendorStats } from "@/app/actions/vendorProducts";
 
-export default function VendorOrdersPage() {
-  // Generate beautiful mock orders
-  const orders = [
-    { id: "ORD-12578", date: "May 20, 2025, 10:24 AM", customer: "Alice Smith", items: 3, total: 18450, status: "Processing", payment: "Paid" },
-    { id: "ORD-12577", date: "May 20, 2025, 09:15 AM", customer: "John Doe", items: 1, total: 12500, status: "Delivered", payment: "Paid" },
-    { id: "ORD-12576", date: "May 19, 2025, 04:30 PM", customer: "Emma Wilson", items: 2, total: 8400, status: "Shipped", payment: "Paid" },
-    { id: "ORD-12575", date: "May 19, 2025, 02:10 PM", customer: "Michael Brown", items: 5, total: 45000, status: "Processing", payment: "Paid" },
-    { id: "ORD-12574", date: "May 18, 2025, 11:45 AM", customer: "Sarah Johnson", items: 1, total: 3200, status: "Delivered", payment: "Paid" },
-    { id: "ORD-12573", date: "May 18, 2025, 09:20 AM", customer: "David Lee", items: 4, total: 22100, status: "Shipped", payment: "Paid" },
-    { id: "ORD-12572", date: "May 17, 2025, 03:50 PM", customer: "James Taylor", items: 2, total: 15600, status: "Cancelled", payment: "Refunded" },
-  ];
+export default async function VendorOrdersPage() {
+  // Fetch dynamic orders from the backend engine
+  const stats = await getVendorStats();
+  const orders = stats?.allOrders || [];
 
   return (
     <div className="space-y-6">
@@ -90,7 +84,7 @@ export default function VendorOrdersPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 font-bold text-gray-900">
-                    ₦{order.total.toLocaleString()}
+                    ₦{order.amount.toLocaleString()}
                   </td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase ${

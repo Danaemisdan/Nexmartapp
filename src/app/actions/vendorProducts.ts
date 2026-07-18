@@ -101,22 +101,39 @@ export async function getVendorStats() {
     return { error: "Failed to fetch stats" };
   }
 
-  const activeProducts = products.length;
-  
-  // Since we don't have an orders table yet, generate realistic mock revenue based on their actual inventory
-  const mockOrdersCount = activeProducts * 14; 
-  const averagePrice = products.length > 0 ? products.reduce((acc: number, p: any) => acc + p.price, 0) / products.length : 0;
-  const mockRevenue = mockOrdersCount * averagePrice;
+  let activeProducts = products.length;
+  let mockOrdersCount = 0;
+  let mockRevenue = 0;
+  let averagePrice = 0;
 
-  // Generate 5 recent mock orders based on their actual products
-  const recentOrders = products.slice(0, 5).map((p: any, i: number) => ({
-    id: `#ORD-${920 + i}`,
-    productTitle: p.title,
-    customer: ["John Doe", "Alice Smith", "Michael Johnson", "Emma Davis", "David Wilson"][i % 5],
-    status: i % 2 === 0 ? "Completed" : "Processing",
-    amount: p.price,
-    date: `May ${20 - i}, 2025`
-  }));
+  // 💥 DEMO MODE INJECTION: If they have 0 products, inject rich demo data so the dashboard looks alive!
+  if (activeProducts === 0) {
+    activeProducts = 32;
+    mockOrdersCount = 350;
+    averagePrice = 8500;
+    mockRevenue = mockOrdersCount * averagePrice;
+  } else {
+    mockOrdersCount = activeProducts * 14; 
+    averagePrice = products.length > 0 ? products.reduce((acc: number, p: any) => acc + p.price, 0) / products.length : 0;
+    mockRevenue = mockOrdersCount * averagePrice;
+  }
+
+  // Generate 20 robust dynamic mock orders for the Orders page
+  const generateMockOrders = (count: number) => {
+    return Array.from({ length: count }).map((_, i) => ({
+      id: `#ORD-${12500 + i}`,
+      productTitle: products.length > 0 ? products[i % products.length].title : "Premium Widget",
+      customer: ["John Doe", "Alice Smith", "Michael Johnson", "Emma Davis", "David Wilson", "Sarah Lee", "James Bond"][i % 7],
+      status: i % 5 === 0 ? "Delivered" : i % 4 === 0 ? "Cancelled" : i % 3 === 0 ? "Shipped" : "Processing",
+      amount: products.length > 0 ? products[i % products.length].price : averagePrice,
+      payment: i % 4 === 0 ? "Refunded" : "Paid",
+      items: (i % 4) + 1,
+      date: `May ${20 - (i % 5)}, 2025`
+    }));
+  };
+
+  const allOrders = generateMockOrders(20);
+  const recentOrders = allOrders.slice(0, 5);
 
   // Generate mock chart data for the last 7 days
   const salesData = [
@@ -130,19 +147,54 @@ export async function getVendorStats() {
   ];
 
   // Top Products
-  const topProducts = products.slice(0, 4).map((p: any, i: number) => ({
-    title: p.title,
-    price: p.price,
-    units: Math.floor(activeProducts * (10 - i) * 1.5),
-    image: p.image
-  }));
+  const topProducts = products.length > 0 
+    ? products.slice(0, 4).map((p: any, i: number) => ({
+        title: p.title,
+        price: p.price,
+        units: Math.floor(activeProducts * (10 - i) * 1.5),
+        image: p.image
+      }))
+    : Array.from({ length: 4 }).map((_, i) => ({
+        title: `Trending Product ${i + 1}`,
+        price: averagePrice * (i + 1) * 0.5,
+        units: 140 - (i * 20),
+        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80"
+      }));
 
-  // AI Agents Mock Data
+  // AI Agents Dynamic Data (Using backend calculations so it's not strictly static)
   const aiAgents = [
-    { name: "Nexi", role: "Sales Agent", icon: "Bot", s1Label: "Orders", s1Val: "128", s2Label: "Revenue", s2Val: `₦${(mockRevenue * 0.4).toLocaleString()}` },
-    { name: "Shopi", role: "Support Agent", icon: "Headset", s1Label: "Sessions", s1Val: "342", s2Label: "Resolution", s2Val: "98%" },
-    { name: "Recomi", role: "Recommendation Agent", icon: "Sparkles", s1Label: "CTR", s1Val: "24.6%", s2Label: "Revenue", s2Val: `₦${(mockRevenue * 0.2).toLocaleString()}` },
-    { name: "Tracki", role: "Logistics Agent", icon: "Truck", s1Label: "Deliveries", s1Val: "298", s2Label: "On-time", s2Val: "96%" }
+    { 
+      id: "nexi-01", name: "Nexi", role: "Sales Agent", color: "indigo", status: "Active",
+      kpis: [
+        { label: "Conversations", value: (mockOrdersCount * 3.5).toLocaleString() },
+        { label: "Conversion Rate", value: "14.2%" },
+        { label: "Generated Revenue", value: `₦${(mockRevenue * 0.4).toLocaleString()}` }
+      ]
+    },
+    { 
+      id: "shopi-02", name: "Shopi", role: "Support Agent", color: "blue", status: "Active",
+      kpis: [
+        { label: "Tickets Handled", value: (mockOrdersCount * 1.2).toLocaleString() },
+        { label: "Avg Response Time", value: "< 1 min" },
+        { label: "Resolution Rate", value: "98%" }
+      ]
+    },
+    { 
+      id: "recomi-03", name: "Recomi", role: "Recommendation Engine", color: "purple", status: "Paused",
+      kpis: [
+        { label: "Impressions", value: (activeProducts * 500).toLocaleString() },
+        { label: "Click-Through", value: "24.6%" },
+        { label: "Upsell Revenue", value: `₦${(mockRevenue * 0.2).toLocaleString()}` }
+      ]
+    },
+    { 
+      id: "tracki-04", name: "Tracki", role: "Logistics Agent", color: "orange", status: "Active",
+      kpis: [
+        { label: "Active Deliveries", value: Math.floor(mockOrdersCount * 0.3).toLocaleString() },
+        { label: "On-Time Rate", value: "96%" },
+        { label: "Customer Alerts", value: (mockOrdersCount * 2.8).toLocaleString() }
+      ]
+    }
   ];
 
   return {
@@ -157,8 +209,9 @@ export async function getVendorStats() {
       onHold: mockRevenue * 0.1
     },
     recentOrders,
+    allOrders, // 🔥 Pass down full robust dynamic list for the Orders page
     salesData,
     topProducts,
-    aiAgents
+    aiAgents // 🔥 Pass down dynamic AI agents data
   };
 }
