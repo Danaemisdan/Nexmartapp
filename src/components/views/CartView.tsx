@@ -54,12 +54,12 @@ export default function CartView() {
     if (cart.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center pt-24 pb-32 px-4 h-[70vh]">
-                <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                    <ShoppingCartIcon className="w-10 h-10 text-gray-300" />
+                <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-6 shadow-xl">
+                    <ShoppingCartIcon className="w-10 h-10 text-gray-300 drop-shadow-md" />
                 </div>
-                <h2 className="text-2xl font-black text-gray-900 mb-2">Your cart is empty</h2>
-                <p className="text-gray-500 mb-8 text-center max-w-xs">Ask the AI Orb to find you something amazing, or browse the homepage.</p>
-                <button onClick={() => navigate('home')} className="bg-[#1e3a8a] text-white px-8 py-4 rounded-full font-bold shadow-lg hover:bg-[#172554] transition-colors flex items-center gap-2">
+                <h2 className="text-3xl font-black text-white mb-3">Your cart is empty</h2>
+                <p className="text-gray-400 mb-8 text-center max-w-sm">Ask the AI Orb to find you something amazing, or browse the homepage.</p>
+                <button onClick={() => navigate('home')} className="bg-white text-black px-8 py-4 rounded-full font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-105 transition-all flex items-center gap-2">
                     <ArrowLeft className="w-5 h-5" /> Back to Store
                 </button>
             </div>
@@ -69,11 +69,11 @@ export default function CartView() {
     return (
         <div className="max-w-4xl mx-auto w-full px-4 md:px-6 py-8 pb-32 md:pb-12">
             <div className="flex items-center gap-3 mb-8">
-                <button onClick={() => navigate('home')} className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors">
-                    <ArrowLeft className="w-5 h-5 text-gray-600" />
+                <button onClick={() => navigate('home')} className="p-2 bg-white/5 backdrop-blur-md rounded-full hover:bg-white/10 border border-white/10 transition-colors">
+                    <ArrowLeft className="w-5 h-5 text-gray-300" />
                 </button>
-                <h1 className="text-3xl font-black text-gray-900">Your Cart</h1>
-                <div className="ml-auto bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm font-bold">
+                <h1 className="text-3xl font-black text-white">Your Cart</h1>
+                <div className="ml-auto bg-blue-500/20 text-blue-300 border border-blue-500/30 px-3 py-1 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(59,130,246,0.3)]">
                     {cart.length} items
                 </div>
             </div>
@@ -86,32 +86,32 @@ export default function CartView() {
                             key={item.product.id}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white border border-gray-100 rounded-2xl p-4 flex gap-4 items-center shadow-sm relative"
+                            className="bg-white/5 border border-white/10 rounded-2xl p-4 flex gap-4 items-center shadow-lg relative backdrop-blur-md hover:bg-white/10 transition-colors"
                         >
-                            <div className="w-24 h-24 bg-gray-50 rounded-xl flex items-center justify-center p-2 flex-shrink-0">
-                                <img src={item.product.image} alt={item.product.title} className="max-w-full max-h-full object-contain mix-blend-multiply" />
+                            <div className="w-24 h-24 bg-white/10 rounded-xl flex items-center justify-center p-2 flex-shrink-0">
+                                <img src={item.product.image} alt={item.product.title} className="max-w-full max-h-full object-contain mix-blend-screen" />
                             </div>
                             
                             <div className="flex flex-col flex-1 min-w-0">
-                                <h3 className="font-bold text-gray-900 text-lg leading-tight truncate pr-8">{item.product.title}</h3>
-                                <p className="text-sm text-gray-500 mb-3">{item.product.category}</p>
+                                <h3 className="font-bold text-white text-lg leading-tight truncate pr-8">{item.product.title}</h3>
+                                <p className="text-sm text-gray-400 mb-3">{item.product.category}</p>
                                 
                                 <div className="flex items-center justify-between mt-auto">
-                                    <span className="font-black text-lg">{formatPrice(item.product.price)}</span>
+                                    <span className="font-black text-lg text-white">{formatPrice(item.product.price)}</span>
                                     
-                                    <div className="flex items-center gap-3 bg-gray-50 rounded-full px-3 py-1 border border-gray-100">
-                                        <button onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)} className="text-gray-500 hover:text-black">
+                                    <div className="flex items-center gap-3 bg-white/5 rounded-full px-3 py-1 border border-white/10">
+                                        <button onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)} className="text-gray-400 hover:text-white">
                                             <Minus className="w-4 h-4" />
                                         </button>
-                                        <span className="font-bold w-4 text-center">{item.quantity}</span>
-                                        <button onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)} className="text-gray-500 hover:text-black">
+                                        <span className="font-bold w-4 text-center text-white">{item.quantity}</span>
+                                        <button onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)} className="text-gray-400 hover:text-white">
                                             <Plus className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <button onClick={() => removeFromCart(item.product.id)} className="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors p-1">
+                            <button onClick={() => removeFromCart(item.product.id)} className="absolute top-4 right-4 text-gray-500 hover:text-red-400 transition-colors p-1 bg-white/5 rounded-full backdrop-blur-md hover:bg-white/10">
                                 <Trash2 className="w-4 h-4" />
                             </button>
                         </motion.div>
@@ -120,46 +120,57 @@ export default function CartView() {
 
                 {/* Checkout Summary */}
                 <div className="w-full lg:w-80 flex-shrink-0">
-                    <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm sticky top-6">
-                        <h2 className="text-xl font-black mb-6">Order Summary</h2>
+                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl sticky top-6">
+                        <h2 className="text-xl font-black mb-6 text-white">Order Summary</h2>
                         
-                        <div className="space-y-3 text-sm text-gray-600 mb-6 font-medium">
+                        <div className="space-y-3 text-sm text-gray-400 mb-6 font-medium">
                             <div className="flex justify-between">
                                 <span>Subtotal</span>
-                                <span>{formatPrice(subtotal)}</span>
+                                <span className="text-gray-200">{formatPrice(subtotal)}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span>Shipping</span>
-                                <span className="text-emerald-500 font-bold">Free</span>
+                                <span className="text-emerald-400 font-bold">Free</span>
                             </div>
                             <div className="flex justify-between">
                                 <span>Tax (8%)</span>
-                                <span>{formatPrice(tax)}</span>
+                                <span className="text-gray-200">{formatPrice(tax)}</span>
                             </div>
                         </div>
 
-                        <div className="border-t border-gray-100 pt-4 mb-8">
+                        <div className="border-t border-white/10 pt-4 mb-8">
                             <div className="flex justify-between items-end">
-                                <span className="text-gray-900 font-bold">Total</span>
-                                <span className="text-3xl font-black text-gray-900">{formatPrice(total)}</span>
+                                <span className="text-white font-bold">Total</span>
+                                <span className="text-3xl font-black text-white">{formatPrice(total)}</span>
                             </div>
                         </div>
 
                         {isSignedIn ? (
                             <button 
-                                disabled={true}
-                                className="w-full bg-gray-300 text-gray-500 py-4 rounded-2xl font-bold text-lg cursor-not-allowed flex items-center justify-center gap-2"
+                                onClick={handleCheckout}
+                                disabled={isCheckingOut || cart.length === 0}
+                                className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Orders Temporarily Paused
+                                {isCheckingOut ? (
+                                    <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    <>
+                                        <CreditCard className="w-5 h-5" /> Checkout with GlobalPay
+                                    </>
+                                )}
                             </button>
                         ) : (
-                            <button disabled={true} className="w-full bg-gray-300 text-gray-500 py-4 rounded-2xl font-bold text-lg cursor-not-allowed flex items-center justify-center gap-2">
-                                Orders Temporarily Paused
-                            </button>
+                            <div className="w-full">
+                                <SignInButton mode="modal" signUpFallbackRedirectUrl="/?payment=success">
+                                    <button className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+                                        <User className="w-5 h-5" /> Sign in to Checkout
+                                    </button>
+                                </SignInButton>
+                            </div>
                         )}
                         
                         <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-gray-400 font-medium">
-                            <Sparkles className="w-3 h-3 text-emerald-500" /> AI verified secure checkout
+                            <Sparkles className="w-3 h-3 text-emerald-400" /> AI verified secure checkout
                         </div>
                     </div>
                 </div>

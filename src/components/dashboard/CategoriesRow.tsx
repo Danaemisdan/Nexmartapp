@@ -23,14 +23,14 @@ export default function CategoriesRow() {
                         key={i} 
                         className="flex flex-col items-center gap-3 min-w-[80px] group flex-shrink-0"
                     >
-                        <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${
+                        <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all backdrop-blur-sm ${
                             cat.isViewAll 
-                            ? 'bg-gray-100 text-gray-500 group-hover:bg-gray-200' 
-                            : 'bg-white border border-gray-100 shadow-sm text-gray-800 group-hover:border-[#1e3a8a] group-hover:text-[#1e3a8a] group-hover:shadow-md'
+                            ? 'bg-white/10 text-white/50 group-hover:bg-white/20 group-hover:text-white' 
+                            : 'bg-white/5 border border-white/10 shadow-[0_0_10px_rgba(255,255,255,0.05)] text-white/80 group-hover:border-yellow-400 group-hover:text-yellow-400 group-hover:shadow-[0_0_15px_rgba(250,204,21,0.4)]'
                         }`}>
                             {cat.icon}
                         </div>
-                        <span className="text-xs font-bold text-gray-700 whitespace-nowrap text-center group-hover:text-[#1e3a8a] transition-colors">
+                        <span className="text-xs font-bold text-white/70 whitespace-nowrap text-center group-hover:text-yellow-400 transition-colors drop-shadow-md">
                             {cat.name}
                         </span>
                     </button>

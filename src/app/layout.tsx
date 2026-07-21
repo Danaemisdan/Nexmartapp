@@ -30,7 +30,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={cn(inter.variable, outfit.variable, "font-sans", geist.variable)}>
-      <body className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased">
+      <body 
+        className="min-h-screen bg-gray-50 text-gray-900 antialiased"
+        style={{ fontFamily: 'var(--font-outfit), sans-serif' }}
+      >
         <ClerkProvider>
           <CartProvider>
             {children}

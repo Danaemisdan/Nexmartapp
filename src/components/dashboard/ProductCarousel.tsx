@@ -20,12 +20,12 @@ export default function ProductCarousel({ title, subtitle, products, type, onPro
         <section className="max-w-7xl mx-auto w-full px-4 md:px-6 py-8 md:py-10">
             <div className="flex items-end justify-between mb-4 md:mb-6">
                 <div>
-                    <h2 className="text-lg md:text-xl font-black text-gray-900 flex items-center gap-2">
+                    <h2 className="text-lg md:text-xl font-black text-white/90 flex items-center gap-2 drop-shadow-md">
                         {title}
                     </h2>
-                    {subtitle && <p className="text-xs md:text-sm text-gray-500 font-medium mt-1">{subtitle}</p>}
+                    {subtitle && <p className="text-xs md:text-sm text-white/60 font-medium mt-1">{subtitle}</p>}
                 </div>
-                <button className="text-[#1e3a8a] font-bold text-xs md:text-sm flex items-center gap-1 hover:underline whitespace-nowrap ml-2">
+                <button className="text-yellow-400 font-bold text-xs md:text-sm flex items-center gap-1 hover:text-yellow-300 hover:underline whitespace-nowrap ml-2 transition-colors">
                     View All {type === 'deals' ? 'Deals' : ''} <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
                 </button>
             </div>
@@ -35,49 +35,49 @@ export default function ProductCarousel({ title, subtitle, products, type, onPro
                     <div 
                         key={product.id} 
                         onClick={() => onProductClick && onProductClick(product)}
-                        className="cursor-pointer min-w-[180px] sm:min-w-[200px] md:min-w-[240px] max-w-[180px] sm:max-w-[200px] md:max-w-[240px] bg-white border border-gray-100 rounded-2xl p-3 md:p-4 flex flex-col group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex-shrink-0 snap-start relative"
+                        className="cursor-pointer min-w-[180px] sm:min-w-[200px] md:min-w-[240px] max-w-[180px] sm:max-w-[200px] md:max-w-[240px] bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3 md:p-4 flex flex-col group hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:-translate-y-1 hover:border-white/20 transition-all duration-300 flex-shrink-0 snap-start relative"
                     >
                         {/* Badges */}
                         {type === 'deals' && product.discount && (
-                            <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-black px-2 py-1 rounded-md z-10 shadow-sm">
+                            <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-black px-2 py-1 rounded-md z-10 shadow-[0_0_10px_rgba(239,68,68,0.5)]">
                                 {product.discount}
                             </div>
                         )}
                         {type === 'ai_picks' && (
-                            <div className="absolute top-4 left-4 bg-[#1e3a8a]/10 text-[#1e3a8a] text-[10px] font-bold px-2 py-1 rounded-md z-10 flex items-center gap-1 uppercase tracking-wider">
+                            <div className="absolute top-4 left-4 bg-yellow-400/20 text-yellow-400 border border-yellow-400/30 text-[10px] font-bold px-2 py-1 rounded-md z-10 flex items-center gap-1 uppercase tracking-wider backdrop-blur-sm">
                                 <Sparkles className="w-3 h-3" /> AI Pick
                             </div>
                         )}
 
                         {/* Image */}
-                        <div className="w-full h-40 bg-gray-50 rounded-xl mb-4 p-4 flex items-center justify-center overflow-hidden">
-                            <img src={product.image} alt={product.title} className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                        <div className="w-full h-40 bg-white/10 rounded-xl mb-4 p-4 flex items-center justify-center overflow-hidden backdrop-blur-sm border border-white/5">
+                            <img src={product.image} alt={product.title} className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-xl" />
                         </div>
 
                         {/* Info */}
                         <div className="flex flex-col flex-1">
-                            <h3 className="text-sm font-bold text-gray-800 leading-tight mb-1 line-clamp-2">{product.title}</h3>
+                            <h3 className="text-sm font-bold text-white/90 leading-tight mb-1 line-clamp-2">{product.title}</h3>
                             {product.description && (
-                                <p className="text-xs text-gray-500 line-clamp-2 leading-snug mb-2">{product.description}</p>
+                                <p className="text-xs text-white/50 line-clamp-2 leading-snug mb-2">{product.description}</p>
                             )}
                             
                             <div className="mt-auto flex flex-col">
                                 <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 mb-2">
-                                    <span className="text-base sm:text-lg font-black text-gray-900 leading-none">{formatPrice(product.price)}</span>
+                                    <span className="text-base sm:text-lg font-black text-white leading-none tracking-tight">{formatPrice(product.price)}</span>
                                     {product.originalPrice && (
-                                        <span className="text-[10px] sm:text-xs text-gray-400 font-bold line-through leading-none">{formatPrice(product.originalPrice)}</span>
+                                        <span className="text-[10px] sm:text-xs text-white/40 font-bold line-through leading-none">{formatPrice(product.originalPrice)}</span>
                                     )}
                                 </div>
                                 
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-1 text-xs font-bold text-gray-500">
-                                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" /> 
+                                    <div className="flex items-center gap-1 text-xs font-bold text-white/60">
+                                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.6)]" /> 
                                         {product.rating} <span className="font-medium">({product.reviews})</span>
                                     </div>
                                     
                                     <button 
                                         onClick={(e) => { e.stopPropagation(); onAddToCart && onAddToCart(product); }}
-                                        className="w-8 h-8 rounded-full border-2 border-[#1e3a8a] text-[#1e3a8a] flex items-center justify-center hover:bg-[#1e3a8a] hover:text-white transition-colors"
+                                        className="w-8 h-8 rounded-full border-2 border-yellow-400 text-yellow-400 flex items-center justify-center hover:bg-yellow-400 hover:text-[#050505] transition-colors shadow-[0_0_10px_rgba(250,204,21,0.2)] hover:shadow-[0_0_15px_rgba(250,204,21,0.6)]"
                                     >
                                         <ShoppingCart className="w-4 h-4" />
                                     </button>

@@ -35,7 +35,7 @@ export default function AmazonStyleCarousel() {
     const prev = () => setCurrentIndex((prev) => (prev - 1 + BANNERS.length) % BANNERS.length);
 
     return (
-        <div className="relative w-full max-w-full overflow-hidden bg-gray-100">
+        <div className="relative w-full max-w-full overflow-hidden bg-[#050505]">
             {/* Banner Container */}
             <div className="relative h-[250px] md:h-[400px] lg:h-[500px] w-full">
                 <AnimatePresence initial={false}>
@@ -47,26 +47,26 @@ export default function AmazonStyleCarousel() {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.5 }}
-                        className="absolute inset-0 w-full h-full object-cover"
+                        className="absolute inset-0 w-full h-full object-cover opacity-80"
                     />
                 </AnimatePresence>
                 
                 {/* Gradient Overlay at the bottom to blend with the rest of the page */}
-                <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-gray-50 to-transparent pointer-events-none" />
+                <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#050505] to-transparent pointer-events-none" />
             </div>
 
             {/* Navigation Controls */}
             <button 
                 onClick={prev}
-                className="absolute top-1/2 left-4 md:left-8 -translate-y-1/2 w-10 h-16 md:w-12 md:h-24 bg-white/20 backdrop-blur hover:bg-white/40 transition-colors border border-white/40 flex items-center justify-center rounded-sm text-white"
+                className="absolute top-1/2 left-4 md:left-8 -translate-y-1/2 w-10 h-16 md:w-12 md:h-24 bg-black/40 backdrop-blur-md hover:bg-black/60 transition-colors border border-white/10 flex items-center justify-center rounded-sm text-yellow-400 group"
             >
-                <ChevronLeft className="w-8 h-8 md:w-10 md:h-10 drop-shadow-md" />
+                <ChevronLeft className="w-8 h-8 md:w-10 md:h-10 drop-shadow-[0_0_5px_rgba(250,204,21,0.6)] group-hover:scale-110 transition-transform" />
             </button>
             <button 
                 onClick={next}
-                className="absolute top-1/2 right-4 md:right-8 -translate-y-1/2 w-10 h-16 md:w-12 md:h-24 bg-white/20 backdrop-blur hover:bg-white/40 transition-colors border border-white/40 flex items-center justify-center rounded-sm text-white"
+                className="absolute top-1/2 right-4 md:right-8 -translate-y-1/2 w-10 h-16 md:w-12 md:h-24 bg-black/40 backdrop-blur-md hover:bg-black/60 transition-colors border border-white/10 flex items-center justify-center rounded-sm text-yellow-400 group"
             >
-                <ChevronRight className="w-8 h-8 md:w-10 md:h-10 drop-shadow-md" />
+                <ChevronRight className="w-8 h-8 md:w-10 md:h-10 drop-shadow-[0_0_5px_rgba(250,204,21,0.6)] group-hover:scale-110 transition-transform" />
             </button>
         </div>
     );
