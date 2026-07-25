@@ -29,7 +29,7 @@ export default function FloatingProducts() {
                     return (
                         <div 
                             key={colIndex} 
-                            className="flex flex-col gap-4 md:gap-8 w-[15vw] min-w-[150px]"
+                            className={`flex-col gap-4 md:gap-8 w-[45vw] md:w-[15vw] min-w-[140px] md:min-w-[150px] ${colIndex >= 2 ? 'hidden md:flex' : 'flex'}`}
                             style={{
                                 animation: `${isEven ? 'floatUp' : 'floatDown'} ${duration}s linear infinite`
                             }}
@@ -37,7 +37,7 @@ export default function FloatingProducts() {
                             {[...col, ...col].map((product, pIndex) => (
                                 <div 
                                     key={`${product.id}-${pIndex}`} 
-                                    className="w-full bg-white/5 backdrop-blur-md rounded-3xl flex flex-col items-center justify-start border border-white/10 shadow-[0_0_30px_rgba(255,255,255,0.02)] overflow-hidden transition-transform duration-300 relative group p-4 text-center min-h-[220px]"
+                                    className="w-full bg-white/5 backdrop-blur-none md:backdrop-blur-md rounded-3xl flex flex-col items-center justify-start border border-white/10 shadow-[0_0_30px_rgba(255,255,255,0.02)] overflow-hidden transition-transform duration-300 relative group p-4 text-center min-h-[200px] md:min-h-[220px]"
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     
@@ -63,10 +63,10 @@ export default function FloatingProducts() {
                                         </div>
                                     </div>
                                     
-                                    <h3 className="text-white/90 font-bold text-xs md:text-sm line-clamp-2 leading-snug mb-1 w-full px-2">
+                                    <h3 className="text-white font-extrabold text-xs md:text-sm line-clamp-2 leading-snug mb-1 w-full px-2 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                                         {product.title || 'Unknown Product'}
                                     </h3>
-                                    <span className="text-blue-400 font-black text-sm mt-auto">
+                                    <span className="text-sky-300 font-black text-sm mt-auto drop-shadow-sm">
                                         ₦{product.price?.toLocaleString()}
                                     </span>
                                 </div>

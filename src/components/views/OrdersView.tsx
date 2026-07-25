@@ -109,10 +109,10 @@ export default function OrdersView() {
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-white/10">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Order Reference</span>
-                                            <span className="text-xs font-mono bg-white/10 text-gray-300 px-2 py-0.5 rounded-md border border-white/10">{order.group_order_reference}</span>
+                                            <span className="text-xs font-extrabold text-white/70 uppercase tracking-wider">Order Reference</span>
+                                            <span className="text-xs font-mono font-bold bg-white/15 text-white px-2 py-0.5 rounded-md border border-white/20">{order.group_order_reference}</span>
                                         </div>
-                                        <p className="text-sm text-gray-400 font-medium flex items-center gap-1.5">
+                                        <p className="text-sm text-white/80 font-semibold flex items-center gap-1.5">
                                             <Clock className="w-4 h-4" />
                                             {new Date(order.date_created).toLocaleString()}
                                         </p>
@@ -139,14 +139,14 @@ export default function OrdersView() {
                                 <div className="flex flex-col gap-4">
                                     <h4 className="font-bold text-white text-sm mb-2">Items</h4>
                                     {order.items?.map((item: any, itemIdx: number) => (
-                                        <div key={itemIdx} className="flex items-center justify-between bg-white/5 border border-white/10 p-4 rounded-2xl">
+                                        <div key={itemIdx} className="flex items-center justify-between bg-white/10 border border-white/15 p-4 rounded-2xl">
                                             <div className="flex items-start gap-4">
                                                 <div className="w-12 h-12 bg-white/10 rounded-xl border border-white/10 flex items-center justify-center text-xl shadow-sm shrink-0">
                                                     📦
                                                 </div>
                                                 <div>
                                                     <h5 className="font-bold text-white line-clamp-1">{item.product_name || 'Item'}</h5>
-                                                    <p className="text-sm text-gray-400">Qty: <span className="font-bold text-gray-200">{item.qty}</span></p>
+                                                    <p className="text-sm text-white/80 font-medium">Qty: <span className="font-bold text-white">{item.qty}</span></p>
                                                 </div>
                                             </div>
                                             <div className="flex flex-col items-end gap-2 shrink-0">
@@ -154,7 +154,7 @@ export default function OrdersView() {
                                                 {order.status !== 'cancelled' && item.qty > 0 && (
                                                     <button 
                                                         onClick={() => handleReturnItem(order.group_order_reference, item.order_id)}
-                                                        className="text-[10px] font-bold text-blue-300 hover:text-blue-200 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 px-2.5 py-1 rounded-md transition-colors flex items-center gap-1"
+                                                        className="text-[10px] font-bold text-sky-200 hover:text-white bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 px-2.5 py-1 rounded-md transition-colors flex items-center gap-1 drop-shadow-sm"
                                                     >
                                                         <RotateCcw className="w-3 h-3" /> Return 1x
                                                     </button>
@@ -166,8 +166,8 @@ export default function OrdersView() {
 
                                 {/* Order Footer */}
                                 <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
-                                    <span className="font-medium text-gray-300">Total Amount</span>
-                                    <span className={`text-xl font-black ${order.status === 'cancelled' ? 'text-gray-400 line-through' : 'text-white'}`}>
+                                    <span className="font-bold text-white/90">Total Amount</span>
+                                    <span className={`text-xl font-black ${order.status === 'cancelled' ? 'text-white/60 line-through' : 'text-white'}`}>
                                         {formatPrice(parseFloat(order.total_amount || 0))}
                                     </span>
                                 </div>

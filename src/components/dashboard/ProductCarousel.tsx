@@ -58,7 +58,7 @@ export default function ProductCarousel({ title, subtitle, products, type, onPro
                                 role="button"
                                 tabIndex={0}
                                 onKeyDown={(e) => e.key === 'Enter' && onProductClick && onProductClick(product)}
-                                className="cursor-pointer min-w-[180px] sm:min-w-[200px] md:min-w-[240px] max-w-[180px] sm:max-w-[200px] md:max-w-[240px] bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3 md:p-4 flex flex-col group hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:-translate-y-1 hover:border-white/20 transition-all duration-300 flex-shrink-0 snap-start relative focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                                className="cursor-pointer min-w-[180px] sm:min-w-[200px] md:min-w-[240px] max-w-[180px] sm:max-w-[200px] md:max-w-[240px] bg-white/10 md:bg-white/5 backdrop-blur-md border border-white/15 md:border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.7)] rounded-2xl p-3 md:p-4 flex flex-col group hover:shadow-[0_0_30px_rgba(255,255,255,0.15)] hover:-translate-y-1 hover:border-white/20 transition-all duration-300 flex-shrink-0 snap-start relative focus:outline-none focus:ring-2 focus:ring-yellow-400"
                             >
                                 {/* Badges */}
                                 {type === 'deals' && product.discount && (
@@ -96,30 +96,31 @@ export default function ProductCarousel({ title, subtitle, products, type, onPro
 
                                 {/* Info */}
                                 <div className="flex flex-col flex-1">
-                                    <span className="text-[10px] uppercase font-bold text-white/40 mb-1">{brand}</span>
-                                    <h3 className="text-sm font-bold text-white/90 leading-tight mb-1 line-clamp-2">{product.title}</h3>
+                                    <span className="text-[10px] uppercase font-extrabold text-white/70 mb-1 drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">{brand}</span>
+                                    <h3 className="text-sm font-extrabold text-white leading-tight mb-1 line-clamp-2 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">{product.title}</h3>
                                     {product.description && (
-                                        <p className="text-xs text-white/50 line-clamp-2 leading-snug mb-2">{product.description}</p>
+                                        <p className="text-xs text-white/80 font-medium line-clamp-2 leading-snug mb-2 drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">{product.description}</p>
                                     )}
                                     
                                     <div className="mt-auto flex flex-col">
                                         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 mb-2">
-                                            <span className="text-base sm:text-lg font-black text-white leading-none tracking-tight">{formatPrice(product.price)}</span>
+                                            <span className="text-base sm:text-lg font-black text-white leading-none tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">{formatPrice(product.price)}</span>
                                             {product.originalPrice && (
-                                                <span className="text-[10px] sm:text-xs text-white/40 font-bold line-through leading-none">{formatPrice(product.originalPrice)}</span>
+                                                <span className="text-[10px] sm:text-xs text-white/60 font-bold line-through leading-none">{formatPrice(product.originalPrice)}</span>
                                             )}
                                         </div>
                                         
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-1 text-xs font-bold text-white/60">
+                                            <div className="flex items-center gap-1 text-xs font-bold text-white/80 drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
                                                 <Star className="w-3 h-3 fill-yellow-400 text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.6)]" /> 
-                                                {hasRating ? product.rating : 'New'} {hasRating && <span className="font-medium">({product.reviews || 0})</span>}
+                                                <span>{hasRating ? product.rating : 'New'}</span>
+                                                {hasRating && <span className="text-[10px] text-white/60">({product.reviews || 0})</span>}
                                             </div>
                                             
                                             <button 
                                                 onClick={(e) => { e.stopPropagation(); onAddToCart && onAddToCart(product); }}
                                                 aria-label={`Add ${product.title} to cart`}
-                                                className="w-8 h-8 rounded-full border-2 border-yellow-400 text-yellow-400 flex items-center justify-center hover:bg-yellow-400 hover:text-[#050505] transition-colors shadow-[0_0_10px_rgba(250,204,21,0.2)] hover:shadow-[0_0_15px_rgba(250,204,21,0.6)] focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-black"
+                                                className="w-8 h-8 rounded-full bg-white/10 hover:bg-yellow-400 hover:text-black text-white flex items-center justify-center transition-colors border border-white/20 shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
                                             >
                                                 <ShoppingCart className="w-4 h-4" />
                                             </button>

@@ -96,38 +96,38 @@ export default function ProductDetailsView() {
                 {/* Product Info */}
                 <div className="w-full lg:w-1/2 flex flex-col pt-2 lg:pt-8">
                     <div className="flex items-center gap-2 mb-4">
-                        <span className="bg-white/10 text-white/80 border border-white/10 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">{brand}</span>
-                        <span className="bg-blue-500/20 text-blue-300 border border-blue-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">{selectedProduct.category || 'General'}</span>
+                        <span className="bg-white/15 text-white font-extrabold border border-white/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider drop-shadow-sm">{brand}</span>
+                        <span className="bg-sky-500/20 text-sky-200 border border-sky-400/40 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider drop-shadow-sm">{selectedProduct.category || 'General'}</span>
                     </div>
 
-                    <h1 className="text-3xl md:text-5xl font-black text-white leading-[1.1] mb-4 drop-shadow-sm">
+                    <h1 className="text-3xl md:text-5xl font-black text-white leading-[1.1] mb-4 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
                         {selectedProduct.title}
                     </h1>
 
                     <div className="flex items-center gap-4 mb-6">
                         <div className="flex items-center gap-1">
-                            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                            <span className="font-bold text-lg text-white">{hasRating ? selectedProduct.rating : 'New'}</span>
+                            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400 drop-shadow-sm" />
+                            <span className="font-bold text-lg text-white drop-shadow-sm">{hasRating ? selectedProduct.rating : 'New'}</span>
                         </div>
                         {hasRating && (
                             <>
-                                <span className="text-white/20">|</span>
-                                <span className="text-white/60 font-medium underline decoration-white/30 hover:text-white transition-colors underline-offset-4">{selectedProduct.reviews || 0} reviews</span>
+                                <span className="text-white/30">|</span>
+                                <span className="text-white/80 font-semibold underline decoration-white/40 hover:text-white transition-colors underline-offset-4">{selectedProduct.reviews || 0} reviews</span>
                             </>
                         )}
                     </div>
 
                     <div className="flex items-end gap-4 mb-8 flex-wrap">
-                        <span className="text-4xl md:text-5xl font-black text-white drop-shadow-md">{formatPrice(selectedProduct.price)}</span>
+                        <span className="text-4xl md:text-5xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">{formatPrice(selectedProduct.price)}</span>
                         {selectedProduct.originalPrice && (
-                            <span className="text-lg md:text-xl text-white/40 font-bold line-through mb-1">{formatPrice(selectedProduct.originalPrice)}</span>
+                            <span className="text-lg md:text-xl text-white/60 font-bold line-through mb-1">{formatPrice(selectedProduct.originalPrice)}</span>
                         )}
                         {selectedProduct.discount && (
-                            <span className="bg-red-500 text-white px-2 py-1 rounded font-black text-sm mb-2">{selectedProduct.discount}</span>
+                            <span className="bg-red-500 text-white px-2.5 py-1 rounded font-black text-sm mb-2 shadow-md">{selectedProduct.discount}</span>
                         )}
                     </div>
 
-                    <p className="text-white/70 text-base md:text-lg leading-relaxed mb-10 font-medium">
+                    <p className="text-white/90 text-base md:text-lg leading-relaxed mb-10 font-semibold drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
                         {description}
                     </p>
 
@@ -169,21 +169,21 @@ export default function ProductDetailsView() {
                             <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400 border border-emerald-500/30"><Truck className="w-5 h-5" /></div>
                             <div>
                                 <h4 className="font-bold text-sm text-white">Free Next-Day Delivery</h4>
-                                <p className="text-xs text-white/60 mt-1">Available for Prime members</p>
+                                <p className="text-xs text-white/80 font-medium mt-1">Available for Prime members</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
-                            <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400 border border-blue-500/30"><ShieldCheck className="w-5 h-5" /></div>
+                            <div className="p-2 bg-sky-500/20 rounded-lg text-sky-300 border border-sky-400/40"><ShieldCheck className="w-5 h-5" /></div>
                             <div>
                                 <h4 className="font-bold text-sm text-white">2-Year AI Warranty</h4>
-                                <p className="text-xs text-white/60 mt-1">Automatic replacement guarantee</p>
+                                <p className="text-xs text-white/80 font-medium mt-1">Automatic replacement guarantee</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
                             <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400 border border-purple-500/30"><RotateCcw className="w-5 h-5" /></div>
                             <div>
                                 <h4 className="font-bold text-sm text-white">30-Day Returns</h4>
-                                <p className="text-xs text-white/60 mt-1">No questions asked</p>
+                                <p className="text-xs text-white/80 font-medium mt-1">No questions asked</p>
                             </div>
                         </div>
                     </div>

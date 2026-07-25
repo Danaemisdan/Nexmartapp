@@ -58,7 +58,7 @@ export default function CartView() {
                             key={item.product.id}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white/5 border border-white/10 rounded-2xl p-4 flex gap-4 items-center shadow-lg relative backdrop-blur-md hover:bg-white/10 transition-colors"
+                            className="bg-white/10 md:bg-white/5 border border-white/15 md:border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.7)] rounded-2xl p-4 flex gap-4 items-center relative backdrop-blur-md hover:bg-white/15 transition-colors"
                         >
                             <div className="w-24 h-24 bg-white/10 rounded-xl flex items-center justify-center p-2 flex-shrink-0">
                                 <img 
@@ -73,11 +73,11 @@ export default function CartView() {
                             </div>
                             
                             <div className="flex flex-col flex-1 min-w-0">
-                                <h3 className="font-bold text-white text-lg leading-tight truncate pr-8">{item.product.title}</h3>
-                                <p className="text-sm text-gray-400 mb-3">{item.product.category || 'General'}</p>
+                                <h3 className="font-extrabold text-white text-lg leading-tight truncate pr-8 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">{item.product.title}</h3>
+                                <p className="text-sm text-white/70 font-bold mb-3 drop-shadow-sm">{item.product.category || 'General'}</p>
                                 
                                 <div className="flex items-center justify-between mt-auto">
-                                    <span className="font-black text-lg text-white">{formatPrice(item.product.price)}</span>
+                                    <span className="font-black text-lg text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">{formatPrice(item.product.price)}</span>
                                     
                                     <div className="flex items-center gap-3 bg-white/5 rounded-full px-3 py-1 border border-white/10">
                                         <button 
@@ -112,13 +112,13 @@ export default function CartView() {
 
                 {/* Checkout Summary */}
                 <div className="w-full lg:w-80 flex-shrink-0">
-                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl sticky top-6">
-                        <h2 className="text-xl font-black mb-6 text-white">Order Summary</h2>
+                    <div className="bg-white/10 md:bg-white/5 backdrop-blur-xl border border-white/15 md:border-white/10 rounded-3xl p-6 shadow-2xl sticky top-6">
+                        <h2 className="text-xl font-black mb-6 text-white drop-shadow-sm">Order Summary</h2>
                         
-                        <div className="space-y-3 text-sm text-gray-400 mb-6 font-medium">
+                        <div className="space-y-3 text-sm text-white/80 mb-6 font-semibold">
                             <div className="flex justify-between">
                                 <span>Subtotal</span>
-                                <span className="text-gray-200">{formatPrice(subtotal)}</span>
+                                <span className="text-white font-bold">{formatPrice(subtotal)}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span>Shipping</span>
@@ -126,7 +126,7 @@ export default function CartView() {
                             </div>
                             <div className="flex justify-between">
                                 <span>Tax (8%)</span>
-                                <span className="text-gray-200">{formatPrice(tax)}</span>
+                                <span className="text-white font-bold">{formatPrice(tax)}</span>
                             </div>
                         </div>
 

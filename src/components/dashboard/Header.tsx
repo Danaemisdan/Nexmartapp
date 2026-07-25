@@ -10,9 +10,9 @@ export default function Header({ onLogoClick }: { onLogoClick?: () => void }) {
     const cartCount = getCartCount();
 
     return (
-        <header className="sticky top-0 z-50 bg-[#050505]/60 backdrop-blur-xl border-b border-white/10 pb-2 md:pb-0">
+        <header className="sticky top-0 z-50 bg-[#050505]/95 md:bg-[#050505]/60 backdrop-blur-xl border-b border-white/15 md:border-white/10 pb-2 md:pb-0 shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
             {/* Top Announcement Bar */}
-            <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 text-white text-[10px] md:text-xs font-bold py-1.5 md:py-2 text-center flex items-center justify-center gap-2 tracking-wider border-b border-white/10">
+            <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 text-white text-[10px] md:text-xs font-extrabold py-1.5 md:py-2 text-center flex items-center justify-center gap-2 tracking-wider border-b border-white/15 drop-shadow-sm">
                 <Sparkles className="w-3 h-3 text-yellow-400" /> 
                 AI Picks Just for You - Smarter Shopping, Better Choices!
             </div>

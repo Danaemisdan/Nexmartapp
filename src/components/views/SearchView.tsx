@@ -114,7 +114,7 @@ export default function SearchView() {
 
             <div className="flex-1 overflow-y-auto p-4">
                 {isApiReady && (query.trim() || activeFilterCount > 0) && (
-                    <p className="text-sm text-gray-500 mb-4 font-bold flex justify-between items-center">
+                    <p className="text-sm text-white/80 mb-4 font-extrabold flex justify-between items-center drop-shadow-sm">
                         <span>Found {filteredProducts.length} results</span>
                     </p>
                 )}

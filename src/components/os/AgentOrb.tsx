@@ -277,14 +277,30 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
           };
           playWelcome();
 
+          const isMobileDevice = typeof window !== 'undefined' && (
+              /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || 
+              (window.matchMedia && window.matchMedia('(max-width: 768px)').matches)
+          );
+
+          if (isMobileDevice || !('gpu' in navigator)) {
+              console.log("Mobile device or no WebGPU detected. Using lightweight Hybrid Cloud Core fallback to prevent memory crashes.");
+              initFallbackEngine();
+              return;
+          }
+
           setAiProgress('Connecting to WebGPU... (Loading Engine)');
           
           try {
-              if (!('gpu' in navigator)) throw new Error("No GPU");
               const adapter = await (navigator as any).gpu.requestAdapter();
-              if (!adapter) throw new Error("No Adapter");
+              if (!adapter) {
+                  console.log("No GPU Adapter found. Switching to Hybrid Cloud Core fallback.");
+                  initFallbackEngine();
+                  return;
+              }
           } catch (e) {
-              // Proceed anyway to use WASM fallback silently
+              console.log("WebGPU check failed. Switching to Hybrid Cloud Core fallback.", e);
+              initFallbackEngine();
+              return;
           }
 
           workerRef.current = new Worker(new URL('@/lib/worker.ts', import.meta.url), { type: 'module' });
