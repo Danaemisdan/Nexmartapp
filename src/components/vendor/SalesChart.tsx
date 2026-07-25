@@ -18,7 +18,7 @@ export default function SalesChart({ data }: { data: any[] }) {
             axisLine={false} 
             tickLine={false} 
             tick={{ fill: '#94a3b8', fontSize: 12 }}
-            tickFormatter={(value) => value >= 1000 ? `₦${(value / 1000).toFixed(0)}k` : `₦${value}`}
+            tickFormatter={(value: any) => value >= 1000 ? `₦${(value / 1000).toFixed(0)}k` : `₦${value}`}
           />
           <Tooltip 
             contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}

@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, fetchProducts } from './api';
 import { supabaseClient } from './supabaseClient';
 
-export type ViewState = 'home' | 'cart' | 'wishlist' | 'product' | 'categories' | 'deals' | 'orders' | 'search';
+export type ViewState = 'home' | 'cart' | 'wishlist' | 'product' | 'categories' | 'deals' | 'orders' | 'search' | 'checkout';
 
 interface CartItem {
     product: Product;
@@ -17,11 +17,13 @@ interface StoreContextType {
     orders: string[];
     activeView: ViewState;
     selectedProduct: Product | null;
+    comparisonProducts: Product[] | null;
     isApiReady: boolean;
     hasMore: boolean;
     
     loadMoreProducts: () => Promise<void>;
     navigate: (view: ViewState, product?: Product) => void;
+    setComparisonProducts: (products: Product[] | null) => void;
     addToCart: (product: Product, quantity?: number) => void;
     removeFromCart: (productId: string) => void;
     updateCartQuantity: (productId: string, quantity: number) => void;
@@ -40,6 +42,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const [isApiReady, setIsApiReady] = useState(false);
     const [activeView, setActiveView] = useState<ViewState>('home');
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [comparisonProducts, setComparisonProducts] = useState<Product[] | null>(null);
     const [cart, setCart] = useState<CartItem[]>([]);
     const [wishlist, setWishlist] = useState<string[]>([]);
     const [orders, setOrders] = useState<string[]>([]);
@@ -173,8 +176,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <StoreContext.Provider value={{
-            products, cart, wishlist, orders, activeView, selectedProduct, isApiReady, hasMore,
-            loadMoreProducts, navigate, addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist, getCartCount,
+            products, cart, wishlist, orders,
+        activeView,
+        selectedProduct,
+        comparisonProducts,
+        isApiReady,
+        hasMore,
+        loadMoreProducts,
+        navigate,
+        setComparisonProducts,
+        addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist, getCartCount,
             formatPrice, addOrder
         }}>
             {children}

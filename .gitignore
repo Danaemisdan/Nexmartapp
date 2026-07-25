@@ -45,3 +45,6 @@ tmp2.txt
 output.txt
 orb_scraped.txt
 *.gguf
+
+# clerk configuration (can include secrets)
+/.clerk/

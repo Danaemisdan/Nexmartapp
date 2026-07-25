@@ -11,8 +11,8 @@ export default function ProductDetailsView() {
     if (!selectedProduct) {
         return (
             <div className="flex flex-col items-center justify-center pt-24 h-[70vh]">
-                <p className="text-gray-500">Product not found.</p>
-                <button onClick={() => navigate('home')} className="mt-4 text-blue-600 font-bold hover:underline">Return Home</button>
+                <p className="text-gray-400">Product not found.</p>
+                <button onClick={() => navigate('home')} className="mt-4 text-yellow-400 font-bold hover:underline">Return Home</button>
             </div>
         );
     }
@@ -20,13 +20,17 @@ export default function ProductDetailsView() {
     const isWishlisted = wishlist.includes(selectedProduct.id);
     const images = selectedProduct.images && selectedProduct.images.length > 0 
         ? selectedProduct.images 
-        : [selectedProduct.image];
+        : [selectedProduct.image || 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&q=80'];
+
+    const brand = selectedProduct.brand || 'Generic';
+    const hasRating = selectedProduct.rating !== undefined && selectedProduct.rating !== null && !isNaN(selectedProduct.rating);
+    const description = selectedProduct.description || 'No description available.';
 
     return (
         <div className="max-w-7xl mx-auto w-full px-4 md:px-6 py-4 md:py-8 pb-32">
             <button 
                 onClick={() => navigate('home')} 
-                className="mb-6 p-3 bg-gray-50 hover:bg-gray-100 rounded-full inline-flex items-center gap-2 transition-colors font-medium text-sm text-gray-700"
+                className="mb-6 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full inline-flex items-center gap-2 transition-colors font-medium text-sm text-white"
             >
                 <ArrowLeft className="w-4 h-4" /> Back
             </button>
@@ -37,25 +41,30 @@ export default function ProductDetailsView() {
                     <motion.div 
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="w-full aspect-square bg-gray-50 rounded-[2rem] p-8 flex items-center justify-center relative overflow-hidden"
+                        className="w-full aspect-square bg-white/95 rounded-[2rem] p-8 flex items-center justify-center relative overflow-hidden shadow-2xl border border-white/20"
                     >
                         <button 
                             onClick={() => toggleWishlist(selectedProduct.id)}
-                            className="absolute top-6 right-6 w-12 h-12 bg-white/80 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center z-10 hover:scale-105 active:scale-95 transition-all"
+                            aria-label={`${isWishlisted ? 'Remove from' : 'Add to'} wishlist`}
+                            className="absolute top-6 right-6 w-12 h-12 bg-black/60 hover:bg-black/80 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center z-10 hover:scale-105 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-rose-500 border border-white/20"
                         >
                             <Heart className={`w-6 h-6 transition-colors ${isWishlisted ? 'fill-rose-500 text-rose-500' : 'text-gray-400'}`} />
                         </button>
                         
                         <AnimatePresence mode="wait">
-                            <motion.img 
-                                key={currentImage}
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                src={images[currentImage]} 
-                                alt={selectedProduct.title} 
-                                className="max-w-full max-h-full object-contain mix-blend-multiply drop-shadow-2xl" 
-                            />
+                                <motion.img 
+                                    key={currentImage}
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    src={images[currentImage]} 
+                                    alt={selectedProduct.title} 
+                                    onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                                        e.currentTarget.onerror = null;
+                                        e.currentTarget.src = 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&q=80';
+                                    }}
+                                    className="max-w-full max-h-full object-contain mix-blend-multiply drop-shadow-2xl" 
+                                />
                         </AnimatePresence>
                     </motion.div>
 
@@ -66,9 +75,18 @@ export default function ProductDetailsView() {
                                 <button 
                                     key={i} 
                                     onClick={() => setCurrentImage(i)}
-                                    className={`w-20 h-20 rounded-xl bg-gray-50 border-2 overflow-hidden flex-shrink-0 transition-all ${currentImage === i ? 'border-[#1e3a8a] opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                                    aria-label={`View image ${i + 1}`}
+                                    className={`w-20 h-20 rounded-xl bg-white/90 border-2 overflow-hidden flex-shrink-0 transition-all focus:outline-none focus:ring-2 focus:ring-yellow-400 ${currentImage === i ? 'border-yellow-400 opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`}
                                 >
-                                    <img src={img} alt="thumbnail" className="w-full h-full object-cover mix-blend-multiply" />
+                                    <img 
+                                        src={img} 
+                                        alt={`Thumbnail ${i + 1}`} 
+                                        onError={(e) => {
+                                            e.currentTarget.onerror = null;
+                                            e.currentTarget.src = 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&q=80';
+                                        }}
+                                        className="w-full h-full object-cover mix-blend-multiply" 
+                                    />
                                 </button>
                             ))}
                         </div>
@@ -78,35 +96,39 @@ export default function ProductDetailsView() {
                 {/* Product Info */}
                 <div className="w-full lg:w-1/2 flex flex-col pt-2 lg:pt-8">
                     <div className="flex items-center gap-2 mb-4">
-                        {selectedProduct.brand && <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">{selectedProduct.brand}</span>}
-                        <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">{selectedProduct.category}</span>
+                        <span className="bg-white/10 text-white/80 border border-white/10 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">{brand}</span>
+                        <span className="bg-blue-500/20 text-blue-300 border border-blue-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">{selectedProduct.category || 'General'}</span>
                     </div>
 
-                    <h1 className="text-3xl md:text-5xl font-black text-gray-900 leading-[1.1] mb-4">
+                    <h1 className="text-3xl md:text-5xl font-black text-white leading-[1.1] mb-4 drop-shadow-sm">
                         {selectedProduct.title}
                     </h1>
 
                     <div className="flex items-center gap-4 mb-6">
                         <div className="flex items-center gap-1">
                             <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                            <span className="font-bold text-lg">{selectedProduct.rating}</span>
+                            <span className="font-bold text-lg text-white">{hasRating ? selectedProduct.rating : 'New'}</span>
                         </div>
-                        <span className="text-gray-300">|</span>
-                        <span className="text-gray-500 font-medium underline decoration-gray-300 underline-offset-4">{selectedProduct.reviews} reviews</span>
+                        {hasRating && (
+                            <>
+                                <span className="text-white/20">|</span>
+                                <span className="text-white/60 font-medium underline decoration-white/30 hover:text-white transition-colors underline-offset-4">{selectedProduct.reviews || 0} reviews</span>
+                            </>
+                        )}
                     </div>
 
-                    <div className="flex items-end gap-4 mb-8">
-                        <span className="text-5xl font-black text-gray-900">{formatPrice(selectedProduct.price)}</span>
+                    <div className="flex items-end gap-4 mb-8 flex-wrap">
+                        <span className="text-4xl md:text-5xl font-black text-white drop-shadow-md">{formatPrice(selectedProduct.price)}</span>
                         {selectedProduct.originalPrice && (
-                            <span className="text-xl text-gray-400 font-bold line-through mb-1">{formatPrice(selectedProduct.originalPrice)}</span>
+                            <span className="text-lg md:text-xl text-white/40 font-bold line-through mb-1">{formatPrice(selectedProduct.originalPrice)}</span>
                         )}
                         {selectedProduct.discount && (
                             <span className="bg-red-500 text-white px-2 py-1 rounded font-black text-sm mb-2">{selectedProduct.discount}</span>
                         )}
                     </div>
 
-                    <p className="text-gray-600 text-lg leading-relaxed mb-10">
-                        {selectedProduct.description}
+                    <p className="text-white/70 text-base md:text-lg leading-relaxed mb-10 font-medium">
+                        {description}
                     </p>
 
                     <div className="flex flex-col gap-3 mb-12">
@@ -116,7 +138,7 @@ export default function ProductDetailsView() {
                                     addToCart(selectedProduct);
                                     navigate('cart');
                                 }}
-                                className="flex-1 bg-black text-white px-8 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-gray-800 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-black/10"
+                                className="flex-1 bg-white text-black px-8 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-white/10"
                             >
                                 Buy Now
                             </button>
@@ -125,7 +147,8 @@ export default function ProductDetailsView() {
                                     addToCart(selectedProduct);
                                     toast.success(`${selectedProduct.title} added to cart!`);
                                 }}
-                                className="sm:w-32 bg-white text-black border-2 border-gray-200 px-8 py-5 rounded-2xl font-bold flex items-center justify-center hover:border-black transition-all hover:scale-[1.02] active:scale-95"
+                                aria-label="Add to cart"
+                                className="sm:w-32 bg-white/10 text-white border border-white/20 px-8 py-5 rounded-2xl font-bold flex items-center justify-center hover:bg-white/20 hover:border-white/40 transition-all hover:scale-[1.02] active:scale-95 focus:outline-none focus:ring-2 focus:ring-white"
                             >
                                 <ShoppingCart className="w-6 h-6" />
                             </button>
@@ -141,26 +164,26 @@ export default function ProductDetailsView() {
                     </div>
 
                     {/* Features/Trust */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-gray-100 pt-8 mt-auto">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-white/10 pt-8 mt-auto">
                         <div className="flex items-start gap-3">
-                            <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600"><Truck className="w-5 h-5" /></div>
+                            <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400 border border-emerald-500/30"><Truck className="w-5 h-5" /></div>
                             <div>
-                                <h4 className="font-bold text-sm text-gray-900">Free Next-Day Delivery</h4>
-                                <p className="text-xs text-gray-500 mt-1">Available for Prime members</p>
+                                <h4 className="font-bold text-sm text-white">Free Next-Day Delivery</h4>
+                                <p className="text-xs text-white/60 mt-1">Available for Prime members</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
-                            <div className="p-2 bg-blue-50 rounded-lg text-blue-600"><ShieldCheck className="w-5 h-5" /></div>
+                            <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400 border border-blue-500/30"><ShieldCheck className="w-5 h-5" /></div>
                             <div>
-                                <h4 className="font-bold text-sm text-gray-900">2-Year AI Warranty</h4>
-                                <p className="text-xs text-gray-500 mt-1">Automatic replacement guarantee</p>
+                                <h4 className="font-bold text-sm text-white">2-Year AI Warranty</h4>
+                                <p className="text-xs text-white/60 mt-1">Automatic replacement guarantee</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-3">
-                            <div className="p-2 bg-purple-50 rounded-lg text-purple-600"><RotateCcw className="w-5 h-5" /></div>
+                            <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400 border border-purple-500/30"><RotateCcw className="w-5 h-5" /></div>
                             <div>
-                                <h4 className="font-bold text-sm text-gray-900">30-Day Returns</h4>
-                                <p className="text-xs text-gray-500 mt-1">No questions asked</p>
+                                <h4 className="font-bold text-sm text-white">30-Day Returns</h4>
+                                <p className="text-xs text-white/60 mt-1">No questions asked</p>
                             </div>
                         </div>
                     </div>

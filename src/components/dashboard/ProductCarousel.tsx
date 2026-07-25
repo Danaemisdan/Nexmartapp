@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/link';
 import { ArrowRight, Star, ShoppingCart, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Product } from '@/lib/api';
@@ -12,10 +11,11 @@ interface ProductCarouselProps {
     type: 'deals' | 'ai_picks';
     onProductClick?: (product: Product) => void;
     onAddToCart?: (product: Product) => void;
+    onViewAllClick?: () => void;
 }
 
-export default function ProductCarousel({ title, subtitle, products, type, onProductClick, onAddToCart }: ProductCarouselProps) {
-    const { formatPrice } = useStore();
+export default function ProductCarousel({ title, subtitle, products, type, onProductClick, onAddToCart, onViewAllClick }: ProductCarouselProps) {
+    const { formatPrice, isApiReady } = useStore();
     return (
         <section className="max-w-7xl mx-auto w-full px-4 md:px-6 py-8 md:py-10">
             <div className="flex items-end justify-between mb-4 md:mb-6">
@@ -25,67 +25,111 @@ export default function ProductCarousel({ title, subtitle, products, type, onPro
                     </h2>
                     {subtitle && <p className="text-xs md:text-sm text-white/60 font-medium mt-1">{subtitle}</p>}
                 </div>
-                <button className="text-yellow-400 font-bold text-xs md:text-sm flex items-center gap-1 hover:text-yellow-300 hover:underline whitespace-nowrap ml-2 transition-colors">
-                    View All {type === 'deals' ? 'Deals' : ''} <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
-                </button>
+                {type === 'deals' && (
+                    <button onClick={onViewAllClick} className="text-yellow-400 font-bold text-xs md:text-sm flex items-center gap-1 hover:text-yellow-300 hover:underline whitespace-nowrap ml-2 transition-colors">
+                        View All Deals <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
+                    </button>
+                )}
             </div>
 
             <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 md:pb-6 hide-scrollbar snap-x">
-                {products.map((product) => (
-                    <div 
-                        key={product.id} 
-                        onClick={() => onProductClick && onProductClick(product)}
-                        className="cursor-pointer min-w-[180px] sm:min-w-[200px] md:min-w-[240px] max-w-[180px] sm:max-w-[200px] md:max-w-[240px] bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3 md:p-4 flex flex-col group hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:-translate-y-1 hover:border-white/20 transition-all duration-300 flex-shrink-0 snap-start relative"
-                    >
-                        {/* Badges */}
-                        {type === 'deals' && product.discount && (
-                            <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-black px-2 py-1 rounded-md z-10 shadow-[0_0_10px_rgba(239,68,68,0.5)]">
-                                {product.discount}
+                {!isApiReady ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                        <div key={i} className="min-w-[180px] sm:min-w-[200px] md:min-w-[240px] max-w-[180px] sm:max-w-[200px] md:max-w-[240px] bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3 md:p-4 flex flex-col flex-shrink-0 animate-pulse">
+                            <div className="w-full h-40 bg-white/10 rounded-xl mb-4" />
+                            <div className="h-4 bg-white/20 rounded w-3/4 mb-2" />
+                            <div className="h-3 bg-white/10 rounded w-full mb-4" />
+                            <div className="mt-auto flex justify-between items-end">
+                                <div className="h-6 bg-white/20 rounded w-1/2" />
+                                <div className="w-8 h-8 bg-white/20 rounded-full" />
                             </div>
-                        )}
-                        {type === 'ai_picks' && (
-                            <div className="absolute top-4 left-4 bg-yellow-400/20 text-yellow-400 border border-yellow-400/30 text-[10px] font-bold px-2 py-1 rounded-md z-10 flex items-center gap-1 uppercase tracking-wider backdrop-blur-sm">
-                                <Sparkles className="w-3 h-3" /> AI Pick
-                            </div>
-                        )}
-
-                        {/* Image */}
-                        <div className="w-full h-40 bg-white/10 rounded-xl mb-4 p-4 flex items-center justify-center overflow-hidden backdrop-blur-sm border border-white/5">
-                            <img src={product.image} alt={product.title} className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-xl" />
                         </div>
+                    ))
+                ) : (
+                    products.map((product) => {
+                        const brand = product.brand || 'Generic';
+                        const hasRating = product.rating !== undefined && product.rating !== null && !isNaN(product.rating);
+                        const imageUrl = product.image || 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&q=80';
 
-                        {/* Info */}
-                        <div className="flex flex-col flex-1">
-                            <h3 className="text-sm font-bold text-white/90 leading-tight mb-1 line-clamp-2">{product.title}</h3>
-                            {product.description && (
-                                <p className="text-xs text-white/50 line-clamp-2 leading-snug mb-2">{product.description}</p>
-                            )}
-                            
-                            <div className="mt-auto flex flex-col">
-                                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 mb-2">
-                                    <span className="text-base sm:text-lg font-black text-white leading-none tracking-tight">{formatPrice(product.price)}</span>
-                                    {product.originalPrice && (
-                                        <span className="text-[10px] sm:text-xs text-white/40 font-bold line-through leading-none">{formatPrice(product.originalPrice)}</span>
-                                    )}
-                                </div>
-                                
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-1 text-xs font-bold text-white/60">
-                                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.6)]" /> 
-                                        {product.rating} <span className="font-medium">({product.reviews})</span>
+                        return (
+                            <div 
+                                key={product.id} 
+                                onClick={() => onProductClick && onProductClick(product)}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => e.key === 'Enter' && onProductClick && onProductClick(product)}
+                                className="cursor-pointer min-w-[180px] sm:min-w-[200px] md:min-w-[240px] max-w-[180px] sm:max-w-[200px] md:max-w-[240px] bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3 md:p-4 flex flex-col group hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:-translate-y-1 hover:border-white/20 transition-all duration-300 flex-shrink-0 snap-start relative focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                            >
+                                {/* Badges */}
+                                {type === 'deals' && product.discount && (
+                                    <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-black px-2 py-1 rounded-md z-10 shadow-[0_0_10px_rgba(239,68,68,0.5)]">
+                                        {product.discount}
                                     </div>
+                                )}
+                                {type === 'ai_picks' && (
+                                    <div className="absolute top-4 left-4 bg-yellow-400/20 text-yellow-400 border border-yellow-400/30 text-[10px] font-bold px-2 py-1 rounded-md z-10 flex items-center gap-1 uppercase tracking-wider backdrop-blur-sm">
+                                        <Sparkles className="w-3 h-3" /> AI Pick
+                                    </div>
+                                )}
+
+                                {/* Image */}
+                                <div className="w-full h-40 bg-white/10 rounded-xl mb-4 p-4 flex items-center justify-center relative overflow-hidden backdrop-blur-sm border border-white/5">
+                                    {imageUrl ? (
+                                        <img 
+                                            src={imageUrl} 
+                                            alt={product.title} 
+                                            onError={(e) => {
+                                                e.currentTarget.style.display = 'none';
+                                                const fb = e.currentTarget.parentElement?.querySelector('.pcar-fallback');
+                                                if (fb) (fb as HTMLElement).style.display = 'flex';
+                                            }}
+                                            className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-xl relative z-10" 
+                                        />
+                                    ) : null}
+                                    <div className={`pcar-fallback absolute inset-0 flex flex-col items-center justify-center text-white/40 p-2 text-center z-0 ${imageUrl ? 'hidden' : 'flex'}`}>
+                                        <svg className="w-8 h-8 mb-1 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                        </svg>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/50 leading-none">No Product Image</span>
+                                    </div>
+                                </div>
+
+                                {/* Info */}
+                                <div className="flex flex-col flex-1">
+                                    <span className="text-[10px] uppercase font-bold text-white/40 mb-1">{brand}</span>
+                                    <h3 className="text-sm font-bold text-white/90 leading-tight mb-1 line-clamp-2">{product.title}</h3>
+                                    {product.description && (
+                                        <p className="text-xs text-white/50 line-clamp-2 leading-snug mb-2">{product.description}</p>
+                                    )}
                                     
-                                    <button 
-                                        onClick={(e) => { e.stopPropagation(); onAddToCart && onAddToCart(product); }}
-                                        className="w-8 h-8 rounded-full border-2 border-yellow-400 text-yellow-400 flex items-center justify-center hover:bg-yellow-400 hover:text-[#050505] transition-colors shadow-[0_0_10px_rgba(250,204,21,0.2)] hover:shadow-[0_0_15px_rgba(250,204,21,0.6)]"
-                                    >
-                                        <ShoppingCart className="w-4 h-4" />
-                                    </button>
+                                    <div className="mt-auto flex flex-col">
+                                        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 mb-2">
+                                            <span className="text-base sm:text-lg font-black text-white leading-none tracking-tight">{formatPrice(product.price)}</span>
+                                            {product.originalPrice && (
+                                                <span className="text-[10px] sm:text-xs text-white/40 font-bold line-through leading-none">{formatPrice(product.originalPrice)}</span>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-1 text-xs font-bold text-white/60">
+                                                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.6)]" /> 
+                                                {hasRating ? product.rating : 'New'} {hasRating && <span className="font-medium">({product.reviews || 0})</span>}
+                                            </div>
+                                            
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); onAddToCart && onAddToCart(product); }}
+                                                aria-label={`Add ${product.title} to cart`}
+                                                className="w-8 h-8 rounded-full border-2 border-yellow-400 text-yellow-400 flex items-center justify-center hover:bg-yellow-400 hover:text-[#050505] transition-colors shadow-[0_0_10px_rgba(250,204,21,0.2)] hover:shadow-[0_0_15px_rgba(250,204,21,0.6)] focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-black"
+                                            >
+                                                <ShoppingCart className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                ))}
+                        );
+                    })
+                )}
             </div>
         </section>
     );

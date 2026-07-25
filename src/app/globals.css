@@ -116,9 +116,24 @@
     scrollbar-width: none;
 }
 
-/* Force-hide the Next.js App Router DEV logo widget */
-#next-logo, [data-nextjs-dev-tools-button] {
+/* Force-hide the Next.js App Router & DevTools indicators */
+#next-logo,
+[data-nextjs-dev-tools-button],
+[data-nextjs-dev-tools],
+nextjs-portal,
+#nextjs-portal,
+[data-nextjs-portal],
+[data-nextjs-dialog-overlay],
+[data-nextjs-toast],
+.nextjs-toast,
+vercel-live-feedback,
+#vercel-live-feedback,
+.vercel-toolbar,
+[data-vercel-toolbar] {
     display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
 }
 
 .dark {
@@ -154,14 +169,23 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
-/* Force Hide Clerk Watermark (Bypass Free Tier Restrictions) */
+/* Force Hide Clerk Watermark & Development Mode Badges */
 div:has(> a[href^="https://clerk.com"]),
 div:has(> a[href^="https://clerk.dev"]),
+div:has(> a[href*="clerk"]),
 .cl-internal-b3al4t,
 .cl-internal-1dauvpw,
 .cl-internal-phsm31,
 .cl-footer,
-.cl-watermark {
+.cl-watermark,
+.cl-devModeBadge,
+.cl-developmentModeBadge,
+[data-clerk-dev-badge],
+.cl-badge,
+div[class*="cl-devMode"],
+div[class*="cl-development"],
+div[id*="clerk-dev"],
+div[style*="position: fixed"][style*="bottom"][style*="right"]:has(a[href*="clerk"]) {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;

@@ -13,6 +13,7 @@ export async function loginVendor(formData: FormData) {
   }
 
   // Find the vendor in Supabase
+  if (!supabase) throw new Error("Supabase is not configured");
   let query = supabase
     .from("vendors")
     .select("id")

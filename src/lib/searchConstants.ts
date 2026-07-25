@@ -1,0 +1,26 @@
+export const SEARCH_SCORES = {
+    // Exact & Phrase Matching
+    PHRASE_TITLE_MATCH: 50,
+    PHRASE_CATEGORY_MATCH: 40,
+    PHRASE_DESC_MATCH: 20,
+    
+    // Structured Intent Matching
+    CATEGORY_MATCH: 40,
+    SUBCATEGORY_MATCH: 35,
+    PRODUCTTYPE_MATCH: 30,
+    CONCERN_MATCH: 25,
+    CONTEXTUAL_BONUS: 3,
+    
+    // Loose Keyword Matching
+    KEYWORD_EXACT_TITLE: 20,
+    TITLE_MATCH: 10,
+    BRAND_MATCH: 8,
+    CATEGORY_KEYWORD_MATCH: 6,
+    TAG_MATCH: 5,
+    DESCRIPTION_MATCH: 3,
+    
+    // Thresholds & State
+    MIN_SEARCH_CONFIDENCE: 5,
+    HIGH_CONFIDENCE_THRESHOLD: 20,
+    FOLLOWUP_CONTEXT_MATCH: 15
+};

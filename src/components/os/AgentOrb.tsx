@@ -6,6 +6,15 @@ import { toast } from 'sonner';
 import { CreateWebWorkerMLCEngine, MLCEngineInterface } from '@mlc-ai/web-llm';
 import { AgentState, Orb } from "@/components/ui/orb";
 import { useStore } from '@/lib/StoreContext';
+import { parseQueryIntent, StructuredIntent } from '@/lib/taxonomy';
+import { normalizeTaxonomyTerm } from '@/lib/normalizer';
+import { SEARCH_SCORES } from '@/lib/searchConstants';
+import { SearchService } from '@/lib/SearchService';
+import { SearchContextManager } from '@/lib/SearchContextManager';
+import { ResultRefinementEngine } from '@/lib/ResultRefinementEngine';
+import { IntentRouter, IntentType } from '@/lib/IntentRouter';
+import { ResultActionEngine, ActionType } from '@/lib/ResultActionEngine';
+import { useClerk } from '@clerk/nextjs';
 
 const suggestedPrompts = [
     "Find me the best smart home products",
@@ -16,7 +25,8 @@ const suggestedPrompts = [
 ];
 
 export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTask, aiProducts, setAiProducts, setIsAiReady, setAiProgress, aiProgress, isAiReady, inline = false }: any) {
-  const { products, addToCart, toggleWishlist, navigate } = useStore();
+  const { products, cart, addToCart, removeFromCart, clearCart, toggleWishlist, navigate, setComparisonProducts } = useStore();
+  const clerk = useClerk();
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [input, setInput] = useState('');
   const [engine, setEngine] = useState<MLCEngineInterface | null>(null);
@@ -243,7 +253,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
       
       const playWelcome = async () => {
           try {
-              await speak("My hybrid core is online and ready.", false);
+              await speak("My hybrid core is online and ready.", true);
           } catch(err) {
               console.warn("Autoplay blocked.");
           }
@@ -260,7 +270,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
           // Play the hardcoded welcome tour instantly
           const playWelcome = async () => {
               try {
-                  await speak("Welcome to Nexmart... the smart way of shopping. I am your AI assistant. Please wait while I download my neural core...", false);
+                  await speak("Welcome to Nexmart... the smart way of shopping. I am your AI assistant. Please wait while I download my neural core...", true);
               } catch(err) {
                   console.warn("Autoplay blocked. User needs to interact with page first.");
               }
@@ -322,7 +332,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
           setIsBooting(false);
           
           // Announce when fully loaded
-          speak("My neural core is online. I am ready to help you shop!", false);
+          speak("My neural core is online. I am ready to help you shop!", true);
       } catch (error) {
           console.error("Failed to init WebLLM", error);
           setAiProgress("Switching to Hybrid Cloud Core...");
@@ -416,8 +426,8 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                                
                                // Specialized overrides for common patterns
                                const systemPrompt = messages[0]?.content || '';
-                               if (systemPrompt.includes('You searched the Nexmart database and found these REAL products:')) {
-                                   const match = systemPrompt.match(/found these REAL products:\s*(.*?)\./);
+                               if (systemPrompt.includes('You are the Nexmart AI e-commerce assistant. You found these products:')) {
+                                   const match = systemPrompt.match(/found these products:\s*(.*?)\./);
                                    const products = match && match[1] !== 'None' ? match[1] : null;
                                    if (products) {
                                        if (userIntent.match(/add|cart|buy|purchase|get/i)) {
@@ -432,6 +442,10 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                                    } else {
                                        text = "I couldn't find any products matching that exactly, but I've brought up some alternatives for you.";
                                    }
+                               } else if (systemPrompt.includes('We currently have 0 matching products in stock')) {
+                                   text = "I'm sorry, but we currently don't have any products matching your request in stock at the moment.";
+                               } else if (systemPrompt.includes('The user is asking a follow-up question about these exact products:')) {
+                                   text = "Based on the products on your screen, they are all excellent choices. Let me know which one you prefer.";
                                } else if (userIntent.match(/can you hear me|are you there|are you listening/i)) {
                                    text = "Audio receptors are online. I'm listening. What do you need?";
                                } else if (userIntent.match(/hello|hi |^hi$|^hey$|greetings/i)) {
@@ -485,7 +499,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
           
           const playWelcome = async () => {
               try {
-                  await speak("My hybrid core is online and ready.", false);
+                  await speak("My hybrid core is online and ready.", true);
               } catch(err) {
                   console.warn("Autoplay blocked.");
               }
@@ -527,7 +541,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
           };
 
           recognitionRef.current.onerror = (e: any) => {
-              console.error("Speech Recognition Error:", e);
+              console.warn("Speech Recognition Error:", e.error || e.message || e);
               setWorkflowState('IDLE');
               setUserTranscript('');
           };
@@ -626,33 +640,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
       }
   };
 
-  useEffect(() => {
-      let inactivityTimer: NodeJS.Timeout;
-
-      const resetTimer = () => {
-          clearTimeout(inactivityTimer);
-          
-          if (isAiReady && !isWorking && !isTalking && !isListening) {
-              inactivityTimer = setTimeout(() => {
-                  const phrases = [
-                      "Hey bro! If you need to buy anything, just ask me!",
-                      "I'm still here! Let me know if you want me to find something for you.",
-                      "Need any help shopping? Just say the word!"
-                  ];
-                  speak(phrases[Math.floor(Math.random() * phrases.length)], false);
-              }, 20000); // 20 seconds
-          }
-      };
-
-      const events = ['mousemove', 'keydown', 'click', 'scroll'];
-      events.forEach(e => window.addEventListener(e, resetTimer));
-      resetTimer();
-
-      return () => {
-          clearTimeout(inactivityTimer);
-          events.forEach(e => window.removeEventListener(e, resetTimer));
-      };
-  }, [isAiReady, isWorking, isTalking, isListening]);
+  // Inactivity timer removed to prevent audio queue race conditions
 
   const handleSemanticTask = async (userMessage: string) => {
     if (!engine || !userMessage.trim()) return;
@@ -663,60 +651,277 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
     setUserTranscript(userMessage);
     setWorkflowState('RESEARCHING');
     setAgentMessage('');
-    setAiProducts([]);
       try {
           const lower = userMessage.toLowerCase();
           
-          // 1. Semantic NLP Keyword Extraction
-          let generatedKeywords: string[] = [];
-          try {
-              const kwResponse = await engine.chat.completions.create({
-                  messages: [
-                      { role: "system", content: "Extract 2-4 core product search keywords based on the user's input. Output ONLY a comma-separated list of keywords. No explanations." },
-                      { role: "user", content: userMessage }
-                  ],
-                  temperature: 0.1,
-                  max_tokens: 20,
-              });
-              const rawKw = kwResponse.choices[0]?.message?.content || "";
-              generatedKeywords = rawKw.toLowerCase().split(',').map((k: string) => k.trim()).filter((k: string) => k.length > 2);
-          } catch(e) {
-              generatedKeywords = lower.replace(/\b(?:find|show|me|some|the|best|top|rated|cheap|expensive|can|you|for|please)\b/g, '').trim().split(' ').filter((k: string) => k.length > 2);
-          }
+          // --- INTENT ROUTING ---
+          const routingDecision = IntentRouter.route(userMessage);
           
-          // 2. Search Database FIRST
+          let action = routingDecision.action || 'CHAT';
           let matchingProducts: any[] = [];
-          if (generatedKeywords.length > 0) {
-              matchingProducts = products.filter(p => {
-                  const str = `${p.title} ${p.description} ${p.category} ${p.brand}`.toLowerCase();
-                  return generatedKeywords.some((keyword: string) => str.includes(keyword));
-              });
+
+          // Execute Cart Modifications immediately (completely bypasses product catalog search)
+          if (action === 'CART_MODIFICATION') {
+              let response = "";
+              
+              if (lower.includes('clear') || lower.includes('empty')) {
+                  clearCart();
+                  response = "I have completely cleared your cart. What would you like to do next?";
+              } else {
+                  const isKeeping = lower.includes('keep') || lower.includes('except') || lower.includes('apart from') || lower.includes('leave') || lower.includes('retain');
+                  
+                  const stopWords = ['remove', 'delete', 'keep', 'except', 'apart', 'from', 'leave', 'retain', 'the', 'other', 'products', 'items', 'my', 'cart', 'only'];
+                  const keywords = lower.replace(/[^\w\s]/gi, '').split(/\s+/).filter(w => !stopWords.includes(w) && w.length > 2);
+                  
+                  if (keywords.length === 0) {
+                      response = "I wasn't sure which product you meant. Could you be more specific?";
+                  } else {
+                      let targetCartItem: any = null;
+                      let highestScore = 0;
+                      
+                      cart.forEach((item: any) => {
+                          let score = 0;
+                          const title = (item.product.title || '').toLowerCase();
+                          keywords.forEach(kw => {
+                              const regex = new RegExp(`\\b${kw}\\b`, 'i');
+                              if (regex.test(title)) score += 10;
+                          });
+                          if (score > highestScore) {
+                              highestScore = score;
+                              targetCartItem = item;
+                          }
+                      });
+                      
+                      if (targetCartItem) {
+                          if (isKeeping) {
+                              cart.forEach((item: any) => {
+                                  if (item.product.id !== targetCartItem.product.id) {
+                                      removeFromCart(item.product.id);
+                                  }
+                              });
+                              response = `I have kept the ${targetCartItem.product.title} and removed the other items from your cart.`;
+                          } else {
+                              removeFromCart(targetCartItem.product.id);
+                              response = `I have removed the ${targetCartItem.product.title} from your cart.`;
+                          }
+                      } else {
+                          response = "I couldn't find that product in your cart.";
+                      }
+                  }
+              }
+              
+              setAgentMessage(response);
+              speak(response, false);
+              
+              const userChat = { role: "user" as const, content: userMessage };
+              setChatHistory([...chatHistory, userChat, { role: "assistant" as const, content: response }].slice(-4));
+              setWorkflowState('NEGOTIATING');
+              return;
           }
-          
-          // Determine Action intent
-          let action = 'CHAT';
-          if (lower.includes('checkout') || lower.includes('pay') || lower.includes('that\'s enough') || lower.includes('enough')) {
-              action = 'CHECKOUT';
-          } else if (lower.includes('wishlist') || lower.includes('favorite') || lower.includes('save') || lower.includes('heart')) {
-              action = 'WISHLIST';
-              if (matchingProducts.length === 0 && aiProducts.length > 0) matchingProducts = [...aiProducts];
-              else if (matchingProducts.length === 0 && products.length > 0) matchingProducts = [products[0]];
-          } else if (lower.includes('add') || lower.includes('cart') || lower.includes('buy') || lower.includes('purchase')) {
-              action = 'ADD_TO_CART';
-              if (matchingProducts.length === 0 && aiProducts.length > 0) matchingProducts = [...aiProducts];
-              else if (matchingProducts.length === 0 && products.length > 0) matchingProducts = [products[0]];
-          } else if (lower.includes('search') || lower.includes('find') || lower.includes('show') || lower.includes('what') || lower.includes('top') || generatedKeywords.length > 0) {
-              action = 'SEARCH';
-              if (matchingProducts.length === 0) {
-                 matchingProducts = [...products].sort(() => 0.5 - Math.random()).slice(0, 4);
+
+          let generatedKeywords: string[] = [];
+          let foundAlternatives = false;
+
+          let validationError = "";
+          let extractedIntent: any = undefined;
+
+          // 1. Intercept Follow-Up Refinements
+          if (routingDecision.intent === IntentType.RESULT_REFINEMENT) {
+              if (SearchContextManager.hasActive()) {
+                  const activeContext = SearchContextManager.get()!;
+                  const refinedContext = ResultRefinementEngine.refine(activeContext, lower);
+                  
+                  if (refinedContext) {
+                      SearchContextManager.update(refinedContext);
+                      
+                      const refinedIds = refinedContext.productSnapshot.map(s => s.id);
+                      const hydratedProducts = products.filter(p => refinedIds.includes(p.id.toString()));
+                      
+                      matchingProducts = refinedContext.productSnapshot
+                          .map(s => hydratedProducts.find(p => p.id.toString() === s.id))
+                          .filter(Boolean) as any[];
+                          
+                      action = 'SEARCH';
+                      generatedKeywords = refinedContext.structuredQuery.keywords;
+                      extractedIntent = refinedContext.structuredQuery.rawIntent;
+                  }
+              } else {
+                  // Fallback Behaviour for Refinements without a Search Context
+                  action = 'INVALID_CONTEXT';
+                  validationError = "I don't have any products to refine yet. What would you like to search for?";
               }
           }
 
-          // 3. Ground the AI with REAL Database Context to prevent hallucination
-          const foundProductNames = matchingProducts.map(p => p.title).join(', ');
-          const systemContext = `You are the Nexmart AI e-commerce assistant. The user asked: "${userMessage}". You searched the Nexmart database and found these REAL products: ${foundProductNames ? foundProductNames : 'None'}. YOU MUST ONLY TALK ABOUT THESE SPECIFIC PRODUCTS. Do NOT make up fake products. 
+          // 2. Intercept RESULT_ACTION (Result Action Engine)
+          if (routingDecision.intent === IntentType.RESULT_ACTION) {
+              if (action === 'CHECKOUT' || action === 'VIEW_CART' || action === 'CONTINUE_SHOPPING' || action === 'VIEW_WISHLIST' || action === 'VIEW_ORDERS' || action === 'VIEW_PROFILE') {
+                  // Bypass ResultActionEngine for global cart actions that don't depend on SearchContext
+              } else if (SearchContextManager.hasActive()) {
+                  const activeContext = SearchContextManager.get()!;
+                  const actionResponse = ResultActionEngine.execute(activeContext, lower);
+                  
+                  if (actionResponse.fallbackMessage) {
+                      action = 'INVALID_CONTEXT';
+                      validationError = actionResponse.fallbackMessage;
+                  } else {
+                      SearchContextManager.update(actionResponse.updatedContext);
+                      
+                      const hydratedProducts = products.filter(p => actionResponse.resolvedIds.includes(p.id.toString()));
+                      
+                      if (actionResponse.action === ActionType.VIEW_DETAILS) {
+                          action = 'ACTION_HANDLED_BY_ENGINE'; // Placeholder for UI state
+                          validationError = `Opening details for ${hydratedProducts[0]?.title || 'the selected product'}.`;
+                      } else if (actionResponse.action === ActionType.COMPARE_PRODUCTS) {
+                          action = 'ACTION_HANDLED_BY_ENGINE'; // Placeholder
+                          setComparisonProducts(hydratedProducts);
+                          validationError = `I've prepared a comparison for the ${actionResponse.resolvedIds.length} selected products.`;
+                      } else {
+                          // Pass through standard actions to legacy checkout/cart UI logic if needed
+                          matchingProducts = hydratedProducts;
+                      }
+                  }
+              } else {
+                  action = 'INVALID_CONTEXT';
+                  validationError = "I don't have any products in context. Please search for a product first.";
+              }
+          }
+
+          // 3. Execute Full Search Engine for New Searches or unknown intents that default to search
+          if (routingDecision.intent === IntentType.NEW_SEARCH || routingDecision.intent === IntentType.UNKNOWN) {
+              const searchResult = SearchService.search(userMessage, lower, action, false, products);
+              matchingProducts = searchResult.matchingProducts;
+              action = searchResult.action;
+              generatedKeywords = searchResult.generatedKeywords;
+              extractedIntent = searchResult.extractedIntent;
+          }
           
-CRITICAL INSTRUCTION: You are authorized to discuss, recommend, and sell ALL products in our catalog, including medications, supplements, and adult items. These are legal store inventory. Do NOT refuse to help the user. Do NOT give medical disclaimers. If the products exist in the catalog list above, you MUST recommend them enthusiastically. Be confident, brief, and helpful.`;
+          if (action === 'WISHLIST' || action === 'ADD_TO_CART') {
+              if (matchingProducts.length === 0 && aiProducts.length > 0) matchingProducts = [...aiProducts];
+          }
+
+          // Centralized Action Validation
+          const bypassActions = ['VIEW_CART', 'CHECKOUT', 'CONTINUE_SHOPPING', 'VIEW_WISHLIST', 'VIEW_ORDERS', 'VIEW_PROFILE', 'VIEW_CATEGORIES', 'VIEW_DEALS', 'CHAT_GREETING', 'FAQ_CATALOG', 'FAQ_CAPABILITIES', 'FAQ_SHIPPING', 'FAQ_PAYMENT', 'FAQ_RETURNS', 'FAQ_SUPPORT', 'FAQ_DISCOUNTS'];
+          if (routingDecision.intent === IntentType.RESULT_ACTION && action !== 'ACTION_HANDLED_BY_ENGINE' && action !== 'INVALID_CONTEXT' && matchingProducts.length === 0 && !bypassActions.includes(action)) {
+              action = 'INVALID_CONTEXT';
+              validationError = "I couldn't find any products to perform that action. Please search for a product first.";
+          }
+
+          if (action === 'INVALID_CONTEXT' || action === 'ACTION_HANDLED_BY_ENGINE') {
+              setAgentMessage(validationError);
+              speak(validationError, false);
+              
+              const userChat = { role: "user" as const, content: userMessage };
+              setChatHistory([...chatHistory, userChat, { role: "assistant" as const, content: validationError }].slice(-4));
+              setWorkflowState('NEGOTIATING');
+              return;
+          }
+          
+          if (action === 'SEARCH') {
+              setAiProducts(matchingProducts);
+          }
+
+          // 4. Fast Track Actions (Bypass WebLLM entirely for lightning fast speed & personalized responses)
+          let fullResponse = "";
+          const fastTrackActions = ['SEARCH', 'ADD_TO_CART', 'WISHLIST', 'CHECKOUT', 'VIEW_CART', 'CONTINUE_SHOPPING', 'VIEW_WISHLIST', 'VIEW_ORDERS', 'VIEW_PROFILE', 'VIEW_CATEGORIES', 'VIEW_DEALS', 'CHAT_GREETING', 'FAQ_CATALOG', 'FAQ_CAPABILITIES', 'FAQ_SHIPPING', 'FAQ_PAYMENT', 'FAQ_RETURNS', 'FAQ_SUPPORT', 'FAQ_DISCOUNTS'];
+          if (fastTrackActions.includes(action)) {
+              if (action === 'SEARCH') {
+                  if (matchingProducts.length > 0) {
+                      fullResponse = `I found a few options that match your search. Take a look below. How would you like to continue? I can compare them, add one to your cart, or show more options.`;
+                  } else {
+                      fullResponse = `Sorry, I couldn't find any matching products on Nexmart. If you'd like, you can try another search or I can help you find something similar.`;
+                  }
+              } else if (action === 'ADD_TO_CART') {
+                  fullResponse = `I've added the selected item(s) to your cart. What would you like to do next? You can continue shopping, view your cart, or proceed to checkout.`;
+              } else if (action === 'WISHLIST') {
+                  fullResponse = `Got it. I've saved those to your wishlist. What would you like to do next?`;
+              } else if (action === 'CHECKOUT') {
+                  fullResponse = `Taking you to checkout now.`;
+              } else if (action === 'VIEW_CART') {
+                  fullResponse = `Taking you to your cart now.`;
+              } else if (action === 'VIEW_WISHLIST') {
+                  fullResponse = `Taking you to your wishlist now.`;
+              } else if (action === 'VIEW_ORDERS') {
+                  fullResponse = `Taking you to your orders now.`;
+              } else if (action === 'VIEW_PROFILE') {
+                  if (lower.includes('how')) {
+                      fullResponse = `You can access your profile and account settings by clicking your avatar in the top right corner.`;
+                  } else {
+                      fullResponse = `Opening your profile settings now.`;
+                  }
+              } else if (action === 'CONTINUE_SHOPPING') {
+                  fullResponse = `Taking you back to the home page so you can continue shopping.`;
+              } else if (action === 'VIEW_CATEGORIES') {
+                  fullResponse = `Taking you to our product categories now.`;
+              } else if (action === 'VIEW_DEALS') {
+                  fullResponse = `Taking you to our special deals and offers now.`;
+              } else if (action === 'CHAT_GREETING') {
+                  fullResponse = `Hello! I'm your Nexmart AI assistant. How can I help you find the perfect products today?`;
+              } else if (action === 'FAQ_CATALOG') {
+                  fullResponse = `We have a wide variety of products on Nexmart! You can explore our electronics, laptops, audio gear, smartphones, skincare, beauty products, smart home devices, and much more. What are you shopping for today?`;
+              } else if (action === 'FAQ_CAPABILITIES') {
+                  fullResponse = `I am your personal AI shopping assistant! I can help you search our entire product catalog, compare items side-by-side, filter by price and specs, manage your cart and wishlist, and guide you through checkout. Just let me know what you need!`;
+              } else if (action === 'FAQ_SHIPPING') {
+                  fullResponse = `We offer fast, reliable shipping across the region! Standard delivery typically takes 2-4 business days, and express shipping is available at checkout. Plus, you can track your orders directly from your orders page.`;
+              } else if (action === 'FAQ_PAYMENT') {
+                  fullResponse = `We accept secure payments via debit/credit cards, bank transfers, and mobile money options. All transactions are fully encrypted for your security.`;
+              } else if (action === 'FAQ_RETURNS') {
+                  fullResponse = `We want you to love your purchase! We offer a hassle-free 14-day return policy for eligible items in original condition. If an item arrives damaged or defective, we'll replace or refund it immediately.`;
+              } else if (action === 'FAQ_SUPPORT') {
+                  fullResponse = `Our customer support team is always here to help! You can reach out to us via support@nexmart.com or use the help center in your account settings.`;
+              } else if (action === 'FAQ_DISCOUNTS') {
+                  fullResponse = `We regularly feature amazing deals and discounts! Check out our Deals section from the menu to see today's top discounted items and special promotions.`;
+              }
+              
+              setAgentMessage(fullResponse);
+              speak(fullResponse, false);
+              
+              const userChat = { role: "user" as const, content: userMessage };
+              setChatHistory([...chatHistory, userChat, { role: "assistant" as const, content: fullResponse }].slice(-4));
+              setWorkflowState('NEGOTIATING');
+              
+              if (action === 'CHECKOUT') navigate('checkout');
+              else if (action === 'VIEW_CART') navigate('cart');
+              else if (action === 'CONTINUE_SHOPPING') {
+                  setAiProducts([]);
+                  SearchContextManager.clear();
+                  navigate('home');
+              }
+              else if (action === 'VIEW_WISHLIST') navigate('wishlist');
+              else if (action === 'VIEW_ORDERS') navigate('orders');
+              else if (action === 'VIEW_PROFILE') clerk.openUserProfile();
+              else if (action === 'VIEW_CATEGORIES') navigate('categories');
+              else if (action === 'VIEW_DEALS') navigate('deals');
+              else if (action === 'WISHLIST') {
+                  matchingProducts.forEach(p => toggleWishlist(p.id));
+                  navigate('wishlist');
+              } else if (action === 'ADD_TO_CART') {
+                  matchingProducts.forEach(p => addToCart(p, 1));
+                  navigate('cart');
+              } else if (action === 'SEARCH' && matchingProducts.length > 0) {
+                  navigate('home');
+              }
+              
+              return; 
+          }
+
+          // 5. Fallback to LLM for conversational CHAT intents
+          if (!engine) {
+              const fallbackMsg = "I am the Nexmart AI assistant! I'm here to help you navigate our catalog, compare products, manage your cart, and answer any shopping questions.";
+              setAgentMessage(fallbackMsg);
+              speak(fallbackMsg, false);
+              const userChat = { role: "user" as const, content: userMessage };
+              setChatHistory([...chatHistory, userChat, { role: "assistant" as const, content: fallbackMsg }].slice(-4));
+              setWorkflowState('NEGOTIATING');
+              return;
+          }
+
+          let systemContext = '';
+          if (routingDecision.intent === IntentType.RESULT_REFINEMENT || routingDecision.intent === IntentType.RESULT_ACTION) {
+              const productDetails = matchingProducts.map((p, i) => `${i + 1}. ${p.title}\nPrice: ₦${p.price}`).join('\n\n');
+              systemContext = `You are the Nexmart AI assistant. Answer the user briefly about these products: \n${productDetails}`;
+          } else {
+              systemContext = `You are the Nexmart AI e-commerce assistant. Address the user as Surbhi. Keep responses concise. CRITICAL: You do NOT have the ability to fetch products. If the user asks for a product, tell them to use the search bar, but NEVER invent or list fake products.`;
+          }
 
           const userChat = { role: "user" as const, content: userMessage };
           const newHistory = [...chatHistory, userChat].slice(-4);
@@ -726,40 +931,20 @@ CRITICAL INSTRUCTION: You are authorized to discuss, recommend, and sell ALL pro
                   { role: "system", content: systemContext },
                   ...newHistory
               ],
-              temperature: 0.3, // Lower temp for factual grounding
+              temperature: 0.3,
               max_tokens: 60,
               stream: true
           });
 
-          // 4. Stream Response & Execute Actions
-          let fullResponse = "";
           for await (const chunk of stream) {
               const text = chunk.choices[0]?.delta?.content || "";
               fullResponse += text;
               setAgentMessage(fullResponse);
           }
+          speak(fullResponse, false);
           
           setChatHistory([...newHistory, { role: "assistant" as const, content: fullResponse }]);
           setWorkflowState('NEGOTIATING');
-          
-          if (action === 'CHECKOUT') {
-              speak(fullResponse, false);
-              navigate('cart');
-          } else if (action === 'WISHLIST') {
-              speak(fullResponse, false);
-              matchingProducts.forEach(p => toggleWishlist(p.id));
-              navigate('wishlist');
-          } else if (action === 'ADD_TO_CART') {
-              speak(fullResponse, false);
-              matchingProducts.forEach(p => addToCart(p, 1));
-              navigate('cart');
-          } else if (action === 'SEARCH' && matchingProducts.length > 0) {
-              setAiProducts(matchingProducts);
-              speak(fullResponse, true);
-              speak("What should I check out for you then?", true);
-          } else {
-              speak(fullResponse, false);
-          }
 
     } catch (error) {
       console.error(error);

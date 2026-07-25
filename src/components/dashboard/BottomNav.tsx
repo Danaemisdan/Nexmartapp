@@ -2,13 +2,16 @@ import React from 'react';
 import { Search, ShoppingCart, Heart, User, Home, Package } from 'lucide-react';
 import { useStore } from '@/lib/StoreContext';
 
-export default function BottomNav() {
+export default function BottomNav({ onHomeClick }: { onHomeClick?: () => void }) {
     const { navigate, activeView, getCartCount } = useStore();
     const cartCount = getCartCount();
 
     return (
         <nav className="md:hidden fixed bottom-0 w-full bg-[#050505]/70 backdrop-blur-xl border-t border-white/10 z-50 px-6 py-3 pb-8 flex justify-between items-center shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
-            <button onClick={() => navigate('home')} className={`flex flex-col items-center gap-1 transition-colors ${activeView === 'home' ? 'text-yellow-400' : 'text-white/50 hover:text-white'}`}>
+            <button onClick={() => {
+                if (onHomeClick) onHomeClick();
+                else navigate('home');
+            }} className={`flex flex-col items-center gap-1 transition-colors ${activeView === 'home' ? 'text-yellow-400' : 'text-white/50 hover:text-white'}`}>
                 <Home className={`w-6 h-6 ${activeView === 'home' ? 'fill-current' : ''}`} />
                 <span className="text-[10px] font-bold">Home</span>
             </button>

@@ -6,6 +6,18 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const { cart, customer, totalAmount } = body;
         
+        if (!cart || !Array.isArray(cart) || cart.length === 0) {
+            return NextResponse.json({ error: 'Cart is required and must not be empty' }, { status: 400 });
+        }
+        
+        if (!customer || typeof customer !== 'object') {
+            return NextResponse.json({ error: 'Customer data is missing or invalid' }, { status: 400 });
+        }
+        
+        if (typeof totalAmount !== 'number' || totalAmount <= 0) {
+            return NextResponse.json({ error: 'Valid totalAmount is required' }, { status: 400 });
+        }
+        
         const GLOBALPAY_SECRET = process.env.GLOBALPAY_SECRET_KEY;
         const GLOBALPAY_PUBLIC = process.env.GLOBALPAY_PUBLIC_KEY;
 
@@ -76,8 +88,9 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Payment initialization failed' }, { status: 400 });
         }
 
-    } catch (error: any) {
-        console.error('[GlobalPay] API Error:', error.message);
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error('[GlobalPay] API Error:', errorMessage);
         return NextResponse.json({ error: 'Server error processing payment' }, { status: 500 });
     }
 }

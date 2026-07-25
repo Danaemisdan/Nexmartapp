@@ -4,7 +4,7 @@ import { useStore } from '@/lib/StoreContext';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
 
-export default function Header() {
+export default function Header({ onLogoClick }: { onLogoClick?: () => void }) {
     const { getCartCount, activeView, navigate } = useStore();
     const { isSignedIn } = useAuth();
     const cartCount = getCartCount();
@@ -27,7 +27,10 @@ export default function Header() {
                             <Menu className="w-6 h-6" />
                         </button>
                         <div 
-                            onClick={() => navigate('home')}
+                            onClick={() => {
+                                if (onLogoClick) onLogoClick();
+                                else navigate('home');
+                            }}
                             className="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity shrink-0 relative"
                         >
                             <motion.img layoutId="main-logo" src="/logo-icon.png" alt="Nexmart" className="h-8 md:h-10" />

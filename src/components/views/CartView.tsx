@@ -16,39 +16,7 @@ export default function CartView() {
     const total = subtotal + tax;
 
     const handleCheckout = async () => {
-        if (!isSignedIn) return;
-
-        setIsCheckingOut(true);
-        try {
-            const customer = {
-                firstname: user?.firstName || "Guest",
-                lastname: user?.lastName || "User",
-                phone: user?.primaryPhoneNumber?.phoneNumber || user?.primaryEmailAddress?.emailAddress || "0000000000",
-                address: "Nexmart Delivery Location"
-            };
-            
-            const res = await fetch('/api/payment/initialize', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cart, customer, totalAmount: total })
-            });
-            
-            const data = await res.json();
-            
-            if (res.ok && data.success && data.checkoutUrl) {
-                toast.success('Redirecting to secure payment gateway...');
-                // Redirect user to GlobalPay!
-                setTimeout(() => {
-                    window.location.href = data.checkoutUrl;
-                }, 800);
-            } else {
-                toast.error(`Checkout Failed: ${data.error || 'Unknown error'}`);
-            }
-        } catch (e: any) {
-            toast.error(`Checkout Error: ${e.message}`);
-        } finally {
-            setIsCheckingOut(false);
-        }
+        navigate('checkout');
     };
 
     if (cart.length === 0) {
@@ -69,7 +37,11 @@ export default function CartView() {
     return (
         <div className="max-w-4xl mx-auto w-full px-4 md:px-6 py-8 pb-32 md:pb-12">
             <div className="flex items-center gap-3 mb-8">
-                <button onClick={() => navigate('home')} className="p-2 bg-white/5 backdrop-blur-md rounded-full hover:bg-white/10 border border-white/10 transition-colors">
+                <button 
+                    onClick={() => navigate('home')} 
+                    aria-label="Back to Store"
+                    className="p-2 bg-white/5 backdrop-blur-md rounded-full hover:bg-white/10 border border-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
                     <ArrowLeft className="w-5 h-5 text-gray-300" />
                 </button>
                 <h1 className="text-3xl font-black text-white">Your Cart</h1>
@@ -89,29 +61,49 @@ export default function CartView() {
                             className="bg-white/5 border border-white/10 rounded-2xl p-4 flex gap-4 items-center shadow-lg relative backdrop-blur-md hover:bg-white/10 transition-colors"
                         >
                             <div className="w-24 h-24 bg-white/10 rounded-xl flex items-center justify-center p-2 flex-shrink-0">
-                                <img src={item.product.image} alt={item.product.title} className="max-w-full max-h-full object-contain mix-blend-screen" />
+                                <img 
+                                    src={item.product.image || 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&q=80'} 
+                                    alt={item.product.title} 
+                                    onError={(e) => {
+                                        e.currentTarget.onerror = null;
+                                        e.currentTarget.src = 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&q=80';
+                                    }}
+                                    className="max-w-full max-h-full object-contain mix-blend-screen" 
+                                />
                             </div>
                             
                             <div className="flex flex-col flex-1 min-w-0">
                                 <h3 className="font-bold text-white text-lg leading-tight truncate pr-8">{item.product.title}</h3>
-                                <p className="text-sm text-gray-400 mb-3">{item.product.category}</p>
+                                <p className="text-sm text-gray-400 mb-3">{item.product.category || 'General'}</p>
                                 
                                 <div className="flex items-center justify-between mt-auto">
                                     <span className="font-black text-lg text-white">{formatPrice(item.product.price)}</span>
                                     
                                     <div className="flex items-center gap-3 bg-white/5 rounded-full px-3 py-1 border border-white/10">
-                                        <button onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)} className="text-gray-400 hover:text-white">
+                                        <button 
+                                            onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)} 
+                                            aria-label={`Decrease quantity of ${item.product.title}`}
+                                            className="text-gray-400 hover:text-white focus:outline-none focus:text-white"
+                                        >
                                             <Minus className="w-4 h-4" />
                                         </button>
                                         <span className="font-bold w-4 text-center text-white">{item.quantity}</span>
-                                        <button onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)} className="text-gray-400 hover:text-white">
+                                        <button 
+                                            onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)} 
+                                            aria-label={`Increase quantity of ${item.product.title}`}
+                                            className="text-gray-400 hover:text-white focus:outline-none focus:text-white"
+                                        >
                                             <Plus className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <button onClick={() => removeFromCart(item.product.id)} className="absolute top-4 right-4 text-gray-500 hover:text-red-400 transition-colors p-1 bg-white/5 rounded-full backdrop-blur-md hover:bg-white/10">
+                            <button 
+                                onClick={() => removeFromCart(item.product.id)} 
+                                aria-label={`Remove ${item.product.title} from cart`}
+                                className="absolute top-4 right-4 text-gray-500 hover:text-red-400 transition-colors p-1 bg-white/5 rounded-full backdrop-blur-md hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-red-400"
+                            >
                                 <Trash2 className="w-4 h-4" />
                             </button>
                         </motion.div>
@@ -155,7 +147,7 @@ export default function CartView() {
                                     <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                                 ) : (
                                     <>
-                                        <CreditCard className="w-5 h-5" /> Checkout with GlobalPay
+                                        <CreditCard className="w-5 h-5" /> Proceed to Checkout
                                     </>
                                 )}
                             </button>

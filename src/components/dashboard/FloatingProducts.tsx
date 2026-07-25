@@ -11,9 +11,8 @@ export default function FloatingProducts() {
     const colCount = 5;
     const columns = Array.from({ length: colCount }, () => [] as any[]);
     
-    // Distribute products into columns
-    // We duplicate the products to create a seamless infinite scroll effect
-    const extendedProducts = [...products, ...products, ...products].slice(0, 50);
+    // Distribute all products into columns so the full variety of the catalog scrolls in the background
+    const extendedProducts = [...products, ...products];
     extendedProducts.forEach((product, i) => {
         columns[i % colCount].push(product);
     });
@@ -42,16 +41,26 @@ export default function FloatingProducts() {
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     
-                                    <div className="w-20 h-20 md:w-28 md:h-28 mb-3 relative flex-shrink-0 rounded-2xl overflow-hidden bg-black/20 border border-white/5 shadow-inner">
-                                        <img 
-                                            src={product.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80'} 
-                                            alt={product.title || 'Product'} 
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                            loading="lazy"
-                                            onError={(e) => {
-                                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80';
-                                            }}
-                                        />
+                                    <div className="w-20 h-20 md:w-28 md:h-28 mb-3 relative flex-shrink-0 rounded-2xl overflow-hidden bg-black/20 border border-white/5 shadow-inner flex items-center justify-center">
+                                        {product.image ? (
+                                            <img 
+                                                src={product.image} 
+                                                alt={product.title || 'Product'} 
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"
+                                                loading="lazy"
+                                                onError={(e) => {
+                                                    e.currentTarget.style.display = 'none';
+                                                    const fb = e.currentTarget.parentElement?.querySelector('.fp-fallback');
+                                                    if (fb) (fb as HTMLElement).style.display = 'flex';
+                                                }}
+                                            />
+                                        ) : null}
+                                        <div className={`fp-fallback absolute inset-0 flex flex-col items-center justify-center text-white/30 p-2 text-center z-0 ${product.image ? 'hidden' : 'flex'}`}>
+                                            <svg className="w-6 h-6 md:w-8 md:h-8 mb-1 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                            </svg>
+                                            <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-wider text-white/40 leading-none">No Product Image</span>
+                                        </div>
                                     </div>
                                     
                                     <h3 className="text-white/90 font-bold text-xs md:text-sm line-clamp-2 leading-snug mb-1 w-full px-2">

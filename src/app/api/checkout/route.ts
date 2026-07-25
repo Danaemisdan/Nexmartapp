@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
+import { getProvider } from '@/lib/providers';
 
 export async function POST(req: NextRequest) {
     try {
@@ -10,68 +10,66 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Cart is empty or invalid' }, { status: 400 });
         }
 
-        const OVALOOP_PUBLIC_KEY = process.env.OVALOOP_PUBLIC_KEY;
-        const OVALOOP_SECRET_KEY = process.env.OVALOOP_SECRET_KEY;
-
-        if (!OVALOOP_PUBLIC_KEY || !OVALOOP_SECRET_KEY) {
-            console.error('Ovaloop API keys missing in environment variables');
-            return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+        if (!customer || typeof customer !== 'object') {
+            return NextResponse.json({ error: 'Customer information is missing or invalid' }, { status: 400 });
         }
 
-        // Generate group_order_reference and timestamp
-        const group_order_reference = `ORD${Date.now()}`;
-        const timestamp = Math.floor(Date.now() / 1000).toString();
-
-        // Compute HMAC SHA512 signature on the timestamp
-        const signature = crypto
-            .createHmac('sha512', OVALOOP_SECRET_KEY)
-            .update(timestamp, 'utf8')
-            .digest('hex');
-
-        // Construct the Ovaloop order payload using actual Cart data
-        const orderPayload = cart.map((item: any) => ({
-            business_id: item.product.business_id || "MISSING_BUSINESS_ID",
-            customer_firstname: customer?.firstname || "Guest",
-            customer_lastname: customer?.lastname || "User",
-            customer_phone: customer?.phone || "0000000000",
-            customer_address: customer?.address || "Nexmart Delivery",
-            product_id: item.product.id,
-            unit_measurement: "Unit",
-            quantity: item.quantity || 1,
-            price: item.product.price,
-            group_order_reference
-        }));
-
-        const ovaloopEndpoint = process.env.OVALOOP_API_URL || 'https://devapi.ovaloop.app';
-        
-        const response = await fetch(`${ovaloopEndpoint}/partner/orders/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-OVALOOP-PARTNER-KEY': OVALOOP_PUBLIC_KEY,
-                'X-OVALOOP-TIMESTAMP': timestamp,
-                'X-OVALOOP-SIGNATURE': signature
-            },
-            body: JSON.stringify(orderPayload)
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('[Checkout API] Error:', response.status, errorText);
-            return NextResponse.json({ error: 'Failed to submit order to Ovaloop' }, { status: response.status });
+        if (!customer.firstname || typeof customer.firstname !== 'string' || customer.firstname.trim() === '') {
+             return NextResponse.json({ error: 'Customer firstname is required' }, { status: 400 });
         }
 
-        const data = await response.json();
-        
+        if (!customer.lastname || typeof customer.lastname !== 'string' || customer.lastname.trim() === '') {
+             return NextResponse.json({ error: 'Customer lastname is required' }, { status: 400 });
+        }
+
+        // Group cart items by provider
+        const providerCarts: Record<string, unknown[]> = {};
+        for (const item of cart) {
+            const providerName = (item as any)?.product?.provider || 'ovaloop';
+            if (!providerCarts[providerName]) {
+                providerCarts[providerName] = [];
+            }
+            providerCarts[providerName].push(item);
+        }
+
+        const results = [];
+        let primaryGroupOrderReference = null;
+
+        // Process orders per provider
+        for (const [providerName, items] of Object.entries(providerCarts)) {
+            const provider = getProvider(providerName);
+            const providerPayload = { cart: items, customer };
+            
+            try {
+                const result = await provider.createOrder(providerPayload);
+                results.push({ provider: providerName, success: true, data: result });
+                // If Ovaloop was the provider or it's the first one, grab its reference
+                if (providerName === 'ovaloop' || !primaryGroupOrderReference) {
+                    primaryGroupOrderReference = result.group_order_reference;
+                }
+            } catch (err: unknown) {
+                const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+                console.error(`[Checkout API] Error processing provider ${providerName}:`, errorMessage);
+                results.push({ provider: providerName, success: false, error: errorMessage });
+            }
+        }
+
+        // Check if all failed
+        const allFailed = results.every(r => !r.success);
+        if (allFailed) {
+            return NextResponse.json({ error: 'Failed to submit order' }, { status: 500 });
+        }
+
         return NextResponse.json({ 
             success: true, 
             message: "Order placed successfully",
-            data,
-            group_order_reference 
+            data: results,
+            group_order_reference: primaryGroupOrderReference
         });
 
-    } catch (error: any) {
-        console.error('[Checkout API] Internal Server Error:', error.message);
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error('[Checkout API] Internal Server Error:', errorMessage);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

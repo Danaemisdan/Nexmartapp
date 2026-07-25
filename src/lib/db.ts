@@ -27,6 +27,12 @@ export interface NexmartProduct {
   stock: number;
   sku: string;
   business_id?: string;
+  // Provider metadata
+  provider?: string;
+  provider_product_id?: string;
+  provider_business_id?: string;
+  provider_metadata?: any;
+  last_synced_at?: string;
 }
 
 export interface ProductIndexEntry {
@@ -41,6 +47,7 @@ export interface ProductIndexEntry {
   rating: number;
   reviews: number;
   business_id?: string;
+  provider?: string;
 }
 
 // ─── Paths (For Local Fallback) ──────────────────────────────────────────────
@@ -63,14 +70,18 @@ export function mapToNexmart(p: any, index: number = 0): NexmartProduct {
     price: Math.round(price * 100) / 100,
     originalPrice: Math.round(originalPrice * 100) / 100,
     discount: discountPct > 0 ? `-${discountPct}%` : '',
-    rating: Math.round((4.5 + Math.random() * 0.5) * 10) / 10,
+    rating: 4.5 + Math.round(Math.random() * 4) / 10,
     reviews: Math.floor(Math.random() * 490) + 10,
-    image: p.image_path || p.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80',
+    image: p.image_path || p.image || '',
     category: p.category_name || p.category || 'General',
     brand: p.brand || p.manufacturer || '',
     stock,
     sku: String(p.sku || id),
     business_id: p.business_id || p.business || '',
+    provider: 'ovaloop',
+    provider_product_id: String(p.id || ''),
+    provider_business_id: p.business_id || p.business || '',
+    last_synced_at: new Date().toISOString()
   };
 }
 
@@ -110,7 +121,7 @@ export async function getAllProducts(limit = 100, offset = 0): Promise<ProductIn
     return data.map((d: any) => ({
         id: d.id, title: d.title, description: d.description, price: d.price, originalPrice: d.originalPrice, 
         discount: d.discount, image: d.image, category: d.category, 
-        rating: d.rating, reviews: d.reviews, business_id: d.business_id
+        rating: d.rating, reviews: d.reviews, business_id: d.business_id, provider: d.provider
     }));
   }
 

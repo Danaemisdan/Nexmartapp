@@ -37,10 +37,10 @@ export default function HomeView({ aiProducts }: HomeViewProps) {
     const [searchValue, setSearchValue] = React.useState('');
 
     const suggestions = [
-        "Noise cancelling headphones under $100",
-        "Top rated 4K drones for beginners",
-        "Organic dark roast coffee beans",
-        "Minimalist mechanical keyboards"
+        "Find noise cancelling headphones under $100",
+        "Show me top rated 4K drones for beginners",
+        "Find organic dark roast coffee beans",
+        "Show me minimalist mechanical keyboards"
     ];
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -75,6 +75,7 @@ export default function HomeView({ aiProducts }: HomeViewProps) {
                         type="deals"
                         onProductClick={(p) => navigate('product', p)}
                         onAddToCart={(p) => addToCart(p)}
+                        onViewAllClick={() => navigate('deals')}
                     />
                 </motion.div>
             ) : (
@@ -101,7 +102,11 @@ export default function HomeView({ aiProducts }: HomeViewProps) {
                                     placeholder="e.g., I need a cheap laptop for college..."
                                     className="flex-1 bg-transparent border-none text-white outline-none placeholder:text-white/40 text-sm md:text-base py-3 relative z-10"
                                 />
-                                <button type="submit" className="w-10 h-10 bg-blue-500 hover:bg-blue-400 rounded-full flex items-center justify-center text-white transition-colors shadow-lg">
+                                <button 
+                                    type="submit" 
+                                    aria-label="Submit AI Search"
+                                    className="w-10 h-10 bg-blue-500 hover:bg-blue-400 rounded-full flex items-center justify-center text-white transition-colors shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 focus:ring-offset-black"
+                                >
                                     <ArrowRight className="w-4 h-4" />
                                 </button>
                         </motion.form>

@@ -1,63 +1,96 @@
 'use client'
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import { ShoppingCart, Star, ExternalLink, ShieldCheck } from 'lucide-react'
+import React from 'react';
+import { motion } from 'framer-motion';
+import { ShoppingCart, Star } from 'lucide-react';
+import { Product } from '@/lib/api';
 
-export interface ProductResult {
-  id: string
-  title: string
-  price: string
-  source: string
-  url: string
-  confidence?: string
+interface ProductCardProps {
+    product: Product;
+    formatPrice: (price: number) => string;
+    onProductClick: (product: Product) => void;
+    onAddToCart: (product: Product) => void;
 }
 
-export function ProductCard({ product, onPurchase }: { product: ProductResult, onPurchase: (p: ProductResult) => void }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      className="relative mb-3 flex w-full flex-col gap-2 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm"
-    >
-      {/* Glow Effect */}
-      <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-nexmart-cyan/20 blur-[30px]" />
-      
-      <div className="z-10 flex items-start justify-between">
-        <div className="flex flex-col pr-4">
-          <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-nexmart-cyan">
-            <ShieldCheck className="h-3 w-3" />
-            Verified Vendor
-          </span>
-          <h3 className="mt-1 line-clamp-2 text-sm font-medium text-white">{product.title}</h3>
-        </div>
-        <div className="flex shrink-0 flex-col items-end">
-          <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-nexmart-cyan to-nexmart-orange glow-text">
-            {product.price}
-          </span>
-        </div>
-      </div>
+export function ProductCard({ product, formatPrice, onProductClick, onAddToCart }: ProductCardProps) {
+    const brand = product.brand || 'Generic';
+    const hasRating = product.rating !== undefined && product.rating !== null && !isNaN(product.rating);
+    const imageUrl = product.image || 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&q=80';
 
-      <div className="z-10 mt-2 flex items-center justify-between text-xs text-white/50">
-        <span className="flex items-center gap-1">
-          <Star className="h-3 w-3 fill-nexmart-orange text-nexmart-orange" />
-          4.8
-        </span>
-        <span className="flex items-center gap-1">
-          Source: {product.source}
-          <a href={product.url} target="_blank" rel="noreferrer" className="hover:text-nexmart-cyan">
-             <ExternalLink className="h-3 w-3" />
-          </a>
-        </span>
-      </div>
+    return (
+        <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            onClick={() => onProductClick(product)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && onProductClick(product)}
+            className="bg-white border border-gray-100 rounded-2xl p-3 flex flex-col cursor-pointer hover:border-[#1e3a8a] transition-colors group h-full focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]"
+        >
+            <div className="w-full aspect-square bg-gray-50 rounded-xl mb-3 p-4 flex items-center justify-center relative overflow-hidden">
+                {imageUrl ? (
+                    <img 
+                        src={imageUrl} 
+                        alt={product.title} 
+                        onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            const fb = e.currentTarget.parentElement?.querySelector('.pc-fallback');
+                            if (fb) (fb as HTMLElement).style.display = 'flex';
+                        }}
+                        className="max-w-full max-h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300 relative z-10" 
+                    />
+                ) : null}
+                <div className={`pc-fallback absolute inset-0 flex flex-col items-center justify-center text-gray-400 p-2 text-center z-0 ${imageUrl ? 'hidden' : 'flex'}`}>
+                    <svg className="w-8 h-8 md:w-10 md:h-10 mb-1 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span className="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-gray-400">No Product Image</span>
+                </div>
+            </div>
+            
+            <div className="flex flex-col flex-1">
+                <span className="text-[10px] uppercase font-bold text-gray-400 mb-1">{brand}</span>
+                <h3 className="font-bold text-gray-900 text-sm line-clamp-2 leading-tight mb-2">{product.title}</h3>
+                
+                <div className="flex items-center gap-1 mb-3 mt-auto">
+                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    <span className="text-xs font-bold text-gray-600">{hasRating ? product.rating : 'New'}</span>
+                    {hasRating && <span className="text-[10px] text-gray-400">({product.reviews || 0})</span>}
+                </div>
 
-      <button 
-        onClick={() => onPurchase(product)}
-        className="z-10 mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-nexmart-cyan/80 to-nexmart-cyan/60 p-2.5 text-sm font-semibold text-nexmart-bg shadow-[0_0_15px_rgba(0,240,255,0.3)] transition hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(0,240,255,0.5)] active:scale-95"
-      >
-        <ShoppingCart className="h-4 w-4" />
-        Authorize Purchase
-      </button>
-    </motion.div>
-  )
+                <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                        <span className="font-black text-black">{formatPrice(product.price)}</span>
+                        {product.stock !== undefined && (
+                           <span className="text-[10px] text-gray-400">{product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}</span>
+                        )}
+                    </div>
+                    <button 
+                        onClick={(e) => { e.stopPropagation(); onAddToCart(product); }} 
+                        aria-label={`Add ${product.title} to cart`}
+                        className="p-2 bg-gray-100 rounded-full hover:bg-[#1e3a8a] hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-offset-2"
+                    >
+                        <ShoppingCart className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+        </motion.div>
+    );
+}
+
+export function ProductSkeleton() {
+    return (
+        <div className="bg-white border border-gray-100 rounded-2xl p-3 flex flex-col h-full animate-pulse">
+            <div className="w-full aspect-square bg-gray-100 rounded-xl mb-3" />
+            <div className="flex flex-col flex-1">
+                <div className="h-3 bg-gray-100 rounded w-1/3 mb-2" />
+                <div className="h-4 bg-gray-100 rounded w-full mb-1" />
+                <div className="h-4 bg-gray-100 rounded w-2/3 mb-4 mt-auto" />
+                <div className="flex items-center justify-between mt-auto">
+                    <div className="h-5 bg-gray-100 rounded w-1/2" />
+                    <div className="w-8 h-8 bg-gray-100 rounded-full" />
+                </div>
+            </div>
+        </div>
+    );
 }

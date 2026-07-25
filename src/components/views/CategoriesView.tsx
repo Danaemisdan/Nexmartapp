@@ -1,58 +1,62 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useStore } from '@/lib/StoreContext';
 import { ArrowLeft, Grid } from 'lucide-react';
-import ProductCarousel from '../dashboard/ProductCarousel';
+import { ProductCard, ProductSkeleton } from '../ui/ProductCard';
 
 export default function CategoriesView() {
-    const { products, navigate, addToCart, formatPrice, loadMoreProducts, hasMore } = useStore();
+    const { products, navigate, addToCart, formatPrice, loadMoreProducts, hasMore, isApiReady } = useStore();
     
-    // Group products by category
-    const categories = Array.from(new Set(products.map(p => p.category)));
+    const categories = useMemo(() => Array.from(new Set(products.map(p => p.category).filter(Boolean))), [products]);
 
     return (
         <div className="max-w-7xl mx-auto w-full px-4 md:px-6 py-8 pb-32">
             <div className="flex items-center gap-3 mb-8">
-                <button onClick={() => navigate('home')} className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors">
-                    <ArrowLeft className="w-5 h-5 text-gray-600" />
+                <button 
+                    onClick={() => navigate('home')} 
+                    aria-label="Back to Store"
+                    className="p-2 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                >
+                    <ArrowLeft className="w-5 h-5 text-white" />
                 </button>
                 <div className="flex items-center gap-2">
-                    <Grid className="w-8 h-8 text-[#1e3a8a]" />
-                    <h1 className="text-3xl font-black text-gray-900">All Categories</h1>
+                    <Grid className="w-8 h-8 text-yellow-400" />
+                    <h1 className="text-3xl font-black text-white">All Categories</h1>
                 </div>
             </div>
             
             <div className="flex flex-col gap-12">
-                {categories.map(category => (
-                    <div key={category}>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6 capitalize">{category}</h2>
+                {!isApiReady ? (
+                    <div>
+                        <div className="h-8 bg-white/10 rounded w-48 mb-6 animate-pulse" />
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            {products.filter(p => p.category === category).map((product, i) => (
-                                <div 
-                                    key={product.id} 
-                                    onClick={() => navigate('product', product)}
-                                    className="cursor-pointer bg-white border border-gray-100 rounded-2xl p-4 flex flex-col group hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                                >
-                                    <div className="w-full aspect-square bg-gray-50 rounded-xl mb-4 p-4 flex items-center justify-center overflow-hidden">
-                                        <img src={product.image} alt={product.title} className="max-w-full max-h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
-                                    </div>
-                                    <div className="flex flex-col flex-1">
-                                        <h3 className="text-sm font-bold text-gray-800 leading-tight mb-1 line-clamp-2">{product.title}</h3>
-                                        <div className="mt-auto pt-2 flex items-center justify-between">
-                                            <span className="text-lg font-black text-gray-900">{formatPrice(product.price)}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                            {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-[280px]"><ProductSkeleton /></div>)}
                         </div>
                     </div>
-                ))}
+                ) : (
+                    categories.map(category => (
+                        <div key={category}>
+                            <h2 className="text-2xl font-bold text-white mb-6 capitalize border-b border-white/10 pb-2">{category}</h2>
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                {products.filter(p => p.category === category).map(product => (
+                                    <ProductCard 
+                                        key={product.id}
+                                        product={product}
+                                        formatPrice={formatPrice}
+                                        onProductClick={(p) => navigate('product', p)}
+                                        onAddToCart={addToCart}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
 
-            {hasMore && (
+            {hasMore && isApiReady && (
                 <div className="flex justify-center mt-12 w-full">
                     <button 
                         onClick={() => loadMoreProducts()} 
-                        className="bg-[#1e3a8a] text-white px-10 py-4 rounded-xl font-bold text-lg shadow-lg hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
+                        className="bg-white text-black px-10 py-4 rounded-xl font-bold text-lg shadow-lg hover:-translate-y-1 hover:shadow-xl hover:bg-gray-100 transition-all duration-300"
                     >
                         Load More Products...
                     </button>
