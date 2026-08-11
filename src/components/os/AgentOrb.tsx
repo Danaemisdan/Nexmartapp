@@ -25,7 +25,7 @@ const suggestedPrompts = [
 ];
 
 export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTask, aiProducts, setAiProducts, setIsAiReady, setAiProgress, aiProgress, isAiReady, inline = false }: any) {
-  const { products, cart, addToCart, removeFromCart, clearCart, toggleWishlist, navigate, setComparisonProducts } = useStore();
+  const { products, cart, addToCart, removeFromCart, clearCart, toggleWishlist, navigate, setComparisonProducts, setAuthModalOpen, setSearchQuery, activeView } = useStore();
   const clerk = useClerk();
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [input, setInput] = useState('');
@@ -391,28 +391,29 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                                
                                // Comprehensive heuristic semantic mappings for the fake AI
                                const semanticMap: Record<string, string[]> = {
-                                   fever: ['medicine', 'paracetamol', 'ibuprofen', 'health', 'panadol', 'pill'],
-                                   sick: ['medicine', 'paracetamol', 'ibuprofen', 'health', 'panadol', 'pill'],
-                                   headache: ['medicine', 'paracetamol', 'ibuprofen', 'health', 'panadol', 'pill'],
-                                   hungry: ['food', 'snack', 'noodles', 'rice', 'biscuit', 'chocolate', 'grocery'],
-                                   eat: ['food', 'snack', 'noodles', 'rice', 'biscuit', 'chocolate', 'grocery'],
-                                   starving: ['food', 'snack', 'noodles', 'rice', 'biscuit', 'chocolate', 'grocery'],
-                                   thirsty: ['water', 'coke', 'juice', 'beverage', 'soda', 'drink'],
-                                   drink: ['water', 'coke', 'juice', 'beverage', 'soda', 'drink'],
+                                   fever: ['medicine', 'paracetamol', 'ibuprofen', 'health', 'panadol', 'pill', 'medical'],
+                                   sick: ['medicine', 'paracetamol', 'ibuprofen', 'health', 'panadol', 'pill', 'medical'],
+                                   headache: ['medicine', 'paracetamol', 'ibuprofen', 'health', 'panadol', 'pill', 'medical'],
+                                   hungry: ['food', 'snack', 'noodles', 'rice', 'biscuit', 'chocolate', 'grocery', 'groceries'],
+                                   eat: ['food', 'snack', 'noodles', 'rice', 'biscuit', 'chocolate', 'grocery', 'groceries'],
+                                   starving: ['food', 'snack', 'noodles', 'rice', 'biscuit', 'chocolate', 'grocery', 'groceries'],
+                                   thirsty: ['water', 'coke', 'juice', 'beverage', 'soda', 'drink', 'groceries'],
+                                   drink: ['water', 'coke', 'juice', 'beverage', 'soda', 'drink', 'groceries'],
                                    workout: ['fitness', 'gym', 'sports', 'dumbbells', 'yoga', 'activewear'],
                                    exercise: ['fitness', 'gym', 'sports', 'dumbbells', 'yoga', 'activewear'],
-                                   cold: ['jacket', 'sweater', 'hoodie', 'heater', 'blanket', 'winter'],
-                                   cleaning: ['detergent', 'soap', 'vacuum', 'mop', 'cleaner', 'laundry'],
-                                   clean: ['detergent', 'soap', 'vacuum', 'mop', 'cleaner', 'laundry'],
-                                   music: ['headphones', 'speaker', 'earbuds', 'audio', 'sound'],
-                                   gaming: ['console', 'controller', 'playstation', 'xbox', 'gamepad', 'gamer'],
-                                   cook: ['pot', 'pan', 'kitchen', 'blender', 'microwave', 'utensils'],
-                                   cooking: ['pot', 'pan', 'kitchen', 'blender', 'microwave', 'utensils'],
-                                   sleep: ['bed', 'pillow', 'mattress', 'blanket', 'bedroom'],
-                                   tired: ['coffee', 'energy', 'caffeine', 'bed', 'pillow'],
-                                   skin: ['skincare', 'lotion', 'cream', 'serum', 'beauty', 'face'],
-                                   baby: ['diaper', 'wipes', 'toys', 'formula', 'stroller', 'infant'],
-                                   pet: ['dog', 'cat', 'food', 'toys', 'leash', 'pet']
+                                   cold: ['jacket', 'sweater', 'hoodie', 'heater', 'blanket', 'winter', 'fashion'],
+                                   cleaning: ['detergent', 'soap', 'vacuum', 'mop', 'cleaner', 'laundry', 'home'],
+                                   clean: ['detergent', 'soap', 'vacuum', 'mop', 'cleaner', 'laundry', 'home'],
+                                   music: ['headphones', 'speaker', 'earbuds', 'audio', 'sound', 'electronics'],
+                                   gaming: ['console', 'controller', 'playstation', 'xbox', 'gamepad', 'gamer', 'electronics'],
+                                   cook: ['pot', 'pan', 'kitchen', 'blender', 'microwave', 'utensils', 'home', 'appliances'],
+                                   cooking: ['pot', 'pan', 'kitchen', 'blender', 'microwave', 'utensils', 'home', 'appliances'],
+                                   sleep: ['bed', 'pillow', 'mattress', 'blanket', 'bedroom', 'home'],
+                                   tired: ['coffee', 'energy', 'caffeine', 'bed', 'pillow', 'groceries'],
+                                   skin: ['skincare', 'lotion', 'cream', 'serum', 'beauty', 'face', 'makeup'],
+                                   makeup: ['lipstick', 'foundation', 'mascara', 'eyeshadow', 'beauty', 'cosmetics'],
+                                   baby: ['diaper', 'wipes', 'toys', 'formula', 'stroller', 'infant', 'kids', 'fashion'],
+                                   pet: ['dog', 'cat', 'food', 'toys', 'leash', 'pet', 'home']
                                };
 
                                Object.entries(semanticMap).forEach(([key, mappedWords]) => {
@@ -770,7 +771,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
 
           // 2. Intercept RESULT_ACTION (Result Action Engine)
           if (routingDecision.intent === IntentType.RESULT_ACTION) {
-              if (action === 'CHECKOUT' || action === 'VIEW_CART' || action === 'CONTINUE_SHOPPING' || action === 'VIEW_WISHLIST' || action === 'VIEW_ORDERS' || action === 'VIEW_PROFILE') {
+              if (action === 'CHECKOUT' || action === 'VIEW_CART' || action === 'CONTINUE_SHOPPING' || action === 'VIEW_WISHLIST' || action === 'VIEW_ORDERS' || action === 'VIEW_PROFILE' || action === 'VIEW_LOGIN' || action === 'VIEW_ACCOUNT') {
                   // Bypass ResultActionEngine for global cart actions that don't depend on SearchContext
               } else if (SearchContextManager.hasActive()) {
                   const activeContext = SearchContextManager.get()!;
@@ -816,7 +817,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
           }
 
           // Centralized Action Validation
-          const bypassActions = ['VIEW_CART', 'CHECKOUT', 'CONTINUE_SHOPPING', 'VIEW_WISHLIST', 'VIEW_ORDERS', 'VIEW_PROFILE', 'VIEW_CATEGORIES', 'VIEW_DEALS', 'CHAT_GREETING', 'FAQ_CATALOG', 'FAQ_CAPABILITIES', 'FAQ_SHIPPING', 'FAQ_PAYMENT', 'FAQ_RETURNS', 'FAQ_SUPPORT', 'FAQ_DISCOUNTS'];
+          const bypassActions = ['VIEW_CART', 'CHECKOUT', 'CONTINUE_SHOPPING', 'VIEW_WISHLIST', 'VIEW_ORDERS', 'VIEW_PROFILE', 'VIEW_CATEGORIES', 'VIEW_DEALS', 'VIEW_LOGIN', 'VIEW_ACCOUNT', 'CHAT_GREETING', 'FAQ_CATALOG', 'FAQ_CAPABILITIES', 'FAQ_SHIPPING', 'FAQ_PAYMENT', 'FAQ_RETURNS', 'FAQ_SUPPORT', 'FAQ_DISCOUNTS'];
           if (routingDecision.intent === IntentType.RESULT_ACTION && action !== 'ACTION_HANDLED_BY_ENGINE' && action !== 'INVALID_CONTEXT' && matchingProducts.length === 0 && !bypassActions.includes(action)) {
               action = 'INVALID_CONTEXT';
               validationError = "I couldn't find any products to perform that action. Please search for a product first.";
@@ -838,7 +839,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
 
           // 4. Fast Track Actions (Bypass WebLLM entirely for lightning fast speed & personalized responses)
           let fullResponse = "";
-          const fastTrackActions = ['SEARCH', 'ADD_TO_CART', 'WISHLIST', 'CHECKOUT', 'VIEW_CART', 'CONTINUE_SHOPPING', 'VIEW_WISHLIST', 'VIEW_ORDERS', 'VIEW_PROFILE', 'VIEW_CATEGORIES', 'VIEW_DEALS', 'CHAT_GREETING', 'FAQ_CATALOG', 'FAQ_CAPABILITIES', 'FAQ_SHIPPING', 'FAQ_PAYMENT', 'FAQ_RETURNS', 'FAQ_SUPPORT', 'FAQ_DISCOUNTS'];
+          const fastTrackActions = ['SEARCH', 'ADD_TO_CART', 'WISHLIST', 'CHECKOUT', 'VIEW_CART', 'CONTINUE_SHOPPING', 'VIEW_WISHLIST', 'VIEW_ORDERS', 'VIEW_PROFILE', 'VIEW_CATEGORIES', 'VIEW_DEALS', 'VIEW_LOGIN', 'VIEW_ACCOUNT', 'CHAT_GREETING', 'FAQ_CATALOG', 'FAQ_CAPABILITIES', 'FAQ_SHIPPING', 'FAQ_PAYMENT', 'FAQ_RETURNS', 'FAQ_SUPPORT', 'FAQ_DISCOUNTS'];
           if (fastTrackActions.includes(action)) {
               if (action === 'SEARCH') {
                   if (matchingProducts.length > 0) {
@@ -864,6 +865,10 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                   } else {
                       fullResponse = `Opening your profile settings now.`;
                   }
+              } else if (action === 'VIEW_LOGIN') {
+                  fullResponse = `Sure! I'm opening the login page for you. You can sign in with your email or mobile number.`;
+              } else if (action === 'VIEW_ACCOUNT') {
+                  fullResponse = `Taking you to your account now. You can manage your orders, addresses, saved cards, and more from there.`;
               } else if (action === 'CONTINUE_SHOPPING') {
                   fullResponse = `Taking you back to the home page so you can continue shopping.`;
               } else if (action === 'VIEW_CATEGORIES') {
@@ -873,7 +878,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
               } else if (action === 'CHAT_GREETING') {
                   fullResponse = `Hello! I'm your Nexmart AI assistant. How can I help you find the perfect products today?`;
               } else if (action === 'FAQ_CATALOG') {
-                  fullResponse = `We have a wide variety of products on Nexmart! You can explore our electronics, laptops, audio gear, smartphones, skincare, beauty products, smart home devices, and much more. What are you shopping for today?`;
+                  fullResponse = `We have a wide variety of products on Nexmart! You can explore our Fashion, Home essentials, Beauty products, Electronics & Appliances, Groceries, Medicine, and Sports equipment. What are you shopping for today?`;
               } else if (action === 'FAQ_CAPABILITIES') {
                   fullResponse = `I am your personal AI shopping assistant! I can help you search our entire product catalog, compare items side-by-side, filter by price and specs, manage your cart and wishlist, and guide you through checkout. Just let me know what you need!`;
               } else if (action === 'FAQ_SHIPPING') {
@@ -905,6 +910,8 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
               else if (action === 'VIEW_WISHLIST') navigate('wishlist');
               else if (action === 'VIEW_ORDERS') navigate('orders');
               else if (action === 'VIEW_PROFILE') clerk.openUserProfile();
+              else if (action === 'VIEW_ACCOUNT') navigate('account');
+              else if (action === 'VIEW_LOGIN') setAuthModalOpen(true);
               else if (action === 'VIEW_CATEGORIES') navigate('categories');
               else if (action === 'VIEW_DEALS') navigate('deals');
               else if (action === 'WISHLIST') {
@@ -914,7 +921,8 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
                   matchingProducts.forEach(p => addToCart(p, 1));
                   navigate('cart');
               } else if (action === 'SEARCH' && matchingProducts.length > 0) {
-                  navigate('home');
+                  setSearchQuery(userMessage);
+                  navigate('search');
               }
               
               return; 
@@ -936,7 +944,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
               const productDetails = matchingProducts.map((p, i) => `${i + 1}. ${p.title}\nPrice: ₦${p.price}`).join('\n\n');
               systemContext = `You are the Nexmart AI assistant. Answer the user briefly about these products: \n${productDetails}`;
           } else {
-              systemContext = `You are the Nexmart AI e-commerce assistant. Address the user as Surbhi. Keep responses concise. CRITICAL: You do NOT have the ability to fetch products. If the user asks for a product, tell them to use the search bar, but NEVER invent or list fake products.`;
+              systemContext = `You are the Nexmart AI e-commerce assistant. Address the user as Surbhi. Keep responses concise. The user is currently on the '${activeView}' page. Tailor your response based on this context. Our platform features these categories: Fashion (Men, Women, Kids), Home, Beauty, Electronics, Groceries, Medicine, and Sports. You can also help the user navigate to their Cart, Wishlist, Orders, Profile, or Account. CRITICAL: You do NOT have the ability to fetch products. If the user asks for a product, tell them to use the search bar, but NEVER invent or list fake products.`;
           }
 
           const userChat = { role: "user" as const, content: userMessage };
@@ -977,194 +985,133 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
   const isIdle = !isWorking && !isTalking && !isListening;
 
   return (
-      <div className={`${inline ? 'relative' : 'fixed inset-0 top-[34px] md:top-[34px]'} z-[60] flex flex-col items-center pointer-events-none`}>
-      
-      <div className="relative flex items-center justify-center pointer-events-auto">
-          <motion.div 
-            drag
-            dragSnapToOrigin={true}
-            dragElastic={0.2}
-            onDragStart={() => {
-                setIsDragging(true);
-                const phrases = ["Whoa!", "Wheee!", "Careful!", "Where are we going?"];
-                speak(phrases[Math.floor(Math.random() * phrases.length)], false);
-            }}
-            onDragEnd={() => setIsDragging(false)}
-            onTap={handleOrbClick}
-            animate={{ scale: isWorking ? 1.15 : 1 }}
-            transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className={`relative cursor-pointer transition-shadow duration-700 w-32 h-32 md:w-48 md:h-48 aspect-square shrink-0 flex items-center justify-center rounded-full group ${isWorking ? 'drop-shadow-[0_0_60px_rgba(239,68,68,0.4)]' : 'drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:scale-105 hover:drop-shadow-[0_0_40px_rgba(59,130,246,0.6)]'}`}
-          >
-             {/* Fluid Plasma Interior (Siri-like) */}
-             <div className="absolute inset-0 rounded-full bg-black overflow-hidden">
-                 <motion.div 
-                     animate={{ x: ["-10%", "20%", "-10%"], y: ["-20%", "10%", "-20%"], scale: [1, 1.4, 1] }}
-                     transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                     className="absolute -top-10 -left-10 w-32 h-32 md:w-48 md:h-48 bg-blue-600 rounded-full blur-3xl opacity-60"
-                 />
-                 <motion.div 
-                     animate={{ x: ["20%", "-20%", "20%"], y: ["10%", "-10%", "10%"], scale: [1.3, 1, 1.3] }}
-                     transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                     className="absolute top-0 -right-10 w-32 h-32 md:w-48 md:h-48 bg-purple-600 rounded-full blur-3xl opacity-60"
-                 />
-                 <motion.div 
-                     animate={{ x: ["-10%", "10%", "-10%"], y: ["20%", "-20%", "20%"], scale: [1, 1.3, 1] }}
-                     transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-                     className="absolute -bottom-10 left-0 w-32 h-32 md:w-48 md:h-48 bg-pink-600 rounded-full blur-3xl opacity-60"
-                 />
-                 <motion.div 
-                     animate={{ x: ["10%", "-20%", "10%"], y: ["-10%", "20%", "-10%"], scale: [1.2, 0.9, 1.2] }}
-                     transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-                     className="absolute bottom-0 right-0 w-28 h-28 md:w-40 md:h-40 bg-yellow-500 rounded-full blur-3xl opacity-60"
-                 />
-             </div>
-             
-             {/* 3D Glass Highlights and Shadows */}
-             <div className="absolute inset-0 rounded-full shadow-[inset_-20px_-20px_40px_rgba(0,0,0,0.8),inset_15px_15px_30px_rgba(255,255,255,0.9)] border border-white/20 pointer-events-none z-10" />
-             
-             {/* Cute Blinking Eyes (Face) */}
-             <motion.div 
-                animate={
-                    isDragging ? { x: [-10, 10, -10], y: [-5, 5, -5], rotate: [0, 360] } :
-                    isWorking ? { x: [-5, 5, -5], y: [-2, 2, -2], rotate: 0 } : 
-                    { x: aiProducts.length > 0 ? 0 : mousePos.x * 12, y: aiProducts.length > 0 ? 15 : mousePos.y * 12, rotate: 0 }
-                }
-                transition={
-                    isDragging ? { duration: 0.5, repeat: Infinity } :
-                    isWorking ? { duration: 1.5, repeat: Infinity } : 
-                    { type: "spring", stiffness: 200, damping: 20 }
-                }
-                className="absolute inset-0 flex items-center justify-center gap-4 md:gap-5 z-10 pointer-events-none"
-             >
-                 <motion.div 
-                     initial={{ height: "3rem" }}
-                     animate={isTalking ? { height: "1.5rem" } : { height: "3rem" }}
-                     transition={{ duration: 0.2 }}
-                     className={`w-2.5 md:w-3.5 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.9)] ${!isTalking ? 'eye-blink' : ''}`} 
-                 />
-                 <motion.div 
-                     initial={{ height: "3rem" }}
-                     animate={isTalking ? { height: "1.5rem" } : { height: "3rem" }}
-                     transition={{ duration: 0.2 }}
-                     className={`w-2.5 md:w-3.5 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.9)] ${!isTalking ? 'eye-blink' : ''}`} 
-                 />
-             </motion.div>
-             
-             {/* Glowing Particle Dust (Optional extra cute factor) */}
-             <div className="absolute -inset-4 md:-inset-8 border border-white/5 rounded-full border-dashed animate-spin-slow opacity-30 pointer-events-none" style={{ animationDuration: '30s' }} />
+      <div className="fixed bottom-5 right-5 md:bottom-6 md:right-6 lg:bottom-8 lg:right-8 flex flex-col items-end z-[60] pointer-events-none">
 
-             <style dangerouslySetInnerHTML={{__html: `
-                 @keyframes eyeBlink {
-                     0%, 90%, 94%, 100% { transform: scaleY(1); }
-                     92%, 96% { transform: scaleY(0.1); }
-                 }
-                 .eye-blink {
-                     animation: eyeBlink 5s infinite;
-                 }
-                 @keyframes spin-slow {
-                     from { transform: rotate(0deg); }
-                     to { transform: rotate(360deg); }
-                 }
-                 .animate-spin-slow {
-                     animation: spin-slow linear infinite;
-                 }
-             `}} />
-          </motion.div>
+          <div className="relative flex items-center justify-center pointer-events-auto w-full h-full origin-bottom-right">
 
-          {/* Bottom Loading Bar */}
-          {!isAiReady && hasStartedBoot && (
-              <div className="fixed bottom-0 left-0 w-full h-1 bg-white/5 z-[100]">
-                  <div 
-                      className="h-full bg-yellow-400 transition-all duration-300 ease-out shadow-[0_0_15px_rgba(234,179,8,0.8)] relative"
-                      style={{ width: `${aiProgress.match(/(\d+)%/) ? aiProgress.match(/(\d+)%/)?.[1] : 100}%` }}
-                  >
-                      <div className="absolute top-0 right-0 bottom-0 w-10 bg-gradient-to-r from-transparent to-white/50 blur-[2px]" />
-                  </div>
-                  <div className="fixed bottom-2 left-1/2 -translate-x-1/2 text-[9px] font-black text-yellow-400 uppercase tracking-widest drop-shadow-md">
-                      {aiProgress}
-                  </div>
-              </div>
-          )}
-
-
-      </div>
-
-      {/* Dynamic Subtitle Bubble (Glassmorphic) */}
-      <div className="h-24 mt-16 flex flex-col items-center justify-start w-[90vw] md:w-[600px] pointer-events-none">
-          <AnimatePresence mode="wait">
-            {(agentMessage || userTranscript) && !showKeyboard && (
               <motion.div 
-                key="subtitle"
-                initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                className="max-w-xl w-full text-center bg-black/60 backdrop-blur-3xl px-6 py-4 rounded-3xl border border-white/10 text-white shadow-2xl flex flex-col gap-2 pointer-events-auto"
+                drag
+                dragSnapToOrigin={false}
+                dragElastic={0.2}
+                onDragStart={() => {
+                    setIsDragging(true);
+                }}
+                onDragEnd={() => setIsDragging(false)}
+                onTap={handleOrbClick}
+                animate={{ 
+                    scale: isWorking ? 1.02 : 1,
+                    y: isIdle && !isDragging ? [0, -6, 0] : 0
+                }}
+                transition={{ 
+                    scale: { type: "spring", stiffness: 100, damping: 20 },
+                    y: { duration: 8, repeat: Infinity, ease: "easeInOut" }
+                }}
+                className={`relative cursor-pointer transition-shadow w-[72px] h-[72px] sm:w-[84px] sm:h-[84px] md:w-[104px] md:h-[104px] lg:w-[124px] lg:h-[124px] xl:w-[146px] xl:h-[146px] aspect-square shrink-0 flex items-center justify-center rounded-full group drop-shadow-[0_30px_60px_rgba(255,106,0,0.3)] z-10`}
               >
-                {userTranscript && (
-                    <span className="text-xs font-bold text-blue-400 uppercase tracking-wider block">
-                        You: "{userTranscript}"
-                    </span>
-                )}
-                {agentMessage && (
-                    <p className="text-sm font-medium leading-relaxed">
-                        {agentMessage}
-                    </p>
-                )}
+                 {/* Animated Neon Backlight for Micro-Interactions */}
+                 <motion.div
+                     animate={{ 
+                         rotate: isWorking ? 360 : 0, 
+                         scale: isListening ? [1, 1.05, 1] : isTalking ? [0.98, 1.04, 0.98] : 1 
+                     }}
+                     transition={{
+                         rotate: isWorking ? { duration: 4, repeat: Infinity, ease: "linear" } : { duration: 0.5 },
+                         scale: isListening ? { duration: 0.8, repeat: Infinity, ease: "easeInOut" } 
+                              : isTalking ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" } 
+                              : { duration: 0.3 }
+                     }}
+                     className="absolute inset-0 z-0 pointer-events-none"
+                 >
+                     <div className="absolute inset-[-2px] rounded-full bg-[conic-gradient(from_0deg,rgba(255,106,0,0.4)_0%,rgba(255,106,0,1)_50%,rgba(255,106,0,0.4)_100%)] blur-[6px] opacity-80" />
+                     <div className="absolute inset-[-5px] rounded-full bg-[conic-gradient(from_180deg,rgba(255,138,31,0.2)_0%,rgba(255,106,0,0.8)_50%,rgba(255,138,31,0.2)_100%)] blur-[12px] opacity-40" />
+                 </motion.div>
+
+                 {/* Glossy White Interior */}
+                 <div className="absolute inset-0 rounded-full bg-white overflow-hidden" />
+                 
+                 {/* Pure CSS 3D Glass Highlights (Smooth crescent reflection) */}
+                 <div className="absolute inset-0 rounded-full shadow-[inset_-20px_-20px_40px_rgba(0,0,0,0.1),inset_4px_8px_16px_rgba(255,255,255,0.8),inset_0_-4px_12px_rgba(255,106,0,0.3)] border border-black/5 pointer-events-none z-10" />
+                 
+                 {/* Dark ambient ground shadow */}
+                 <div className="absolute -bottom-6 w-3/4 h-5 bg-black/80 blur-[12px] rounded-[100%] pointer-events-none z-0" />
+                 
+                 {/* Sharp Neon Ground Light (Two layers for realistic falloff) */}
+                 <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-[80%] h-1 bg-theme-accent blur-[3px] rounded-[100%] pointer-events-none z-0" />
+                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-[120%] h-3 bg-theme-accent blur-[12px] rounded-[100%] pointer-events-none z-0" />
+                 
+                 {/* Minimalist AI Face (Subtle dark indicators) */}
+                 <motion.div 
+                    animate={
+                        isDragging ? { x: [-2, 2, -2], y: [-1, 1, -1] } :
+                        isWorking ? { x: [-1, 1, -1], y: [-1, 1, -1] } : 
+                        { x: aiProducts.length > 0 ? 0 : mousePos.x * 6, y: aiProducts.length > 0 ? 5 : mousePos.y * 6 }
+                    }
+                    transition={
+                        isDragging ? { duration: 0.5, repeat: Infinity } :
+                        isWorking ? { duration: 1.5, repeat: Infinity } : 
+                        { type: "spring", stiffness: 200, damping: 20 }
+                    }
+                    className="absolute inset-0 flex items-center justify-center gap-2.5 md:gap-3 z-10 pointer-events-none"
+                 >
+                     {/* LEFT EYE — vertically elongated pill */}
+                     <motion.div 
+                         animate={{ 
+                             width: "0.55rem",
+                             height: "1.46rem",
+                             borderRadius: "9999px"
+                         }}
+                         transition={{ duration: 0.2 }}
+                         className={`bg-[#1a1a1a] shadow-[0_0_6px_rgba(0,0,0,0.15)] ${!isTalking ? 'eye-blink' : ''}`} 
+                     />
+                     {/* RIGHT EYE — vertically elongated pill */}
+                     <motion.div 
+                         animate={{ 
+                             width: "0.55rem",
+                             height: "1.46rem",
+                             borderRadius: "9999px"
+                         }}
+                         transition={{ duration: 0.2 }}
+                         className={`bg-[#1a1a1a] shadow-[0_0_6px_rgba(0,0,0,0.15)] ${!isTalking ? 'eye-blink' : ''}`} 
+                     />
+                 </motion.div>
+
+                 <style dangerouslySetInnerHTML={{__html: `
+                     @keyframes eyeBlink {
+                         0%, 88%, 92%, 100% { transform: scaleY(1); }
+                         90% { transform: scaleY(0.08); }
+                     }
+                     .eye-blink {
+                         animation: eyeBlink 6s infinite;
+                     }
+                     @keyframes spin-slow {
+                         from { transform: rotate(0deg); }
+                         to { transform: rotate(360deg); }
+                     }
+                     .animate-spin-slow {
+                         animation: spin-slow linear infinite;
+                     }
+                 `}} />
               </motion.div>
-            )}
-          </AnimatePresence>
-      </div>
 
-      {/* Magic Search Input & Suggestions (Glassmorphic) */}
-      <AnimatePresence>
-        {showKeyboard && !isWorking && !isListening && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="absolute top-44 bg-white/40 backdrop-blur-3xl border border-white/60 p-3 rounded-3xl shadow-2xl w-[90vw] md:w-[600px] flex flex-col gap-2 pointer-events-auto"
-          >
-            <div className="px-4 pt-2 pb-1 flex items-center justify-between">
-                <h3 className="text-gray-900 font-bold text-lg tracking-tight">Magic AI Search</h3>
-                <button type="button" onClick={() => setShowKeyboard(false)} className="bg-white/50 hover:bg-white/80 border border-white/40 p-2 rounded-xl transition-colors">
-                    <X className="w-4 h-4 text-gray-700" />
-                </button>
-            </div>
-
-            <form onSubmit={(e) => { e.preventDefault(); handleSemanticTask(input); }} className="flex items-center gap-2 relative mb-2">
-                <input 
-                  autoFocus
-                  type="text" 
-                  value={input}
-                  onChange={e => setInput(e.target.value)}
-                  placeholder="Ask anything..." 
-                  className="w-full bg-white/50 border border-white/60 rounded-2xl px-6 py-4 text-gray-900 text-base placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-[#3b82f6]/50 transition-all shadow-inner backdrop-blur-xl"
-                />
-                <button type="submit" disabled={!input.trim()} className="absolute right-2 bg-[#3b82f6] hover:bg-blue-600 disabled:opacity-50 p-3 rounded-xl transition-colors shadow-lg shadow-blue-500/30">
-                    <ArrowUp className="w-5 h-5 text-white" />
-                </button>
-            </form>
-
-            <div className="flex flex-col gap-1 px-1">
-                 {suggestedPrompts.map((prompt, idx) => (
-                      <button 
-                          key={idx}
-                          type="button"
-                          onClick={() => { setInput(prompt); handleSemanticTask(prompt); }}
-                          className="flex items-center gap-3 w-full text-left p-3 hover:bg-white/60 rounded-xl transition-colors group border border-transparent hover:border-white/40"
+              {/* Bottom Loading Bar */}
+              {!isAiReady && hasStartedBoot && (
+                  <div className="fixed bottom-0 left-0 w-full h-1 bg-white/5 z-[100]">
+                      <div 
+                          className="h-full bg-theme-accent transition-all duration-300 ease-out shadow-[0_0_15px_rgba(255,106,0,0.8)] relative"
+                          style={{ width: `${aiProgress.match(/(\d+)%/) ? aiProgress.match(/(\d+)%/)?.[1] : 100}%` }}
                       >
-                           <div className="w-6 h-6 rounded-full bg-white/50 text-gray-500 group-hover:bg-[#3b82f6]/20 group-hover:text-[#3b82f6] flex items-center justify-center transition-colors">
-                               <Plus className="w-3 h-3" />
-                           </div>
-                           <span className="text-gray-600 text-sm font-medium group-hover:text-gray-900 transition-colors">
-                               {prompt}
-                           </span>
-                      </button>
-                 ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+                          <div className="absolute top-0 right-0 bottom-0 w-10 bg-gradient-to-r from-transparent to-white/50 blur-[2px]" />
+                      </div>
+                      <div className="fixed bottom-2 left-1/2 -translate-x-1/2 text-[9px] font-black text-theme-accent uppercase tracking-widest drop-shadow-md">
+                          {aiProgress}
+                      </div>
+                  </div>
+              )}
+
+
+          </div>
+
+
+      </div>
   );
 }

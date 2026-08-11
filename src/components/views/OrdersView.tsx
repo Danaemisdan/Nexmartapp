@@ -65,17 +65,17 @@ export default function OrdersView() {
     };
 
     return (
-        <div className="flex flex-col h-full bg-gray-50/50 pb-24 md:pb-0">
+        <div className="flex flex-col h-full bg-[#F8F8F8] pb-24 md:pb-0 min-h-screen text-[#111111]">
             {/* Header */}
-            <div className="sticky top-0 bg-white/5 backdrop-blur-xl border-b border-white/10 z-10 px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center gap-4">
+            <div className="sticky top-0 bg-white border-b border-[#ECECEC] z-10 px-6 py-4 shadow-sm flex items-center justify-between">
+                <div className="flex items-center gap-4 max-w-[1400px] mx-auto w-full">
                     <button 
                         onClick={() => navigate('home')}
-                        className="p-2 -ml-2 bg-white/5 text-gray-300 hover:text-white rounded-full hover:bg-white/10 transition-colors"
+                        className="p-2 -ml-2 bg-white hover:bg-gray-50 border border-[#ECECEC] text-[#111111] rounded-full shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6A00]"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <h1 className="text-xl md:text-2xl font-bold text-white">Your Orders</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-[#111111]">Your Orders</h1>
                 </div>
             </div>
 
@@ -83,19 +83,19 @@ export default function OrdersView() {
             <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 max-w-4xl mx-auto w-full">
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
-                        <Loader2 className="w-8 h-8 text-yellow-400 animate-spin" />
-                        <p className="text-gray-300 font-medium">Loading your order history...</p>
+                        <Loader2 className="w-8 h-8 text-[#FF6A00] animate-spin" />
+                        <p className="text-gray-500 font-medium">Loading your order history...</p>
                     </div>
                 ) : orderDetails.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-[60vh] text-center gap-4 bg-white/5 rounded-3xl border border-white/10 shadow-xl p-8 backdrop-blur-sm">
-                        <div className="w-20 h-20 bg-blue-500/20 text-blue-300 rounded-full flex items-center justify-center mb-2 border border-blue-500/30">
-                            <Package className="w-10 h-10" />
+                    <div className="flex flex-col items-center justify-center h-[60vh] text-center gap-4 bg-white rounded-3xl border border-[#ECECEC] p-8 shadow-sm">
+                        <div className="w-20 h-20 bg-[#F8F8F8] border border-[#ECECEC] rounded-full flex items-center justify-center mb-2">
+                            <Package className="w-10 h-10 text-gray-400" />
                         </div>
-                        <h2 className="text-2xl font-bold text-white">No orders yet</h2>
-                        <p className="text-gray-400 max-w-md">When you buy items, they will appear here along with their status.</p>
+                        <h2 className="text-2xl font-bold text-[#111111]">No orders yet</h2>
+                        <p className="text-gray-500 max-w-md">When you buy items, they will appear here along with their status.</p>
                         <button 
                             onClick={() => navigate('home')}
-                            className="mt-4 px-8 py-3 bg-white text-black rounded-xl font-bold hover:bg-gray-100 transition-colors shadow-lg shadow-white/10"
+                            className="mt-4 px-8 py-3 bg-[#FF6A00] hover:bg-[#E65C00] text-white rounded-full font-bold transition-all shadow-sm"
                         >
                             Start Shopping
                         </button>
@@ -103,23 +103,23 @@ export default function OrdersView() {
                 ) : (
                     <div className="flex flex-col gap-6">
                         {orderDetails.map((order, idx) => (
-                            <div key={idx} className="bg-white/5 border border-white/10 rounded-3xl p-5 md:p-6 shadow-xl hover:bg-white/10 transition-all backdrop-blur-sm">
+                            <div key={idx} className="bg-white border border-[#ECECEC] rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md transition-all">
                                 
                                 {/* Order Header */}
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-white/10">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-[#ECECEC]">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-xs font-extrabold text-white/70 uppercase tracking-wider">Order Reference</span>
-                                            <span className="text-xs font-mono font-bold bg-white/15 text-white px-2 py-0.5 rounded-md border border-white/20">{order.group_order_reference}</span>
+                                            <span className="text-xs font-extrabold text-gray-500 uppercase tracking-wider">Order Reference</span>
+                                            <span className="text-xs font-mono font-bold bg-[#F8F8F8] text-[#111111] px-2 py-0.5 rounded-md border border-[#ECECEC]">{order.group_order_reference}</span>
                                         </div>
-                                        <p className="text-sm text-white/80 font-semibold flex items-center gap-1.5">
-                                            <Clock className="w-4 h-4" />
+                                        <p className="text-sm text-gray-600 font-semibold flex items-center gap-1.5">
+                                            <Clock className="w-4 h-4 text-gray-400" />
                                             {new Date(order.date_created).toLocaleString()}
                                         </p>
                                     </div>
                                     
                                     <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4">
-                                        <div className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 ${order.status === 'cancelled' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-green-500/20 text-green-300 border border-green-500/30'}`}>
+                                        <div className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 ${order.status === 'cancelled' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'}`}>
                                             {order.status === 'cancelled' ? <X className="w-3.5 h-3.5" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                                             {order.status === 'cancelled' ? 'Cancelled' : 'Confirmed'}
                                         </div>
@@ -127,7 +127,7 @@ export default function OrdersView() {
                                         {order.status !== 'cancelled' && (
                                             <button 
                                                 onClick={() => handleCancel(order.group_order_reference)}
-                                                className="text-xs font-bold text-red-400 hover:text-red-300 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1"
+                                                className="text-xs font-bold text-red-600 hover:text-red-700 bg-white hover:bg-red-50 border border-red-200 px-3 py-1.5 rounded-full transition-colors flex items-center gap-1"
                                             >
                                                 <X className="w-3.5 h-3.5" /> Cancel Order
                                             </button>
@@ -137,24 +137,24 @@ export default function OrdersView() {
 
                                 {/* Order Items */}
                                 <div className="flex flex-col gap-4">
-                                    <h4 className="font-bold text-white text-sm mb-2">Items</h4>
+                                    <h4 className="font-bold text-[#111111] text-sm mb-2">Items</h4>
                                     {order.items?.map((item: any, itemIdx: number) => (
-                                        <div key={itemIdx} className="flex items-center justify-between bg-white/10 border border-white/15 p-4 rounded-2xl">
+                                        <div key={itemIdx} className="flex items-center justify-between bg-[#F8F8F8] border border-[#ECECEC] p-4 rounded-2xl">
                                             <div className="flex items-start gap-4">
-                                                <div className="w-12 h-12 bg-white/10 rounded-xl border border-white/10 flex items-center justify-center text-xl shadow-sm shrink-0">
+                                                <div className="w-12 h-12 bg-white rounded-xl border border-[#ECECEC] flex items-center justify-center text-xl shadow-sm shrink-0">
                                                     📦
                                                 </div>
                                                 <div>
-                                                    <h5 className="font-bold text-white line-clamp-1">{item.product_name || 'Item'}</h5>
-                                                    <p className="text-sm text-white/80 font-medium">Qty: <span className="font-bold text-white">{item.qty}</span></p>
+                                                    <h5 className="font-bold text-[#111111] line-clamp-1">{item.product_name || 'Item'}</h5>
+                                                    <p className="text-sm text-gray-500 font-medium">Qty: <span className="font-bold text-[#111111]">{item.qty}</span></p>
                                                 </div>
                                             </div>
                                             <div className="flex flex-col items-end gap-2 shrink-0">
-                                                <span className="font-bold text-white">{formatPrice(parseFloat(item.total_cost || 0))}</span>
+                                                <span className="font-bold text-[#111111]">{formatPrice(parseFloat(item.total_cost || 0))}</span>
                                                 {order.status !== 'cancelled' && item.qty > 0 && (
                                                     <button 
                                                         onClick={() => handleReturnItem(order.group_order_reference, item.order_id)}
-                                                        className="text-[10px] font-bold text-sky-200 hover:text-white bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 px-2.5 py-1 rounded-md transition-colors flex items-center gap-1 drop-shadow-sm"
+                                                        className="text-[10px] font-bold text-[#FF6A00] hover:text-[#E65C00] bg-white hover:bg-orange-50 border border-[#FF6A00]/20 px-2.5 py-1 rounded-md transition-colors flex items-center gap-1 shadow-sm"
                                                     >
                                                         <RotateCcw className="w-3 h-3" /> Return 1x
                                                     </button>
@@ -165,9 +165,9 @@ export default function OrdersView() {
                                 </div>
 
                                 {/* Order Footer */}
-                                <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between">
-                                    <span className="font-bold text-white/90">Total Amount</span>
-                                    <span className={`text-xl font-black ${order.status === 'cancelled' ? 'text-white/60 line-through' : 'text-white'}`}>
+                                <div className="mt-6 pt-6 border-t border-[#ECECEC] flex items-center justify-between">
+                                    <span className="font-bold text-gray-600">Total Amount</span>
+                                    <span className={`text-xl font-black ${order.status === 'cancelled' ? 'text-gray-400 line-through' : 'text-[#111111]'}`}>
                                         {formatPrice(parseFloat(order.total_amount || 0))}
                                     </span>
                                 </div>

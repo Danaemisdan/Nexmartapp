@@ -28,7 +28,7 @@ export class IntentRouter {
         // FAQ: Catalog / Platform Overview
         if ((lower.includes('what') || lower.includes('which') || lower.includes('list') || lower.includes('tell me') || lower.includes('do you sell') || lower.includes('do you have') || lower.includes('kind of') || lower.includes('types of')) && 
             (lower.includes('products') || lower.includes('items') || lower.includes('catalog') || lower.includes('sell') || lower.includes('offer') || lower.includes('platform') || lower.includes('website') || lower.includes('store') || lower.includes('available'))) {
-            const specificCategories = ['laptop', 'phone', 'headphone', 'earbud', 'monitor', 'screen', 'audio', 'sound', 'camera', 'drone', 'watch', 'skincare', 'beauty', 'tv', 'television', 'gadget', 'speaker', 'keyboard', 'mouse'];
+            const specificCategories = ['laptop', 'phone', 'headphone', 'earbud', 'monitor', 'screen', 'audio', 'sound', 'camera', 'drone', 'watch', 'skincare', 'beauty', 'tv', 'television', 'gadget', 'speaker', 'keyboard', 'mouse', 'fashion', 'clothing', 'home', 'furniture', 'groceries', 'food', 'medicine', 'health', 'sports'];
             const hasSpecificCategory = specificCategories.some(cat => lower.includes(cat));
             if (!hasSpecificCategory || lower.includes('on your website') || lower.includes('on your platform') || lower.includes('on your store') || lower.includes('on your e-commerce') || lower.includes('do you have on')) {
                 return { intent: IntentType.GENERAL_CHAT, action: 'FAQ_CATALOG', isRefinement: false };
@@ -110,7 +110,7 @@ export class IntentRouter {
         const questionStarters = ['what is ', 'who is ', 'why do ', 'why is ', 'how do i ', 'how can i ', 'how does ', 'tell me about ', 'can you explain ', 'is nexmart ', 'do you guys '];
         const hasQuestionStarter = questionStarters.some(q => lower.startsWith(q) || lower.includes(` ${q}`));
         if (hasQuestionStarter) {
-            const productKeywords = ['laptop', 'phone', 'headphone', 'earbud', 'monitor', 'screen', 'audio', 'sound', 'camera', 'drone', 'watch', 'skincare', 'beauty', 'tv', 'television', 'gadget', 'speaker', 'keyboard', 'mouse', 'shirt', 'shoe', 'cloth', 'furniture', 'chair', 'table', 'bed', 'book'];
+            const productKeywords = ['laptop', 'phone', 'headphone', 'earbud', 'monitor', 'screen', 'audio', 'sound', 'camera', 'drone', 'watch', 'skincare', 'beauty', 'tv', 'television', 'gadget', 'speaker', 'keyboard', 'mouse', 'shirt', 'shoe', 'cloth', 'furniture', 'chair', 'table', 'bed', 'book', 'fashion', 'medicine', 'grocery', 'sports'];
             const mentionsProduct = productKeywords.some(pk => lower.includes(pk));
             if (!mentionsProduct) {
                 return { intent: IntentType.GENERAL_CHAT, action: 'CHAT_GENERAL', isRefinement: false };

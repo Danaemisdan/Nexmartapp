@@ -3,11 +3,19 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, fetchProducts } from './api';
 import { supabaseClient } from './supabaseClient';
 
-export type ViewState = 'home' | 'cart' | 'wishlist' | 'product' | 'categories' | 'deals' | 'orders' | 'search' | 'checkout';
+export type ViewState = 'home' | 'cart' | 'wishlist' | 'product' | 'categories' | 'deals' | 'orders' | 'search' | 'checkout' | 'login' | 'account' | 'checkout_address' | 'checkout_payment';
 
-interface CartItem {
+export interface CartItem {
     product: Product;
     quantity: number;
+    size?: string;
+}
+
+export interface ToastConfig {
+    visible: boolean;
+    type: 'success' | 'error' | 'warning' | 'info';
+    message: string;
+    productImage?: string;
 }
 
 interface StoreContextType {
@@ -20,18 +28,28 @@ interface StoreContextType {
     comparisonProducts: Product[] | null;
     isApiReady: boolean;
     hasMore: boolean;
+    toast: ToastConfig;
+    authModalOpen: boolean;
+    addressModalOpen: boolean;
+    searchQuery: string;
     
     loadMoreProducts: () => Promise<void>;
     navigate: (view: ViewState, product?: Product) => void;
     setComparisonProducts: (products: Product[] | null) => void;
-    addToCart: (product: Product, quantity?: number) => void;
+    addToCart: (product: Product, quantity?: number, size?: string) => void;
     removeFromCart: (productId: string) => void;
     updateCartQuantity: (productId: string, quantity: number) => void;
+    updateCartSize: (productId: string, size: string) => void;
     clearCart: () => void;
     toggleWishlist: (productId: string) => void;
     getCartCount: () => number;
     formatPrice: (price: number) => string;
     addOrder: (orderId: string) => void;
+    showToast: (message: string, type: ToastConfig['type'], productImage?: string) => void;
+    hideToast: () => void;
+    setAuthModalOpen: (open: boolean) => void;
+    setAddressModalOpen: (open: boolean) => void;
+    setSearchQuery: (query: string) => void;
 }
 
 
@@ -48,6 +66,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const [orders, setOrders] = useState<string[]>([]);
     const [pageOffset, setPageOffset] = useState(0);
     const [hasMore, setHasMore] = useState(true);
+    const [authModalOpen, setAuthModalOpen] = useState(false);
+    const [addressModalOpen, setAddressModalOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [toast, setToast] = useState<ToastConfig>({
+        visible: false,
+        type: 'info',
+        message: ''
+    });
     const LIMIT = 100;
 
     useEffect(() => {
@@ -118,19 +144,31 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         return `₦${price.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     };
 
+    const showToast = (message: string, type: ToastConfig['type'], productImage?: string) => {
+        setToast({ visible: true, message, type, productImage });
+        setTimeout(() => {
+            setToast(prev => ({ ...prev, visible: false }));
+        }, 3000);
+    };
+
+    const hideToast = () => {
+        setToast(prev => ({ ...prev, visible: false }));
+    };
+
     const navigate = (view: ViewState, product?: Product) => {
         if (product) setSelectedProduct(product);
         setActiveView(view);
     };
 
-    const addToCart = (product: Product, quantity = 1) => {
+    const addToCart = (product: Product, quantity = 1, size?: string) => {
         setCart(prev => {
-            const existing = prev.find(item => item.product.id === product.id);
+            const existing = prev.find(item => item.product.id === product.id && item.size === size);
             if (existing) {
-                return prev.map(item => item.product.id === product.id ? { ...item, quantity: item.quantity + quantity } : item);
+                return prev.map(item => (item.product.id === product.id && item.size === size) ? { ...item, quantity: item.quantity + quantity } : item);
             }
-            return [...prev, { product, quantity }];
+            return [...prev, { product, quantity, size }];
         });
+        showToast('Item successfully added to bag', 'success', product.image);
     };
 
     const removeFromCart = (productId: string) => {
@@ -140,6 +178,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     const updateCartQuantity = (productId: string, quantity: number) => {
         if (quantity <= 0) return removeFromCart(productId);
         setCart(prev => prev.map(item => item.product.id === productId ? { ...item, quantity } : item));
+    };
+
+    const updateCartSize = (productId: string, size: string) => {
+        setCart(prev => prev.map(item => item.product.id === productId ? { ...item, size } : item));
     };
 
     const clearCart = () => setCart([]);
@@ -182,11 +224,15 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         comparisonProducts,
         isApiReady,
         hasMore,
+        toast,
+        authModalOpen,
+        addressModalOpen,
+        searchQuery,
         loadMoreProducts,
         navigate,
         setComparisonProducts,
-        addToCart, removeFromCart, updateCartQuantity, clearCart, toggleWishlist, getCartCount,
-            formatPrice, addOrder
+        addToCart, removeFromCart, updateCartQuantity, updateCartSize, clearCart, toggleWishlist, getCartCount,
+            formatPrice, addOrder, showToast, hideToast, setAuthModalOpen, setAddressModalOpen, setSearchQuery
         }}>
             {children}
         </StoreContext.Provider>

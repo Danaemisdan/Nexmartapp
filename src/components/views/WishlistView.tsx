@@ -1,79 +1,127 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useStore } from '@/lib/StoreContext';
-import { ArrowLeft, Heart, ShoppingCart, Trash2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Heart, X, ArrowLeft } from 'lucide-react';
+import { marketplaceProducts } from '@/lib/marketplaceData';
+import ProductVariantModal from '../ui/ProductVariantModal';
+import { Product } from '@/lib/api';
+import AuthGate from '../ui/AuthGate';
 
 export default function WishlistView() {
-    const { products, wishlist, toggleWishlist, addToCart, navigate, formatPrice } = useStore();
+    const { wishlist, addToCart, toggleWishlist, navigate } = useStore();
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-    const wishlistProducts = products.filter(p => wishlist.includes(p.id));
+    const wishlistProducts = marketplaceProducts.filter(p => wishlist.includes(p.id as any));
 
-    if (wishlistProducts.length === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center pt-24 pb-32 px-4 h-[70vh]">
-                <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-6 shadow-xl">
-                    <Heart className="w-10 h-10 text-rose-400 drop-shadow-md" />
-                </div>
-                <h2 className="text-3xl font-black text-white mb-3">No favorites yet</h2>
-                <p className="text-gray-400 mb-8 text-center max-w-sm">Tap the heart icon on any product to save it for later.</p>
-                <button onClick={() => navigate('home')} className="bg-white text-black px-8 py-4 rounded-full font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-105 transition-all flex items-center gap-2">
-                    <ArrowLeft className="w-5 h-5" /> Start Exploring
-                </button>
-            </div>
-        );
-    }
+    const handleMoveToBag = (product: any) => {
+        setSelectedProduct(product as Product);
+    };
+
+    const handleConfirmSize = (size: string) => {
+        if (selectedProduct) {
+            addToCart(selectedProduct, 1, size);
+            toggleWishlist(selectedProduct.id); // Remove from wishlist after moving to bag
+        }
+    };
 
     return (
-        <div className="max-w-7xl mx-auto w-full px-4 md:px-6 py-8 pb-32 md:pb-12">
-            <div className="flex items-center gap-3 mb-8">
-                <button onClick={() => navigate('home')} className="p-2 bg-white/5 backdrop-blur-md rounded-full hover:bg-white/10 border border-white/10 transition-colors">
-                    <ArrowLeft className="w-5 h-5 text-gray-300" />
-                </button>
-                <h1 className="text-3xl font-black text-white">Your Wishlist</h1>
-                <div className="ml-auto bg-rose-500/20 text-rose-300 border border-rose-500/30 px-3 py-1 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(244,63,94,0.3)]">
-                    {wishlistProducts.length} saved
+        <div className="flex flex-col h-full bg-[#F8F8F8] pb-24 md:pb-0 min-h-screen text-[#111111]">
+            <div className="sticky top-0 bg-white border-b border-[#ECECEC] z-10 px-6 py-4 shadow-sm flex items-center justify-between">
+                <div className="flex items-center gap-4 max-w-[1400px] mx-auto w-full">
+                    <button 
+                        onClick={() => navigate('home')}
+                        className="p-2 -ml-2 bg-white hover:bg-gray-50 border border-[#ECECEC] text-[#111111] rounded-full shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6A00]"
+                    >
+                        <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <h1 className="text-xl md:text-2xl font-bold text-[#111111]">Your Wishlist</h1>
                 </div>
             </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                {wishlistProducts.map((product, i) => (
-                    <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                        key={product.id} 
-                        onClick={() => navigate('product', product)}
-                        className="cursor-pointer bg-white/10 md:bg-white/5 border border-white/15 md:border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.7)] rounded-2xl p-4 flex flex-col group hover:bg-white/15 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative backdrop-blur-sm"
-                    >
-                        {/* Remove button */}
-                        <button 
-                            onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}
-                            className="absolute top-3 right-3 w-8 h-8 bg-white/10 backdrop-blur-md rounded-full shadow-sm flex items-center justify-center text-rose-400 hover:bg-rose-500 hover:text-white transition-colors z-10"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </button>
-
-                        <div className="w-full aspect-square bg-white/10 rounded-xl mb-4 p-4 flex items-center justify-center overflow-hidden">
-                            <img src={product.image} alt={product.title} className="max-w-full max-h-full object-contain mix-blend-screen group-hover:scale-110 transition-transform duration-500" />
+        <AuthGate
+            icon={<Heart className="w-10 h-10 text-rose-400" />}
+            pageName="Wishlist"
+            subtitle="Save your favourite products and access them anytime after logging in."
+        >
+            {wishlistProducts.length === 0 ? (
+                <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 max-w-4xl mx-auto w-full mt-4">
+                    <div className="flex flex-col items-center justify-center h-[60vh] text-center gap-4 bg-white rounded-3xl border border-[#ECECEC] p-8 shadow-sm">
+                        <div className="w-20 h-20 bg-[#F8F8F8] border border-[#ECECEC] rounded-full flex items-center justify-center mb-2">
+                            <Heart className="w-10 h-10 text-gray-400" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-[#111111]">No favorites yet</h2>
+                        <p className="text-gray-500 max-w-md">Tap the heart icon on any product to save it for later.</p>
+                        <div className="mt-4 flex flex-col sm:flex-row gap-4 items-center justify-center w-full">
+                            <button 
+                                onClick={() => navigate('home')}
+                                className="px-8 py-3 bg-[#FF6A00] hover:bg-[#E65C00] text-white rounded-full font-bold transition-all shadow-sm w-full sm:w-auto"
+                            >
+                                Start Shopping
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="w-full bg-white min-h-screen text-[#111111] py-8 pb-32 font-sans">
+                    <div className="max-w-[1400px] mx-auto w-full px-4 md:px-8">
+                        <div className="flex items-center gap-3 mb-8">
+                            <h1 className="text-xl font-bold text-[#111111]">
+                                My Wishlist <span className="font-normal text-gray-500">{wishlistProducts.length} items</span>
+                            </h1>
                         </div>
 
-                        <div className="flex flex-col flex-1">
-                            <h3 className="text-sm font-extrabold text-white leading-tight mb-1 line-clamp-2 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">{product.title}</h3>
-                            <p className="text-xs text-white/70 font-bold mb-2 drop-shadow-sm">{product.category}</p>
-                            
-                            <div className="mt-auto flex items-center justify-between">
-                                <span className="text-lg font-black text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">{formatPrice(product.price)}</span>
-                                <button 
-                                    onClick={(e) => { e.stopPropagation(); addToCart(product); }}
-                                    className="w-8 h-8 rounded-full border-2 border-sky-300 text-sky-300 flex items-center justify-center hover:bg-sky-300 hover:text-black transition-colors shadow-[0_0_10px_rgba(56,189,248,0.3)]"
-                                >
-                                    <ShoppingCart className="w-4 h-4" />
-                                </button>
-                            </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                            {wishlistProducts.map((product) => (
+                                <div key={product.id} className="min-w-0 max-w-full flex flex-col border border-gray-100 hover:shadow-lg transition-shadow bg-white relative group">
+                                    
+                                    {/* Remove Button */}
+                                    <button 
+                                        onClick={() => toggleWishlist(product.id as any)}
+                                        className="absolute top-2 right-2 z-10 w-6 h-6 bg-white/80 hover:bg-white rounded-full flex items-center justify-center text-gray-500 shadow-sm transition-colors"
+                                    >
+                                        <X className="w-3.5 h-3.5" />
+                                    </button>
+
+                                    {/* Image */}
+                                    <div className="relative aspect-[3/4] w-full overflow-hidden bg-gray-50 cursor-pointer" onClick={() => navigate('product', product as any)}>
+                                        <img 
+                                            src={product.image} 
+                                            alt={product.title} 
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                                        />
+                                    </div>
+
+                                    {/* Info */}
+                                    <div className="p-3 text-center border-t border-gray-100 flex-1 flex flex-col justify-center">
+                                        <h3 className="text-xs text-gray-500 truncate font-medium mb-1">{product.title}</h3>
+                                        <div className="flex items-center justify-center gap-2">
+                                            <span className="text-sm font-bold text-[#111111]">Rs.{Math.floor(product.price)}</span>
+                                            <span className="text-xs text-gray-400 line-through">Rs.{Math.floor(product.price * 1.5)}</span>
+                                            <span className="text-[10px] font-bold text-[#FF6A00]">(33% OFF)</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Move to Cart */}
+                                    <button 
+                                        onClick={() => handleMoveToBag(product)}
+                                        className="w-full py-2.5 text-xs font-bold tracking-widest text-[#FF6A00] uppercase hover:bg-[#FF6A00] hover:text-white transition-colors border-t border-gray-100"
+                                    >
+                                        MOVE TO CART
+                                    </button>
+                                </div>
+                            ))}
                         </div>
-                    </motion.div>
-                ))}
-            </div>
+                    </div>
+
+                    {selectedProduct && (
+                        <ProductVariantModal
+                            isOpen={!!selectedProduct}
+                            onClose={() => setSelectedProduct(null)}
+                            product={selectedProduct}
+                            onConfirm={handleConfirmSize}
+                        />
+                    )}
+                </div>
+            )}
+        </AuthGate>
         </div>
     );
 }

@@ -70,7 +70,7 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
                 <AnimatePresence mode="wait">
                     {step === 0 && (
                         <motion.div key="step0" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="flex flex-col items-center text-center">
-                            <img src="/logo-icon.png" alt="Nexmart Logo" className="w-24 h-24 mb-6 drop-shadow-xl" />
+                            <img src="/yellow-x-logo.png" alt="Nexmart Logo" className="w-24 h-24 mb-6 drop-shadow-xl rounded-xl" />
                             <h2 className="text-4xl font-extrabold tracking-tight text-slate-900 mb-4">Meet Nexmart AI.</h2>
                             <p className="text-lg text-slate-500 mb-10 leading-relaxed max-w-sm">Experience the future of shopping. Your personal AI agent is ready to curate, negotiate, and discover.</p>
                             

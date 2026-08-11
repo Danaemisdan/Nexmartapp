@@ -46,6 +46,20 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Nexmart Premium Design System Tokens (Whatnot-Inspired) */
+  --color-theme-bg: #111111;
+  --color-theme-surface: #181818;
+  --color-theme-surface-hover: #222222;
+  --color-theme-card: #202020;
+  --color-theme-accent: #FF6A00;
+  --color-theme-accent-hover: #FF8A1F;
+  --color-theme-border: rgba(255, 255, 255, 0.08);
+  --color-theme-text: #FFFFFF;
+  --color-theme-text-muted: rgba(255, 255, 255, 0.5);
+  
+  --shadow-theme-card: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-theme-card-hover: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 :root {
@@ -185,7 +199,10 @@ div:has(> a[href*="clerk"]),
 div[class*="cl-devMode"],
 div[class*="cl-development"],
 div[id*="clerk-dev"],
-div[style*="position: fixed"][style*="bottom"][style*="right"]:has(a[href*="clerk"]) {
+div[id="clerk-components"] > div[style*="z-index: 2147483647"],
+div[style*="z-index: 2147483647"][style*="bottom"],
+div[style*="position: fixed"][style*="bottom"][style*="right"]:has(a[href*="clerk"]),
+div:has(> div > div > p:contains("created your first user")) {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;

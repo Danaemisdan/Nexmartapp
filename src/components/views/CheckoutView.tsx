@@ -1,240 +1,243 @@
 import React, { useState } from 'react';
 import { useStore } from '@/lib/StoreContext';
-import { ArrowLeft, CreditCard, User, Truck, ShieldCheck, MapPin } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { toast } from 'sonner';
-import { useAuth, useUser, SignInButton } from '@clerk/nextjs';
+import { ShieldCheck, MapPin, Tag, Truck } from 'lucide-react';
+import { useAuth } from '@clerk/nextjs';
 
 export default function CheckoutView() {
-    const { cart, formatPrice, navigate, clearCart } = useStore();
+    const { activeView, cart, navigate, showToast, clearCart } = useStore();
     const { isSignedIn } = useAuth();
-    const { user } = useUser();
-    
-    const [isCheckingOut, setIsCheckingOut] = useState(false);
-    const [shippingMethod, setShippingMethod] = useState('standard');
-    
-    // Form state
-    const [formData, setFormData] = useState({
-        firstName: user?.firstName || '',
-        lastName: user?.lastName || '',
-        phone: user?.primaryPhoneNumber?.phoneNumber || '',
-        address: '',
-        city: ''
-    });
+    const [selectedAddress, setSelectedAddress] = useState<string>('home');
+    const [selectedPayment, setSelectedPayment] = useState<string>('upi');
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-    const tax = subtotal * 0.08;
-    const shippingCost = shippingMethod === 'express' ? 15 : 0;
-    const total = subtotal + tax + shippingCost;
+    const isAddressStep = activeView === 'checkout_address' || activeView === 'checkout';
+    const isPaymentStep = activeView === 'checkout_payment';
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    const totalMRP = cart.reduce((sum, item) => sum + (Math.floor(item.product.price * 1.5) * item.quantity), 0);
+    const totalDiscount = cart.reduce((sum, item) => sum + ((Math.floor(item.product.price * 1.5) - item.product.price) * item.quantity), 0);
+    const totalAmount = totalMRP - totalDiscount + 23; // 23 is platform fee
 
-    const handleCheckout = async (e: React.FormEvent) => {
-        e.preventDefault();
-        
-        if (!formData.firstName || !formData.lastName || !formData.phone || !formData.address || !formData.city) {
-            toast.error('Please fill in all required delivery fields.');
-            return;
-        }
-
-        setIsCheckingOut(true);
-        try {
-            const customer = {
-                firstname: formData.firstName,
-                lastname: formData.lastName,
-                phone: formData.phone,
-                address: `${formData.address}, ${formData.city}`
-            };
-            
-            const res = await fetch('/api/payment/initialize', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cart, customer, totalAmount: total })
-            });
-            
-            const data = await res.json();
-            
-            if (res.ok && data.success && data.checkoutUrl) {
-                toast.success('Redirecting to secure payment gateway...');
-                setTimeout(() => {
-                    window.location.href = data.checkoutUrl;
-                }, 800);
-            } else {
-                toast.error(`Checkout Failed: ${data.error || 'Unknown error'}`);
-            }
-        } catch (e: any) {
-            toast.error(`Checkout Error: ${e.message}`);
-        } finally {
-            setIsCheckingOut(false);
+    const handleNext = () => {
+        if (isAddressStep) {
+            navigate('checkout_payment');
+        } else {
+            handlePlaceOrder();
         }
     };
 
-    if (cart.length === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center pt-24 h-[70vh]">
-                <h2 className="text-3xl font-black text-white mb-3">Your cart is empty</h2>
-                <button onClick={() => navigate('home')} className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-bold transition-all mt-6">
-                    Continue Shopping
-                </button>
-            </div>
-        );
-    }
-
-    if (!isSignedIn) {
-        return (
-            <div className="flex flex-col items-center justify-center pt-24 h-[70vh]">
-                <div className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center mb-6">
-                    <User className="w-10 h-10 text-blue-400" />
-                </div>
-                <h2 className="text-3xl font-black text-white mb-3">Sign in to checkout</h2>
-                <p className="text-gray-400 mb-8 max-w-md text-center">You need an account to place an order securely.</p>
-                <SignInButton mode="modal" signUpFallbackRedirectUrl="/?payment=success">
-                    <button className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">
-                        Sign In Now
-                    </button>
-                </SignInButton>
-            </div>
-        );
-    }
+    const handlePlaceOrder = () => {
+        setIsProcessing(true);
+        // Simulate order placement
+        setTimeout(() => {
+            setIsProcessing(false);
+            showToast('Order placed successfully!', 'success');
+            clearCart();
+            navigate('orders');
+        }, 1500);
+    };
 
     return (
-        <div className="flex flex-col h-full max-h-[80vh]">
-            <div className="flex items-center gap-4 mb-6 px-4 md:px-0 mt-4 md:mt-0 flex-shrink-0">
-                <button onClick={() => navigate('cart')} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
-                    <ArrowLeft className="w-5 h-5" />
-                </button>
-                <div>
-                    <h1 className="text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">
-                        Checkout
-                    </h1>
+        <div className="w-full bg-white min-h-screen text-[#111111] font-sans pb-32 flex flex-col">
+            {/* Header / Progress Bar */}
+            <div className="border-b border-gray-100 bg-white sticky top-0 z-40">
+                <div className="max-w-[1000px] mx-auto px-4 py-4 flex items-center justify-between">
+                    <div className="flex-1" />
+                    <div className="flex items-center gap-4 text-xs font-bold tracking-widest uppercase">
+                        <span className="text-[#00BFA5] cursor-pointer hover:underline" onClick={() => navigate('cart')}>BAG</span>
+                        <span className="text-[#00BFA5]">----------</span>
+                        <span className={`cursor-pointer ${isPaymentStep ? 'text-[#00BFA5] hover:underline' : 'text-[#00BFA5] border-b-2 border-[#00BFA5] pb-1'}`} onClick={() => navigate('checkout_address')}>ADDRESS</span>
+                        <span className={isPaymentStep ? "text-[#00BFA5]" : "text-gray-300"}>----------</span>
+                        <span className={isPaymentStep ? "text-[#00BFA5] border-b-2 border-[#00BFA5] pb-1" : "text-gray-500"}>PAYMENT</span>
+                    </div>
+                    <div className="flex-1 flex justify-end">
+                        <div className="flex items-center gap-1 text-gray-500">
+                            <ShieldCheck className="w-5 h-5 text-[#00BFA5]" />
+                            <span className="text-xs font-bold tracking-widest uppercase">100% SECURE</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto hide-scrollbar px-4 md:px-0 pb-20">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 space-y-6">
-                        {/* Delivery Information */}
-                        <div className="bg-white/5 rounded-3xl p-6 border border-white/10">
-                            <h2 className="text-xl font-bold flex items-center gap-2 mb-6">
-                                <MapPin className="w-5 h-5 text-blue-400" /> Delivery Information
-                            </h2>
-                            <form id="checkout-form" onSubmit={handleCheckout} className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">First Name *</label>
-                                        <input required name="firstName" value={formData.firstName} onChange={handleInputChange} type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-1">Last Name *</label>
-                                        <input required name="lastName" value={formData.lastName} onChange={handleInputChange} type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Phone Number *</label>
-                                    <input required name="phone" value={formData.phone} onChange={handleInputChange} type="tel" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">Street Address *</label>
-                                    <input required name="address" value={formData.address} onChange={handleInputChange} type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-400 mb-1">City *</label>
-                                    <input required name="city" value={formData.city} onChange={handleInputChange} type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500" />
-                                </div>
-                            </form>
-                        </div>
+            <div className="max-w-[1000px] mx-auto w-full px-4 pt-8 flex flex-col md:flex-row gap-8 flex-1">
+                
+                {/* Left Column: Flow Content */}
+                <div className="flex-1 pr-0 md:pr-4">
+                    {isAddressStep && (
+                        <div>
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-lg font-bold text-[#111111]">Select Delivery Address</h2>
+                                <button className="text-xs font-bold text-[#FF6A00] border border-gray-200 px-4 py-2 rounded uppercase hover:border-[#FF6A00]">ADD NEW ADDRESS</button>
+                            </div>
 
-                        {/* Shipping Options */}
-                        <div className="bg-white/5 rounded-3xl p-6 border border-white/10">
-                            <h2 className="text-xl font-bold flex items-center gap-2 mb-6">
-                                <Truck className="w-5 h-5 text-emerald-400" /> Shipping Method
-                            </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <label className={`border rounded-2xl p-4 cursor-pointer transition-all ${shippingMethod === 'standard' ? 'border-emerald-500 bg-emerald-500/10' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-3">
-                                            <input type="radio" name="shipping" value="standard" checked={shippingMethod === 'standard'} onChange={() => setShippingMethod('standard')} className="w-4 h-4 accent-emerald-500" />
-                                            <span className="font-bold">Standard</span>
+                            <div className="border border-gray-200 rounded p-4 mb-4 bg-gray-50">
+                                <span className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 block">DEFAULT ADDRESS</span>
+                                <div className="flex items-start gap-3">
+                                    <input 
+                                        type="radio" 
+                                        name="address" 
+                                        checked={selectedAddress === 'home'}
+                                        onChange={() => setSelectedAddress('home')}
+                                        className="mt-1 accent-[#FF6A00]" 
+                                    />
+                                    <div>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <span className="font-bold text-[#111111]">John Doe</span>
+                                            <span className="px-2 py-0.5 bg-green-50 text-[#00BFA5] border border-[#00BFA5]/20 text-[10px] font-bold rounded-full uppercase tracking-wider">HOME</span>
                                         </div>
-                                        <span className="font-medium text-emerald-400">Free</span>
+                                        <p className="text-sm text-gray-600 leading-relaxed mb-3">
+                                            Flat number-4, 2-77, adesh villa, block-2, rajendra nagar, sector-5, Sahibabad<br/>
+                                            Ghaziabad, Uttar Pradesh - 201005
+                                        </p>
+                                        <p className="text-sm text-gray-600 mb-4">Mobile: <span className="font-medium text-[#111111]">8447450354</span></p>
+                                        <button className="text-xs font-bold text-gray-600 hover:text-[#FF6A00] uppercase border border-gray-300 hover:border-[#FF6A00] rounded px-4 py-1.5 transition-colors">EDIT</button>
                                     </div>
-                                    <p className="text-sm text-gray-400 pl-7">3-5 business days</p>
-                                </label>
-                                <label className={`border rounded-2xl p-4 cursor-pointer transition-all ${shippingMethod === 'express' ? 'border-emerald-500 bg-emerald-500/10' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-3">
-                                            <input type="radio" name="shipping" value="express" checked={shippingMethod === 'express'} onChange={() => setShippingMethod('express')} className="w-4 h-4 accent-emerald-500" />
-                                            <span className="font-bold">Express</span>
-                                        </div>
-                                        <span className="font-medium text-white">$15.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaymentStep && (
+                        <div>
+                            <div className="border border-gray-200 rounded p-4 mb-6 bg-white">
+                                <div className="flex items-center gap-4 border-b border-gray-100 pb-4 mb-4">
+                                    <Tag className="w-5 h-5 text-[#00BFA5]" />
+                                    <div>
+                                        <span className="font-bold text-sm text-[#111111]">Bank Offer</span>
+                                        <p className="text-xs text-gray-500">10% Instant Discount on IDFC FIRST SWYP Credit Card on min spend of ₹850</p>
                                     </div>
-                                    <p className="text-sm text-gray-400 pl-7">1-2 business days</p>
-                                </label>
+                                </div>
+                                
+                                <h2 className="text-base font-bold text-[#111111] mb-4">Choose Payment Mode</h2>
+                                
+                                <div className="flex border border-gray-200 rounded overflow-hidden">
+                                    {/* Payment Sidebar */}
+                                    <div className="w-48 bg-gray-50 border-r border-gray-200 flex flex-col">
+                                        <button 
+                                            onClick={() => setSelectedPayment('cod')}
+                                            className={`py-4 px-4 text-left text-sm font-bold border-l-4 transition-colors ${selectedPayment === 'cod' ? 'border-[#FF6A00] bg-white text-[#FF6A00]' : 'border-transparent text-gray-600 hover:bg-gray-100'}`}
+                                        >
+                                            Cash On Delivery
+                                        </button>
+                                        <button 
+                                            onClick={() => setSelectedPayment('upi')}
+                                            className={`py-4 px-4 text-left text-sm font-bold border-l-4 transition-colors ${selectedPayment === 'upi' ? 'border-[#FF6A00] bg-white text-[#FF6A00]' : 'border-transparent text-gray-600 hover:bg-gray-100'}`}
+                                        >
+                                            UPI (Google Pay)
+                                        </button>
+                                        <button 
+                                            onClick={() => setSelectedPayment('cards')}
+                                            className={`py-4 px-4 text-left text-sm font-bold border-l-4 transition-colors ${selectedPayment === 'cards' ? 'border-[#FF6A00] bg-white text-[#FF6A00]' : 'border-transparent text-gray-600 hover:bg-gray-100'}`}
+                                        >
+                                            Credit/Debit Card
+                                        </button>
+                                    </div>
+
+                                    {/* Payment Content */}
+                                    <div className="flex-1 p-6 bg-white">
+                                        {selectedPayment === 'cod' && (
+                                            <div className="animate-in fade-in duration-300">
+                                                <h3 className="font-bold text-[#111111] mb-2">Cash on Delivery (Cash/UPI)</h3>
+                                                <p className="text-sm text-gray-500 mb-6">Pay when you receive the order.</p>
+                                                <button onClick={handlePlaceOrder} disabled={isProcessing} className="w-full bg-[#FF6A00] hover:bg-[#E65C00] text-white py-3.5 rounded text-sm font-bold uppercase transition-colors flex items-center justify-center gap-2">
+                                                    {isProcessing ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : null}
+                                                    PLACE ORDER
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {selectedPayment === 'upi' && (
+                                            <div className="animate-in fade-in duration-300">
+                                                <h3 className="font-bold text-[#111111] mb-2">Pay via UPI</h3>
+                                                <p className="text-sm text-gray-500 mb-6">Enter your UPI ID to receive a payment request.</p>
+                                                <input type="text" placeholder="Enter UPI ID (e.g. name@bank)" className="w-full border border-gray-300 rounded px-4 py-3 text-sm mb-6 focus:outline-none focus:border-[#FF6A00]" />
+                                                <button onClick={handlePlaceOrder} disabled={isProcessing} className="w-full bg-[#FF6A00] hover:bg-[#E65C00] text-white py-3.5 rounded text-sm font-bold uppercase transition-colors flex items-center justify-center gap-2">
+                                                    {isProcessing ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : null}
+                                                    PAY NOW
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {selectedPayment === 'cards' && (
+                                            <div className="animate-in fade-in duration-300">
+                                                <h3 className="font-bold text-[#111111] mb-2">Credit/Debit Card</h3>
+                                                <p className="text-sm text-gray-500 mb-6">Please ensure your card is active for online transactions.</p>
+                                                <input type="text" placeholder="Card Number" className="w-full border border-gray-300 rounded px-4 py-3 text-sm mb-4 focus:outline-none focus:border-[#FF6A00]" />
+                                                <div className="flex gap-4 mb-6">
+                                                    <input type="text" placeholder="MM/YY" className="w-full border border-gray-300 rounded px-4 py-3 text-sm focus:outline-none focus:border-[#FF6A00]" />
+                                                    <input type="text" placeholder="CVV" className="w-full border border-gray-300 rounded px-4 py-3 text-sm focus:outline-none focus:border-[#FF6A00]" />
+                                                </div>
+                                                <button onClick={handlePlaceOrder} disabled={isProcessing} className="w-full bg-[#FF6A00] hover:bg-[#E65C00] text-white py-3.5 rounded text-sm font-bold uppercase transition-colors flex items-center justify-center gap-2">
+                                                    {isProcessing ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : null}
+                                                    PAY NOW
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+
+                {/* Right Column: Pricing Summary */}
+                <div className="w-full md:w-[340px] flex-shrink-0">
+                    {/* Delivery Estimates */}
+                    <div className="mb-4">
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">DELIVERY ESTIMATES</span>
+                        <div className="flex items-start gap-3">
+                            <Truck className="w-5 h-5 text-gray-400 mt-0.5" />
+                            <div>
+                                <span className="text-sm font-bold text-[#111111]">Estimated delivery by <span className="text-[#00BFA5]">20 Aug 2026</span></span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="lg:col-span-1">
-                        <div className="bg-white/5 rounded-3xl p-6 border border-white/10 sticky top-0">
-                            <h2 className="text-xl font-bold mb-6">Order Summary</h2>
-                            
-                            <div className="space-y-4 mb-6 max-h-60 overflow-y-auto hide-scrollbar pr-2">
-                                {cart.map((item, idx) => (
-                                    <div key={idx} className="flex gap-3">
-                                        <div className="w-16 h-16 rounded-xl bg-white/10 overflow-hidden flex-shrink-0">
-                                            <img src={item.product.image} alt={item.product.title} className="w-full h-full object-cover mix-blend-overlay" />
-                                        </div>
-                                        <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                            <h3 className="font-medium text-sm text-white truncate">{item.product.title}</h3>
-                                            <div className="flex items-center justify-between mt-1">
-                                                <span className="text-xs text-gray-400">Qty: {item.quantity}</span>
-                                                <span className="font-bold text-sm text-white">{formatPrice(item.product.price * item.quantity)}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                    {/* Price Details */}
+                    <div>
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 block">PRICE DETAILS ({cart.length} Items)</span>
+                        
+                        <div className="space-y-3 text-sm text-[#111111] mb-4">
+                            <div className="flex justify-between">
+                                <span>Total MRP</span>
+                                <span>₹{totalMRP}</span>
                             </div>
-                            
-                            <div className="space-y-3 pt-6 border-t border-white/10">
-                                <div className="flex justify-between text-gray-400">
-                                    <span>Subtotal</span>
-                                    <span className="text-white font-medium">{formatPrice(subtotal)}</span>
-                                </div>
-                                <div className="flex justify-between text-gray-400">
-                                    <span>Tax (8%)</span>
-                                    <span className="text-white font-medium">{formatPrice(tax)}</span>
-                                </div>
-                                <div className="flex justify-between text-gray-400">
-                                    <span>Shipping</span>
-                                    <span className="text-white font-medium">{shippingCost === 0 ? 'Free' : formatPrice(shippingCost)}</span>
-                                </div>
-                                <div className="flex justify-between items-end pt-3 mt-3 border-t border-white/10">
-                                    <span className="text-lg font-bold">Total</span>
-                                    <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">
-                                        {formatPrice(total)}
-                                    </span>
-                                </div>
+                            <div className="flex justify-between">
+                                <span>Discount on MRP</span>
+                                <span className="text-[#00BFA5]">- ₹{totalDiscount}</span>
                             </div>
-                            
-                            <div className="mt-8">
-                                <button type="submit" form="checkout-form" disabled={isCheckingOut} className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.4)] disabled:opacity-50 disabled:cursor-not-allowed">
-                                    {isCheckingOut ? (
-                                        <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                    ) : (
-                                        <>
-                                            <CreditCard className="w-5 h-5" /> Pay Securely
-                                        </>
-                                    )}
-                                </button>
-                                <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-gray-400 font-medium">
-                                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> 256-bit encrypted secure checkout
-                                </div>
+                            <div className="flex justify-between">
+                                <span>Coupon Discount</span>
+                                <span className="text-[#FF6A00] cursor-pointer">Apply Coupon</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span>Platform Fee</span>
+                                <span>₹23</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span>Shipping Fee</span>
+                                <span className="text-[#00BFA5]">FREE</span>
                             </div>
                         </div>
+
+                        <div className="border-t border-gray-200 pt-4 mb-4">
+                            <div className="flex justify-between items-center">
+                                <span className="font-bold text-[#111111] text-base">Total Amount</span>
+                                <span className="font-bold text-[#111111] text-base">₹{totalAmount}</span>
+                            </div>
+                        </div>
+
+                        {isAddressStep && (
+                            <button 
+                                onClick={handleNext}
+                                className="w-full bg-[#FF6A00] hover:bg-[#E65C00] text-white py-3.5 rounded text-sm font-bold tracking-widest uppercase transition-colors"
+                            >
+                                CONTINUE
+                            </button>
+                        )}
                     </div>
                 </div>
+
             </div>
         </div>
     );

@@ -31,10 +31,10 @@ export const canonicalTaxonomies: CanonicalTaxonomy[] = [
     { category: 'electronics', subcategory: 'smartphones', productType: 'phone', aliases: ['phone', 'phones', 'smartphone', 'smartphones', 'iphone'] },
     { category: 'electronics', aliases: ['electronics', 'tech', 'gadgets'] },
     
-    // Health
-    { category: 'health', subcategory: 'supplements', productType: 'protein', concern: 'muscle', aliases: ['protein', 'protein powder', 'whey'] },
-    { category: 'health', subcategory: 'supplements', aliases: ['supplement', 'supplements', 'vitamins'] },
-    { category: 'health', aliases: ['health', 'wellness'] },
+    // Medicine & Health
+    { category: 'medicine', subcategory: 'supplements', productType: 'protein', concern: 'muscle', aliases: ['protein', 'protein powder', 'whey'] },
+    { category: 'medicine', subcategory: 'supplements', aliases: ['supplement', 'supplements', 'vitamins'] },
+    { category: 'medicine', aliases: ['health', 'wellness', 'medicine', 'medical', 'pharmacy'] },
     
     // Fashion
     { category: 'fashion', subcategory: 'mens', productType: 'shirt', aliases: ['shirt', 'shirts', 'tshirt'] },
@@ -54,9 +54,9 @@ export const canonicalTaxonomies: CanonicalTaxonomy[] = [
     { category: 'pets', subcategory: 'cat', productType: 'food', aliases: ['cat food', 'cat treats'] },
     { category: 'pets', aliases: ['pet care', 'pets', 'pet'] },
     
-    // Food / Groceries
-    { category: 'food', subcategory: 'groceries', productType: 'coffee', aliases: ['coffee', 'coffee beans'] },
-    { category: 'food', aliases: ['food', 'groceries', 'grocery', 'snacks'] },
+    // Groceries
+    { category: 'groceries', subcategory: 'beverages', productType: 'coffee', aliases: ['coffee', 'coffee beans'] },
+    { category: 'groceries', aliases: ['food', 'groceries', 'grocery', 'snacks', 'beverage', 'drinks'] },
     
     // Accessories
     { category: 'accessories', subcategory: 'watches', productType: 'watch', aliases: ['watch', 'watches', 'smartwatch'] },

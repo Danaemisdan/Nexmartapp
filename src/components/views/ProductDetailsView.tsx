@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '@/lib/StoreContext';
-import { ArrowLeft, Star, ShoppingCart, Heart, ShieldCheck, Truck, RotateCcw, Sparkles } from 'lucide-react';
+import { ArrowLeft, Star, ShoppingCart, Heart, ShieldCheck, Truck, RotateCcw, Sparkles, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -10,9 +10,9 @@ export default function ProductDetailsView() {
 
     if (!selectedProduct) {
         return (
-            <div className="flex flex-col items-center justify-center pt-24 h-[70vh]">
-                <p className="text-gray-400">Product not found.</p>
-                <button onClick={() => navigate('home')} className="mt-4 text-yellow-400 font-bold hover:underline">Return Home</button>
+            <div className="flex flex-col items-center justify-center pt-24 h-[70vh] bg-white w-full">
+                <p className="text-gray-500">Product not found.</p>
+                <button onClick={() => navigate('home')} className="mt-4 text-[#FF6A00] font-bold hover:underline">Return Home</button>
             </div>
         );
     }
@@ -22,172 +22,181 @@ export default function ProductDetailsView() {
         ? selectedProduct.images 
         : [selectedProduct.image || 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&q=80'];
 
-    const brand = selectedProduct.brand || 'Generic';
+    const brand = selectedProduct.brand || 'Nexmart';
     const hasRating = selectedProduct.rating !== undefined && selectedProduct.rating !== null && !isNaN(selectedProduct.rating);
     const description = selectedProduct.description || 'No description available.';
 
     return (
-        <div className="max-w-7xl mx-auto w-full px-4 md:px-6 py-4 md:py-8 pb-32">
-            <button 
-                onClick={() => navigate('home')} 
-                className="mb-6 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full inline-flex items-center gap-2 transition-colors font-medium text-sm text-white"
-            >
-                <ArrowLeft className="w-4 h-4" /> Back
-            </button>
+        <div className="w-full min-h-screen bg-white text-[#111111] pb-32 pt-6">
+            <div className="max-w-7xl mx-auto w-full px-4 md:px-8">
+                {/* Breadcrumb / Back Navigation */}
+                <div className="flex items-center gap-2 mb-8 text-gray-500 text-sm font-medium">
+                    <button onClick={() => navigate('home')} className="hover:text-[#111111] transition-colors flex items-center gap-1">
+                        <ArrowLeft className="w-4 h-4" /> Back to Store
+                    </button>
+                    <ChevronRight className="w-4 h-4 opacity-50" />
+                    <span className="capitalize">{selectedProduct.category || 'General'}</span>
+                    <ChevronRight className="w-4 h-4 opacity-50" />
+                    <span className="truncate max-w-[200px] text-[#111111]">{selectedProduct.title}</span>
+                </div>
 
-            <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
-                {/* Image Gallery */}
-                <div className="w-full lg:w-1/2 flex flex-col gap-4">
-                    <motion.div 
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="w-full aspect-square bg-white/95 rounded-[2rem] p-8 flex items-center justify-center relative overflow-hidden shadow-2xl border border-white/20"
-                    >
-                        <button 
-                            onClick={() => toggleWishlist(selectedProduct.id)}
-                            aria-label={`${isWishlisted ? 'Remove from' : 'Add to'} wishlist`}
-                            className="absolute top-6 right-6 w-12 h-12 bg-black/60 hover:bg-black/80 backdrop-blur-md rounded-full shadow-lg flex items-center justify-center z-10 hover:scale-105 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-rose-500 border border-white/20"
+                <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
+                    {/* LEFT COLUMN: Large Image Gallery */}
+                    <div className="w-full lg:w-1/2 flex flex-col gap-6">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="w-full aspect-[4/3] sm:aspect-square bg-[#F8F8F8] rounded-3xl p-8 sm:p-12 flex items-center justify-center relative overflow-hidden border border-[#ECECEC] group"
                         >
-                            <Heart className={`w-6 h-6 transition-colors ${isWishlisted ? 'fill-rose-500 text-rose-500' : 'text-gray-400'}`} />
-                        </button>
-                        
-                        <AnimatePresence mode="wait">
+                            <button 
+                                onClick={() => toggleWishlist(selectedProduct.id)}
+                                aria-label={`${isWishlisted ? 'Remove from' : 'Add to'} wishlist`}
+                                className="absolute top-6 right-6 w-12 h-12 bg-white/80 hover:bg-white rounded-full flex items-center justify-center z-10 hover:scale-105 active:scale-95 transition-all focus:outline-none border border-[#ECECEC] shadow-sm"
+                            >
+                                <Heart className={`w-5 h-5 transition-colors ${isWishlisted ? 'fill-[#FF6A00] text-[#FF6A00]' : 'text-gray-400 hover:text-[#FF6A00]'}`} />
+                            </button>
+                            
+                            <AnimatePresence mode="wait">
                                 <motion.img 
                                     key={currentImage}
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 1.05 }}
+                                    transition={{ duration: 0.3 }}
                                     src={images[currentImage]} 
                                     alt={selectedProduct.title} 
                                     onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                                         e.currentTarget.onerror = null;
                                         e.currentTarget.src = 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&q=80';
                                     }}
-                                    className="max-w-full max-h-full object-contain mix-blend-multiply drop-shadow-2xl" 
+                                    className="max-w-full max-h-full object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-700 mix-blend-multiply" 
                                 />
-                        </AnimatePresence>
-                    </motion.div>
+                            </AnimatePresence>
+                        </motion.div>
 
-                    {/* Thumbnail Strip */}
-                    {images.length > 1 && (
-                        <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
-                            {images.map((img, i) => (
+                        {/* Thumbnail Strip */}
+                        {images.length > 1 && (
+                            <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
+                                {images.map((img, i) => (
+                                    <button 
+                                        key={i} 
+                                        onClick={() => setCurrentImage(i)}
+                                        aria-label={`View image ${i + 1}`}
+                                        className={`w-24 h-24 rounded-2xl bg-[#F8F8F8] border-2 overflow-hidden flex-shrink-0 transition-all focus:outline-none ${currentImage === i ? 'border-[#FF6A00] shadow-md opacity-100' : 'border-transparent opacity-50 hover:opacity-100 hover:border-[#ECECEC]'}`}
+                                    >
+                                        <img 
+                                            src={img} 
+                                            alt={`Thumbnail ${i + 1}`} 
+                                            onError={(e) => {
+                                                e.currentTarget.onerror = null;
+                                                e.currentTarget.src = 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&q=80';
+                                            }}
+                                            className="w-full h-full object-cover mix-blend-multiply" 
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* RIGHT COLUMN: Product Info & Actions */}
+                    <div className="w-full lg:w-1/2 flex flex-col pt-2 lg:pt-4">
+                        <div className="mb-8">
+                            <h2 className="text-sm font-bold text-[#FF6A00] uppercase tracking-wider mb-3 flex items-center gap-2">
+                                {brand}
+                                {selectedProduct.category && (
+                                    <>
+                                        <span className="text-gray-300">•</span>
+                                        <span className="text-gray-500">{selectedProduct.category}</span>
+                                    </>
+                                )}
+                            </h2>
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#111111] leading-tight mb-4">
+                                {selectedProduct.title}
+                            </h1>
+                            
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-1 bg-white border border-[#ECECEC] px-3 py-1.5 rounded-full">
+                                    <Star className="w-4 h-4 fill-[#FF6A00] text-[#FF6A00]" />
+                                    <span className="font-bold text-sm text-[#111111]">{hasRating ? selectedProduct.rating : 'New'}</span>
+                                </div>
+                                {hasRating && (
+                                    <span className="text-gray-500 text-sm font-medium hover:text-[#111111] cursor-pointer transition-colors underline underline-offset-4 decoration-gray-200 hover:decoration-gray-400">
+                                        {selectedProduct.reviews || 0} Reviews
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Pricing */}
+                        <div className="bg-[#F8F8F8] border border-[#ECECEC] rounded-3xl p-6 sm:p-8 mb-8">
+                            <div className="flex items-end gap-4 flex-wrap mb-2">
+                                <span className="text-4xl sm:text-5xl font-black text-[#111111]">{formatPrice(selectedProduct.price)}</span>
+                                {selectedProduct.originalPrice && (
+                                    <span className="text-xl text-gray-500 font-bold line-through mb-1.5">{formatPrice(selectedProduct.originalPrice)}</span>
+                                )}
+                            </div>
+                            {selectedProduct.discount && (
+                                <div className="inline-block bg-[#FF6A00]/10 text-[#FF6A00] px-3 py-1 rounded-full font-bold text-sm mb-4">
+                                    Save {selectedProduct.discount}
+                                </div>
+                            )}
+                            
+                            <p className="text-gray-600 text-sm font-medium mb-6 flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-[#FF6A00]" />
+                                In stock and ready to ship
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row gap-4">
                                 <button 
-                                    key={i} 
-                                    onClick={() => setCurrentImage(i)}
-                                    aria-label={`View image ${i + 1}`}
-                                    className={`w-20 h-20 rounded-xl bg-white/90 border-2 overflow-hidden flex-shrink-0 transition-all focus:outline-none focus:ring-2 focus:ring-yellow-400 ${currentImage === i ? 'border-yellow-400 opacity-100' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                                    onClick={() => {
+                                        addToCart(selectedProduct);
+                                        navigate('checkout');
+                                    }}
+                                    className="flex-1 bg-[#FF6A00] hover:bg-[#E65C00] text-white px-8 py-4 sm:py-5 rounded-2xl font-bold text-lg transition-all active:scale-[0.98] shadow-sm hover:shadow-md"
                                 >
-                                    <img 
-                                        src={img} 
-                                        alt={`Thumbnail ${i + 1}`} 
-                                        onError={(e) => {
-                                            e.currentTarget.onerror = null;
-                                            e.currentTarget.src = 'https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&q=80';
-                                        }}
-                                        className="w-full h-full object-cover mix-blend-multiply" 
-                                    />
+                                    Buy Now
                                 </button>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                {/* Product Info */}
-                <div className="w-full lg:w-1/2 flex flex-col pt-2 lg:pt-8">
-                    <div className="flex items-center gap-2 mb-4">
-                        <span className="bg-white/15 text-white font-extrabold border border-white/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider drop-shadow-sm">{brand}</span>
-                        <span className="bg-sky-500/20 text-sky-200 border border-sky-400/40 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider drop-shadow-sm">{selectedProduct.category || 'General'}</span>
-                    </div>
-
-                    <h1 className="text-3xl md:text-5xl font-black text-white leading-[1.1] mb-4 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-                        {selectedProduct.title}
-                    </h1>
-
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="flex items-center gap-1">
-                            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400 drop-shadow-sm" />
-                            <span className="font-bold text-lg text-white drop-shadow-sm">{hasRating ? selectedProduct.rating : 'New'}</span>
-                        </div>
-                        {hasRating && (
-                            <>
-                                <span className="text-white/30">|</span>
-                                <span className="text-white/80 font-semibold underline decoration-white/40 hover:text-white transition-colors underline-offset-4">{selectedProduct.reviews || 0} reviews</span>
-                            </>
-                        )}
-                    </div>
-
-                    <div className="flex items-end gap-4 mb-8 flex-wrap">
-                        <span className="text-4xl md:text-5xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">{formatPrice(selectedProduct.price)}</span>
-                        {selectedProduct.originalPrice && (
-                            <span className="text-lg md:text-xl text-white/60 font-bold line-through mb-1">{formatPrice(selectedProduct.originalPrice)}</span>
-                        )}
-                        {selectedProduct.discount && (
-                            <span className="bg-red-500 text-white px-2.5 py-1 rounded font-black text-sm mb-2 shadow-md">{selectedProduct.discount}</span>
-                        )}
-                    </div>
-
-                    <p className="text-white/90 text-base md:text-lg leading-relaxed mb-10 font-semibold drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">
-                        {description}
-                    </p>
-
-                    <div className="flex flex-col gap-3 mb-12">
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <button 
-                                onClick={() => {
-                                    addToCart(selectedProduct);
-                                    navigate('cart');
-                                }}
-                                className="flex-1 bg-white text-black px-8 py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-white/10"
-                            >
-                                Buy Now
-                            </button>
-                            <button 
-                                onClick={() => {
-                                    addToCart(selectedProduct);
-                                    toast.success(`${selectedProduct.title} added to cart!`);
-                                }}
-                                aria-label="Add to cart"
-                                className="sm:w-32 bg-white/10 text-white border border-white/20 px-8 py-5 rounded-2xl font-bold flex items-center justify-center hover:bg-white/20 hover:border-white/40 transition-all hover:scale-[1.02] active:scale-95 focus:outline-none focus:ring-2 focus:ring-white"
-                            >
-                                <ShoppingCart className="w-6 h-6" />
-                            </button>
-                        </div>
-                        <button 
-                            onClick={() => toast.success('Checking your Nexmart Credit limit...', { icon: '✨' })}
-                            className="w-full relative overflow-hidden group bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white px-8 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-purple-500/30"
-                        >
-                            <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out skew-x-12"></div>
-                            <Sparkles className="w-5 h-5 text-yellow-200 drop-shadow-md" />
-                            Buy Now, Pay Later
-                        </button>
-                    </div>
-
-                    {/* Features/Trust */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-white/10 pt-8 mt-auto">
-                        <div className="flex items-start gap-3">
-                            <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400 border border-emerald-500/30"><Truck className="w-5 h-5" /></div>
-                            <div>
-                                <h4 className="font-bold text-sm text-white">Free Next-Day Delivery</h4>
-                                <p className="text-xs text-white/80 font-medium mt-1">Available for Prime members</p>
+                                <button 
+                                    onClick={() => {
+                                        addToCart(selectedProduct);
+                                        toast.success(`${selectedProduct.title} added to cart!`);
+                                    }}
+                                    className="flex-1 bg-white hover:bg-gray-50 text-[#111111] border border-[#ECECEC] px-8 py-4 sm:py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98]"
+                                >
+                                    <ShoppingCart className="w-5 h-5" />
+                                    Add to Cart
+                                </button>
                             </div>
                         </div>
-                        <div className="flex items-start gap-3">
-                            <div className="p-2 bg-sky-500/20 rounded-lg text-sky-300 border border-sky-400/40"><ShieldCheck className="w-5 h-5" /></div>
-                            <div>
-                                <h4 className="font-bold text-sm text-white">2-Year AI Warranty</h4>
-                                <p className="text-xs text-white/80 font-medium mt-1">Automatic replacement guarantee</p>
-                            </div>
+
+                        {/* Description */}
+                        <div className="mb-10">
+                            <h3 className="text-xl font-black mb-4">About this product</h3>
+                            <p className="text-gray-600 text-base leading-relaxed font-medium">
+                                {description}
+                            </p>
                         </div>
-                        <div className="flex items-start gap-3">
-                            <div className="p-2 bg-purple-500/20 rounded-lg text-purple-400 border border-purple-500/30"><RotateCcw className="w-5 h-5" /></div>
-                            <div>
-                                <h4 className="font-bold text-sm text-white">30-Day Returns</h4>
-                                <p className="text-xs text-white/80 font-medium mt-1">No questions asked</p>
+
+                        {/* Modern Specification Cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-[#ECECEC] pt-10">
+                            <div className="bg-white border border-[#ECECEC] rounded-2xl p-5 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors">
+                                <Truck className="w-6 h-6 text-[#FF6A00] mb-3" />
+                                <h4 className="font-bold text-[#111111] text-sm mb-1">Fast Delivery</h4>
+                                <p className="text-gray-500 text-xs">Arrives in 2-3 days</p>
+                            </div>
+                            <div className="bg-white border border-[#ECECEC] rounded-2xl p-5 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors">
+                                <ShieldCheck className="w-6 h-6 text-[#FF6A00] mb-3" />
+                                <h4 className="font-bold text-[#111111] text-sm mb-1">Warranty</h4>
+                                <p className="text-gray-500 text-xs">1 Year Included</p>
+                            </div>
+                            <div className="bg-white border border-[#ECECEC] rounded-2xl p-5 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors">
+                                <RotateCcw className="w-6 h-6 text-[#FF6A00] mb-3" />
+                                <h4 className="font-bold text-[#111111] text-sm mb-1">Free Returns</h4>
+                                <p className="text-gray-500 text-xs">30-day guarantee</p>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

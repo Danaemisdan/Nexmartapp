@@ -17,27 +17,28 @@ export interface FilterState {
 }
 
 export function filterAndSortProducts(
-    products: Product[],
+    products: any[],
     query: string,
     filters: FilterState,
     sortOption: SortOption
-): Product[] {
+): any[] {
     let result = products;
 
     // 1. Search Query
     if (query.trim()) {
         const q = query.toLowerCase();
-        result = result.filter(p => 
-            p.title.toLowerCase().includes(q) || 
-            p.category.toLowerCase().includes(q) ||
-            p.description.toLowerCase().includes(q) ||
-            (p.brand && p.brand.toLowerCase().includes(q))
-        );
+        result = result.filter(p => {
+            const titleMatch = p.title?.toLowerCase().includes(q);
+            const categoryMatch = (p.category || p.categoryId || '').toLowerCase().includes(q);
+            const descMatch = (p.description || '').toLowerCase().includes(q);
+            const brandMatch = p.brand && p.brand.toLowerCase().includes(q);
+            return titleMatch || categoryMatch || descMatch || brandMatch;
+        });
     }
 
     // 2. Filters
     if (filters.category) {
-        result = result.filter(p => p.category === filters.category);
+        result = result.filter(p => p.category === filters.category || p.categoryId === filters.category);
     }
     if (filters.brand) {
         result = result.filter(p => p.brand === filters.brand);

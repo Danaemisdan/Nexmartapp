@@ -15,7 +15,7 @@ export default function Home() {
     };
 
     return (
-        <div className="h-screen w-full relative overflow-hidden font-sans bg-[#050505]">
+        <div className="h-screen w-full relative overflow-hidden font-sans bg-[#111111]">
             <LayoutGroup>
                 <AnimatePresence>
                     {appState === 'SPLASH' && (
@@ -25,7 +25,7 @@ export default function Home() {
                     )}
 
                     {appState === 'ONBOARDING' && (
-                        <motion.div key="onboarding" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="absolute inset-0 z-40 bg-[#050505]">
+                        <motion.div key="onboarding" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }} className="absolute inset-0 z-40 bg-[#121212]">
                             <Onboarding onComplete={() => setAppState('HOME')} />
                         </motion.div>
                     )}
