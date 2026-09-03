@@ -154,13 +154,6 @@ export default async function ProductPage({ params }: { params: { id: string } }
                 Buy Now
               </button>
             </div>
-            <button
-              disabled={product.stock === 0}
-              className="w-full relative overflow-hidden group bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 flex items-center justify-center gap-2"
-            >
-              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out skew-x-12"></div>
-              <span className="text-xl">✨</span> Buy Now, Pay Later
-            </button>
           </div>
 
           {/* Trust Badges */}

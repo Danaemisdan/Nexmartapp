@@ -23,7 +23,7 @@ export default async function VendorWalletPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-[#0f1115] rounded-3xl p-8 relative overflow-hidden text-white shadow-2xl h-[280px] flex flex-col justify-between border border-[#1a1f2e]">
-            {/* Background styling for Nexpay prepaid card look */}
+            {/* Background styling for prepaid card look */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#0f1115] via-[#111827] to-[#1e3a8a] opacity-80 pointer-events-none"></div>
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full blur-[100px] opacity-20 -mr-20 -mt-20 pointer-events-none"></div>
             
@@ -59,9 +59,6 @@ export default async function VendorWalletPage() {
                           <p className="font-mono text-lg text-gray-200">12/28</p>
                         </div>
                         <p className="text-sm tracking-wider uppercase text-gray-300 font-medium">VALUED CUSTOMER</p>
-                      </div>
-                      <div className="text-xl font-bold italic tracking-tighter">
-                        Nex<span className="text-yellow-500">pay</span>
                       </div>
                     </div>
                   </>
