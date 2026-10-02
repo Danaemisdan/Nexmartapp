@@ -30,7 +30,7 @@ export function HeroProductCard({
  theme = 'dark'
 }: HeroProductCardProps) {
  const formatPrice = (price: number) => {
- return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
+ return `₦${price.toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
  };
 
  const isLight = theme === 'light';

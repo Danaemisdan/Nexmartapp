@@ -11,7 +11,7 @@ interface MarketplaceProductCardProps {
 
 export default function MarketplaceProductCard({ product, onProductClick, onAddToCart, variant = 'standard' }: MarketplaceProductCardProps) {
  const formatPrice = (price: number) => {
- return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
+ return `₦${price.toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
  };
 
  return (
