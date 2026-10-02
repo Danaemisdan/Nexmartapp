@@ -26,7 +26,7 @@ export class ResultRefinementEngine {
  };
 
  const lowerQuery = followUpQuery.toLowerCase();
- const isSort = lowerQuery.includes('cheapest') || lowerQuery.includes('expensive') || lowerQuery.includes('highest rated') || lowerQuery.includes('newest');
+ const isSort = lowerQuery.includes('cheapest') || lowerQuery.includes('expensive') || lowerQuery.includes('highest rated') || lowerQuery.includes('newest') || lowerQuery.includes('better');
  const isSlice = lowerQuery.includes('top') || lowerQuery.includes('first') || lowerQuery.includes('only') || lowerQuery.includes('keep');
 
  let productsBefore = newContext.productSnapshot.length;
@@ -67,7 +67,7 @@ export class ResultRefinementEngine {
  } else if (lowerQuery.includes('expensive')) {
  newContext.sortState = 'expensive_first';
  newContext.productSnapshot.sort((a, b) => b.price - a.price);
- } else if (lowerQuery.includes('highest rated') || lowerQuery.includes('rating')) {
+ } else if (lowerQuery.includes('highest rated') || lowerQuery.includes('rating') || lowerQuery.includes('better')) {
  newContext.sortState = 'highest_rated';
  newContext.productSnapshot.sort((a, b) => (b.rating || 0) - (a.rating || 0));
  } else if (lowerQuery.includes('newest')) {
@@ -77,7 +77,12 @@ export class ResultRefinementEngine {
  }
 
  // Apply Slice Operations
- if (isSlice) {
+ if (isSlice || lowerQuery.includes('alternative') || lowerQuery.includes('another') || lowerQuery.includes('different')) {
+      if (lowerQuery.includes('alternative') || lowerQuery.includes('another') || lowerQuery.includes('different')) {
+        if (newContext.productSnapshot.length > 1) {
+          newContext.productSnapshot = newContext.productSnapshot.slice(1);
+        }
+      } else {
  const sliceMatch = lowerQuery.match(/(top|first|only|keep)\s*(\d+)/i) || lowerQuery.match(/(show)\s*(only)?\s*(\d+)/i);
  if (sliceMatch) {
  const limit = parseInt(sliceMatch[sliceMatch.length - 1], 10);

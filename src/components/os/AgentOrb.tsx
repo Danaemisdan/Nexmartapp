@@ -56,6 +56,15 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
  const [isDragging, setIsDragging] = useState(false);
  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatHistory, userTranscript, agentMessage, isWorking]);
  
  useEffect(() => {
  const handleMouseMove = (e: MouseEvent) => {

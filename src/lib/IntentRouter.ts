@@ -84,13 +84,13 @@ export class IntentRouter {
  return { intent: IntentType.RESULT_ACTION, action: 'VIEW_CATEGORIES', isRefinement: false };
  } else if (lower === 'deals' || lower.includes('show deals') || lower.includes('view deals') || lower.includes('open deals') || lower.includes('special offers')) {
  return { intent: IntentType.RESULT_ACTION, action: 'VIEW_DEALS', isRefinement: false };
- } else if (lower.includes('profile') || lower.includes('account') || lower.includes('settings')) {
+ } else if (lower.includes('profile') || lower.includes('account') || lower.includes('settings') || lower.includes('address') || lower.includes('password')) {
  return { intent: IntentType.RESULT_ACTION, action: 'VIEW_PROFILE', isRefinement: false };
  } else if (lower.includes('wishlist') || lower.includes('favorite') || lower.includes('save') || lower.includes('heart')) {
  return { intent: IntentType.RESULT_ACTION, action: 'WISHLIST', isRefinement: false };
  } else if (lower.includes('remove') || lower.includes('delete') || lower.includes('empty cart') || lower.includes('keep') || lower.includes('except')) {
  return { intent: IntentType.RESULT_ACTION, action: 'CART_MODIFICATION', isRefinement: false };
- } else if (lower.includes('add') || lower.includes('buy') || lower.includes('purchase')) {
+ } else if (lower.match(/\badd\b/i) || lower.match(/\bbuy\b/i) || lower.match(/\bpurchase\b/i)) {
  return { intent: IntentType.RESULT_ACTION, action: 'ADD_TO_CART', isRefinement: false };
  } else if (lower.includes('compare') || lower.includes('open') || lower.includes('details')) {
  // Future placeholder for generic result actions
@@ -98,7 +98,7 @@ export class IntentRouter {
  }
 
  // 3. Check for Result Refinements
- const refinementIndicators = ['only', 'under', 'above', 'between', 'cheapest', 'expensive', 'highest rated', 'newest', 'top', 'first', 'keep'];
+ const refinementIndicators = ['only', 'under', 'above', 'between', 'cheapest', 'expensive', 'highest rated', 'newest', 'top', 'first', 'keep', 'better', 'alternative', 'another', 'different'];
  // Use word boundaries to prevent substring matches (e.g. 'top' in 'laptops')
  const hasRefinementWord = refinementIndicators.some(w => lower.match(new RegExp(`\\b${w}\\b`, 'i')));
  
