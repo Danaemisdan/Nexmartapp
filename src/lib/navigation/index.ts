@@ -10,11 +10,11 @@ import { sportsNav } from './sports';
 export * from './types';
 
 export const megaMenuData: NavData[] = [
-    fashionNav,
-    homeNav,
-    beautyNav,
-    electronicsNav,
-    groceriesNav,
-    medicineNav,
-    sportsNav
+ fashionNav,
+ homeNav,
+ beautyNav,
+ electronicsNav,
+ groceriesNav,
+ medicineNav,
+ sportsNav
 ];

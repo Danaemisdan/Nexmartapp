@@ -11,36 +11,36 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' })
 
 export const metadata = {
-  title: "Nexmart AI : World's first AI that shops for you",
-  description: "The world's first large-scale Agentic Commerce platform powered by intelligent AI agents that discover, compare, negotiate, purchase, and manage products on your behalf.",
+ title: "Nexmart AI : World's first AI that shops for you",
+ description: "The world's first large-scale Agentic Commerce platform powered by intelligent AI agents that discover, compare, negotiate, purchase, and manage products on your behalf.",
 }
 
 export const viewport = {
-  themeColor: '#000000',
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+ themeColor: '#000000',
+ width: 'device-width',
+ initialScale: 1,
+ maximumScale: 1,
+ userScalable: false,
 }
 
 export default function RootLayout({
-  children,
+ children,
 }: {
-  children: React.ReactNode
+ children: React.ReactNode
 }) {
-  return (
-    <html lang="en" className={cn(inter.variable, outfit.variable, "font-sans", geist.variable)}>
-      <body 
-        className="min-h-screen bg-gray-50 text-gray-900 antialiased"
-        style={{ fontFamily: 'var(--font-outfit), sans-serif' }}
-      >
-        <ClerkProvider>
-          <CartProvider>
-            {children}
-            <Toaster position="top-center" richColors theme="light" />
-          </CartProvider>
-        </ClerkProvider>
-      </body>
-    </html>
-  )
+ return (
+ <html lang="en" className={cn(inter.variable, outfit.variable, "font-sans", geist.variable)}>
+ <body 
+ className="min-h-screen bg-gray-50 text-gray-900 antialiased"
+ style={{ fontFamily: 'var(--font-outfit), sans-serif' }}
+ >
+ <ClerkProvider>
+ <CartProvider>
+ {children}
+ <Toaster position="top-center" richColors theme="light" />
+ </CartProvider>
+ </ClerkProvider>
+ </body>
+ </html>
+ )
 }

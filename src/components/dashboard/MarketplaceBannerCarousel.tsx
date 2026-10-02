@@ -4,100 +4,99 @@ import { promoBanners } from '@/lib/marketplaceData';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function MarketplaceBannerCarousel() {
-    const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % promoBanners.length);
-        }, 5000);
-        return () => clearInterval(timer);
-    }, []);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % promoBanners.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
 
-    const handleNext = () => {
-        setCurrentIndex((prev) => (prev + 1) % promoBanners.length);
-    };
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % promoBanners.length);
+  };
 
-    const handlePrev = () => {
-        setCurrentIndex((prev) => (prev - 1 + promoBanners.length) % promoBanners.length);
-    };
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + promoBanners.length) % promoBanners.length);
+  };
 
-    return (
-        <div className="w-full relative bg-gray-100 overflow-hidden group rounded-3xl" style={{ height: 'calc(100vh - 450px)', minHeight: '300px', maxHeight: '420px' }}>
-            <AnimatePresence initial={false} mode="wait">
-                <motion.div
-                    key={currentIndex}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute inset-0 w-full h-full flex"
-                    style={{ backgroundColor: promoBanners[currentIndex].backgroundColor }}
-                >
-                    <div className="w-1/2 h-full flex flex-col justify-center px-12 md:px-24">
-                        <motion.h2 
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.2 }}
-                            className="text-4xl md:text-6xl font-black mb-4 tracking-tight leading-none"
-                            style={{ color: promoBanners[currentIndex].textColor }}
-                        >
-                            {promoBanners[currentIndex].title}
-                        </motion.h2>
-                        <motion.p 
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.3 }}
-                            className="text-lg md:text-2xl font-bold opacity-80 mb-8"
-                            style={{ color: promoBanners[currentIndex].textColor }}
-                        >
-                            {promoBanners[currentIndex].subtitle}
-                        </motion.p>
-                        <motion.button 
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.4 }}
-                            className="px-8 py-3 rounded-xl font-bold text-lg w-max shadow-lg transition-transform hover:-translate-y-1"
-                            style={{ backgroundColor: promoBanners[currentIndex].textColor, color: promoBanners[currentIndex].backgroundColor }}
-                        >
-                            Shop Now
-                        </motion.button>
-                    </div>
-                    <div className="w-1/2 h-full relative">
-                        <img 
-                            src={promoBanners[currentIndex].image} 
-                            alt={promoBanners[currentIndex].title}
-                            className="w-full h-full object-cover"
-                        />
-                        {/* Gradient fade to blend image with solid color */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg-color)] to-transparent w-1/3" style={{ '--bg-color': promoBanners[currentIndex].backgroundColor } as React.CSSProperties} />
-                    </div>
-                </motion.div>
-            </AnimatePresence>
+  return (
+    <div className="w-full relative overflow-hidden group rounded-[2.5rem]" style={{ height: 'calc(100vh - 450px)', minHeight: '350px', maxHeight: '500px' }}>
+      <AnimatePresence initial={false} mode="wait">
+        <motion.div
+          key={currentIndex}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
+          className="absolute inset-0 w-full h-full"
+        >
+          {/* Full Cover Image */}
+          <img 
+            src={promoBanners[currentIndex].image} 
+            alt={promoBanners[currentIndex].title}
+            className="w-full h-full object-cover object-center"
+          />
+          
+          {/* Premium Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent md:hidden" />
 
-            {/* Controls */}
-            <button 
-                onClick={handlePrev}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-24 bg-white/80 hover:bg-white text-gray-800 flex items-center justify-center rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          {/* Content */}
+          <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-20 w-full md:w-2/3">
+            <motion.h2 
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="text-4xl md:text-7xl font-black mb-4 tracking-tight leading-[1.1] text-white"
             >
-                <ChevronLeft className="w-8 h-8" />
-            </button>
-            <button 
-                onClick={handleNext}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-24 bg-white/80 hover:bg-white text-gray-800 flex items-center justify-center rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              {promoBanners[currentIndex].title}
+            </motion.h2>
+            <motion.p 
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="text-lg md:text-2xl font-medium text-gray-200 mb-8 max-w-xl"
             >
-                <ChevronRight className="w-8 h-8" />
-            </button>
+              {promoBanners[currentIndex].subtitle}
+            </motion.p>
+            <motion.button 
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="px-8 py-3.5 rounded-full font-semibold text-lg w-max bg-white text-black hover:bg-gray-100 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] hover:scale-105 active:scale-95"
+            >
+              Shop Now
+            </motion.button>
+          </div>
+        </motion.div>
+      </AnimatePresence>
 
-            {/* Dots */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                {promoBanners.map((_, idx) => (
-                    <button 
-                        key={idx}
-                        onClick={() => setCurrentIndex(idx)}
-                        className={`h-2 rounded-full transition-all ${idx === currentIndex ? 'w-8 bg-[#111111]' : 'w-2 bg-[#111111]/30'}`}
-                    />
-                ))}
-            </div>
-        </div>
-    );
+      {/* Controls */}
+      <button 
+        onClick={handlePrev}
+        className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/20 hover:bg-black/40 backdrop-blur-md text-white flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all z-10 hover:scale-110 border border-white/10"
+      >
+        <ChevronLeft className="w-6 h-6 ml-[-2px]" />
+      </button>
+      <button 
+        onClick={handleNext}
+        className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/20 hover:bg-black/40 backdrop-blur-md text-white flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all z-10 hover:scale-110 border border-white/10"
+      >
+        <ChevronRight className="w-6 h-6 mr-[-2px]" />
+      </button>
+
+      {/* Sleek Dots */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-10">
+        {promoBanners.map((_, idx) => (
+          <button 
+            key={idx}
+            onClick={() => setCurrentIndex(idx)}
+            className={`h-1.5 rounded-full transition-all duration-500 ${idx === currentIndex ? 'w-10 bg-white' : 'w-2 bg-white/40 hover:bg-white/60'}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
