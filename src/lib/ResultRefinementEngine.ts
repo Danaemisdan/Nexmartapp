@@ -83,16 +83,17 @@ export class ResultRefinementEngine {
           newContext.productSnapshot = newContext.productSnapshot.slice(1);
         }
       } else {
- const sliceMatch = lowerQuery.match(/(top|first|only|keep)\s*(\d+)/i) || lowerQuery.match(/(show)\s*(only)?\s*(\d+)/i);
- if (sliceMatch) {
- const limit = parseInt(sliceMatch[sliceMatch.length - 1], 10);
- if (!isNaN(limit) && limit > 0) {
- newContext.productSnapshot = newContext.productSnapshot.slice(0, limit);
- }
- }
- }
- 
- newContext.totalResultCount = newContext.productSnapshot.length;
+        const sliceMatch = lowerQuery.match(/(top|first|only|keep)\s*(\d+)/i) || lowerQuery.match(/(show)\s*(only)?\s*(\d+)/i);
+        if (sliceMatch) {
+          const limit = parseInt(sliceMatch[sliceMatch.length - 1], 10);
+          if (!isNaN(limit) && limit > 0) {
+            newContext.productSnapshot = newContext.productSnapshot.slice(0, limit);
+          }
+        }
+      }
+    }
+    
+    newContext.totalResultCount = newContext.productSnapshot.length;
 
  if (process.env.NODE_ENV === 'development') {
  console.log(`🔍 [Refinement] Products Before: ${productsBefore} | After: ${newContext.totalResultCount}`);
