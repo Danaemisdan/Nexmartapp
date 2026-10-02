@@ -606,7 +606,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
  }
  };
  
- const handleTextSubmit = (e) => {
+ const handleTextSubmit = (e: React.FormEvent) => {
  e.preventDefault();
  if (input.trim()) {
  handleSemanticTask(input.trim());
