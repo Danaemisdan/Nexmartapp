@@ -280,7 +280,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
  // Play the hardcoded welcome tour instantly
  const playWelcome = async () => {
  try {
- await speak("Welcome to Nexmart... the smart way of shopping. I am your AI assistant. Please wait while I download my neural core...", true);
+ await speak("Welcome to Nexmart! I'm your AI assistant. I am ready to help you search and shop while my advanced neural core boots up in the background. What are you looking for today?", true);
  } catch(err) {
  console.warn("Autoplay blocked. User needs to interact with page first.");
  }
@@ -358,7 +358,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
  setIsBooting(false);
  
  // Announce when fully loaded
- speak("My neural core is online. I am ready to help you shop!", true);
+ toast.success("Neural core is now fully online for advanced conversations!");
  } catch (error) {
  console.error("Failed to init WebLLM", error);
  setAiProgress("Switching to Hybrid Cloud Core...");
@@ -689,7 +689,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
  // Inactivity timer removed to prevent audio queue race conditions
 
  const handleSemanticTask = async (userMessage: string) => {
- if (!engine || !userMessage.trim()) return;
+ if (!userMessage.trim()) return;
  
  setCurrentTask(userMessage);
  setInput('');
