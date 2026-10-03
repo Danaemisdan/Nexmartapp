@@ -536,11 +536,14 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
  };
 
  const stopTalking = () => {
- if (audioRef.current) {
- audioRef.current.pause();
- audioRef.current.currentTime = 0;
- }
- };
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    audioQueue.current = [];
+    isPlayingAudio.current = false;
+    setWorkflowState('IDLE');
+  };
 
  const startListening = () => {
  stopTalking();

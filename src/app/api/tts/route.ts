@@ -16,7 +16,7 @@ export async function GET(req: Request) {
  await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
  
  // Instead of streaming, we wait for the buffer to finish to prevent Vercel 500 crashes
- const { audioStream } = tts.toStream(text);
+ const { audioStream } = tts.toStream(text, { rate: '+15%' });
  
  const chunks: Uint8Array[] = [];
  for await (const chunk of audioStream) {
