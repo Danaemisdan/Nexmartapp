@@ -923,7 +923,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
  if (matchingProducts.length > 0) {
  fullResponse = `I found a few options that match your search. Take a look below. How would you like to continue? I can compare them, add one to your cart, or show more options.`;
  } else {
- fullResponse = `Sorry, I couldn't find any matching products on Nexmart. If you'd like, you can try another search or I can help you find something similar.`;
+ action = 'CHAT_GENERAL'; // Escalate empty searches directly to the LLM to handle conversationally!
  }
  } else if (action === 'ADD_TO_CART') {
  fullResponse = `I've added the selected item(s) to your cart. What would you like to do next? You can continue shopping, view your cart, or proceed to checkout.`;
@@ -971,6 +971,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
  fullResponse = `We regularly feature amazing deals and discounts! Check out our Deals section from the menu to see today's top discounted items and special promotions.`;
  }
  
+ if (action !== 'CHAT_GENERAL') {
  setAgentMessage(fullResponse);
  speak(fullResponse, false);
  
@@ -1006,6 +1007,7 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
  }
  
  return; 
+ }
  }
 
  // 5. Fallback to LLM for conversational CHAT intents
