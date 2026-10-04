@@ -80,17 +80,49 @@ export default function AgentOrb({ workflowState, setWorkflowState, setCurrentTa
  audioRef.current = new Audio();
 
     const nukeClerkBadge = () => {
-      document.querySelectorAll('div').forEach(d => {
-        if (
-          d.style.position === 'fixed' && 
-          d.textContent && 
-          (d.textContent.includes('Configure your application') || d.textContent.includes('created your first user'))
-        ) {
-          d.style.display = 'none';
+      // 1. Hide by text content (ignoring inline styles)
+      const walkDOM = (node: any) => {
+        if (node.nodeType === 3) {
+          const text = node.textContent || '';
+          if (text.includes('Configure your application') || text.includes('created your first user')) {
+            let parent = node.parentElement;
+            while (parent && parent.tagName !== 'BODY') {
+              if (parent.id === 'clerk-components' || parent.style.position === 'fixed' || parent.style.position === 'absolute' || window.getComputedStyle(parent).position === 'fixed') {
+                parent.style.display = 'none';
+                parent.style.opacity = '0';
+                parent.style.pointerEvents = 'none';
+                break;
+              }
+              parent = parent.parentElement;
+            }
+          }
+        } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT') {
+          // Check shadow DOM
+          if (node.shadowRoot) walkDOM(node.shadowRoot);
+          for (let i = 0; i < node.childNodes.length; i++) {
+            walkDOM(node.childNodes[i]);
+          }
         }
-      });
+      };
+      
+      walkDOM(document.body);
+      
+      // 2. Hide by brute force Clerk internal classes if they exist
+      const styles = document.createElement('style');
+      styles.innerHTML = `
+        .cl-devModeBadge, .cl-developmentModeBadge, 
+        [class*="cl-internal-"] { 
+           display: none !important; 
+           opacity: 0 !important; 
+           pointer-events: none !important; 
+        }
+      `;
+      if (!document.getElementById('anti-clerk-styles')) {
+        styles.id = 'anti-clerk-styles';
+        document.head.appendChild(styles);
+      }
     };
-    const interval = setInterval(nukeClerkBadge, 500);
+    const interval = setInterval(nukeClerkBadge, 200);
 
  
  // Auto-boot immediately (50ms delay) so it downloads in the background during the splash screen
