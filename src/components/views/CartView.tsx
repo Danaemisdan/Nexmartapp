@@ -177,7 +177,7 @@ export default function CartView() {
  <div className="w-8 h-8 bg-blue-50 border border-blue-100 rounded flex-shrink-0" />
  <div>
  <p className="text-sm font-bold text-[#1D1D1F]">10% Instant Discount</p>
- <p className="text-xs text-gray-500">On IDFC FIRST SWYP Credit Card on min spend of ₹850</p>
+ <p className="text-xs text-gray-500">On IDFC FIRST SWYP Credit Card on min spend of ₦850</p>
  <button className="text-xs font-bold text-[#FF6A00] mt-1">View Eligible Styles {'>'}</button>
  </div>
  </div>
@@ -227,8 +227,8 @@ export default function CartView() {
  </div>
 
  <div className="flex items-center gap-2 mb-2">
- <span className="font-bold text-sm text-[#1D1D1F]">₹{Math.floor(item.product.price)}</span>
- <span className="text-xs text-gray-400 line-through">₹{Math.floor(item.product.price * 1.5)}</span>
+ <span className="font-bold text-sm text-[#1D1D1F]">₦{Math.floor(item.product.price)}</span>
+ <span className="text-xs text-gray-400 line-through">₦{Math.floor(item.product.price * 1.5)}</span>
  <span className="text-xs font-bold text-[#FF6A00]">(33% OFF)</span>
  </div>
  
@@ -279,7 +279,7 @@ export default function CartView() {
  <span className="font-bold text-sm text-[#1D1D1F]">Donate and make a difference</span>
  </div>
  <div className="flex gap-3 mb-2">
- {['₹10', '₹20', '₹50', '₹100'].map(amt => (
+ {['₦10', '₦20', '₦50', '₦100'].map(amt => (
  <button key={amt} className="flex-1 py-2 border border-gray-200 rounded-full text-sm font-bold text-[#1D1D1F] hover:border-[#FF6A00]">
  {amt}
  </button>
@@ -295,11 +295,11 @@ export default function CartView() {
  <div className="space-y-3 text-sm text-[#1D1D1F] mb-4">
  <div className="flex justify-between">
  <span>Total MRP</span>
- <span>₹{totalMRP}</span>
+ <span>₦{totalMRP}</span>
  </div>
  <div className="flex justify-between">
  <span>Discount on MRP</span>
- <span className="text-[#00BFA5]">- ₹{totalDiscount}</span>
+ <span className="text-[#00BFA5]">- ₦{totalDiscount}</span>
  </div>
  <div className="flex justify-between">
  <span>Coupon Discount</span>
@@ -307,7 +307,7 @@ export default function CartView() {
  </div>
  <div className="flex justify-between">
  <span>Platform Fee <span className="text-[#FF6A00] text-xs cursor-pointer ml-1 hover:underline">Know More</span></span>
- <span>₹23</span>
+ <span>₦23</span>
  </div>
  <div className="flex justify-between">
  <span>Shipping Fee</span>
@@ -318,7 +318,7 @@ export default function CartView() {
  <div className="border-t border-gray-200 pt-4 mb-4">
  <div className="flex justify-between items-center">
  <span className="font-bold text-[#1D1D1F] text-base">Total Amount</span>
- <span className="font-bold text-[#1D1D1F] text-base">₹{totalAmount}</span>
+ <span className="font-bold text-[#1D1D1F] text-base">₦{totalAmount}</span>
  </div>
  </div>
 

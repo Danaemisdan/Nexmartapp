@@ -103,7 +103,7 @@ export default function CheckoutView() {
  <Tag className="w-5 h-5 text-[#00BFA5]" />
  <div>
  <span className="font-bold text-sm text-[#1D1D1F]">Bank Offer</span>
- <p className="text-xs text-gray-500">10% Instant Discount on IDFC FIRST SWYP Credit Card on min spend of ₹850</p>
+ <p className="text-xs text-gray-500">10% Instant Discount on IDFC FIRST SWYP Credit Card on min spend of ₦850</p>
  </div>
  </div>
  
@@ -200,11 +200,11 @@ export default function CheckoutView() {
  <div className="space-y-3 text-sm text-[#1D1D1F] mb-4">
  <div className="flex justify-between">
  <span>Total MRP</span>
- <span>₹{totalMRP}</span>
+ <span>₦{totalMRP}</span>
  </div>
  <div className="flex justify-between">
  <span>Discount on MRP</span>
- <span className="text-[#00BFA5]">- ₹{totalDiscount}</span>
+ <span className="text-[#00BFA5]">- ₦{totalDiscount}</span>
  </div>
  <div className="flex justify-between">
  <span>Coupon Discount</span>
@@ -212,7 +212,7 @@ export default function CheckoutView() {
  </div>
  <div className="flex justify-between">
  <span>Platform Fee</span>
- <span>₹23</span>
+ <span>₦23</span>
  </div>
  <div className="flex justify-between">
  <span>Shipping Fee</span>
@@ -223,7 +223,7 @@ export default function CheckoutView() {
  <div className="border-t border-gray-200 pt-4 mb-4">
  <div className="flex justify-between items-center">
  <span className="font-bold text-[#1D1D1F] text-base">Total Amount</span>
- <span className="font-bold text-[#1D1D1F] text-base">₹{totalAmount}</span>
+ <span className="font-bold text-[#1D1D1F] text-base">₦{totalAmount}</span>
  </div>
  </div>
 

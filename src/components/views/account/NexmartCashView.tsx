@@ -19,7 +19,7 @@ export default function NexmartCashView() {
  </div>
  <div className="relative z-10">
  <p className="text-[#E0F2F1] font-medium text-sm mb-1 uppercase tracking-wider">Total Cash</p>
- <h3 className="text-4xl font-black">₹0.00</h3>
+ <h3 className="text-4xl font-black">₦0.00</h3>
  </div>
  </div>
 
@@ -30,7 +30,7 @@ export default function NexmartCashView() {
  <h4 className="font-bold text-[#1D1D1F]">How it works?</h4>
  </div>
  <p className="text-sm text-gray-600 leading-relaxed">
- Nexmart Cash is earned through special promotions or refunds. 1 Nexmart Cash = ₹1. It can be used to pay for up to 100% of your order value on any purchase.
+ Nexmart Cash is earned through special promotions or refunds. 1 Nexmart Cash = ₦1. It can be used to pay for up to 100% of your order value on any purchase.
  </p>
  </div>
  </div>

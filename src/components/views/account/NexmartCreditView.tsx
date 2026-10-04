@@ -19,7 +19,7 @@ export default function NexmartCreditView() {
  </div>
  <div className="relative z-10">
  <p className="text-gray-400 font-medium text-sm mb-1 uppercase tracking-wider">Available Balance</p>
- <h3 className="text-4xl font-black">₹0.00</h3>
+ <h3 className="text-4xl font-black">₦0.00</h3>
  </div>
  <div className="relative z-10 mt-6 pt-4 border-t border-gray-800">
  <button className="text-[#FF6A00] font-bold text-sm hover:text-[#FF8A1F] transition-colors uppercase">

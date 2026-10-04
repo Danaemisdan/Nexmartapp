@@ -56,8 +56,8 @@ export default function ProductVariantModal({ isOpen, onClose, product, onConfir
  <div className="flex flex-col">
  <h4 className="text-sm font-semibold text-[#1D1D1F] line-clamp-1">{product.title}</h4>
  <div className="flex items-center gap-2 mt-1">
- <span className="text-sm font-bold text-[#1D1D1F]">₹{product.price}</span>
- <span className="text-xs text-gray-400 line-through">₹{Math.floor(product.price * 1.5)}</span>
+ <span className="text-sm font-bold text-[#1D1D1F]">₦{product.price}</span>
+ <span className="text-xs text-gray-400 line-through">₦{Math.floor(product.price * 1.5)}</span>
  <span className="text-xs font-bold text-[#FF6A00]">(33% OFF)</span>
  </div>
  </div>

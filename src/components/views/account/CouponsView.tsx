@@ -42,13 +42,13 @@ export default function CouponsView() {
  </div>
  <div>
  <span className="font-bold text-[#1D1D1F] bg-gray-100 px-2 py-1 border border-gray-200 border-dashed rounded text-xs tracking-widest uppercase">WELCOME400</span>
- <p className="text-sm font-bold text-[#1D1D1F] mt-1">Flat ₹400 OFF on your first order</p>
+ <p className="text-sm font-bold text-[#1D1D1F] mt-1">Flat ₦400 OFF on your first order</p>
  </div>
  </div>
  <span className="text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded">Expires in 2 days</span>
  </div>
  <p className="text-xs text-gray-500 pl-3 leading-relaxed">
- Valid on a minimum spend of ₹1,999. Applicable on select products. Cannot be combined with other offers.
+ Valid on a minimum spend of ₦1,999. Applicable on select products. Cannot be combined with other offers.
  </p>
  </div>
 
@@ -67,7 +67,7 @@ export default function CouponsView() {
  <span className="text-xs font-bold text-gray-400">Valid till 31 Dec 2026</span>
  </div>
  <p className="text-xs text-gray-500 pl-3 leading-relaxed">
- Valid on all fashion categories. Max discount ₹500.
+ Valid on all fashion categories. Max discount ₦500.
  </p>
  </div>
  </>

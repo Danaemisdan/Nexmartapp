@@ -364,8 +364,8 @@ export default function OrdersView() {
  <h4 className="text-xs font-bold text-[#1D1D1F] truncate">{item.brand}</h4>
  <p className="text-[11px] text-gray-500 truncate mb-1">{item.name}</p>
  <div className="flex items-center gap-1 text-[11px]">
- <span className="line-through text-gray-400">₹{item.oldPrice}</span>
- <span className="font-bold text-[#1D1D1F]">₹{item.price}</span>
+ <span className="line-through text-gray-400">₦{item.oldPrice}</span>
+ <span className="font-bold text-[#1D1D1F]">₦{item.price}</span>
  <span className="text-[#FF6A00] font-bold">{item.off} OFF</span>
  </div>
  <span className="text-[10px] text-gray-500 mt-1 block">{item.size}</span>
@@ -409,7 +409,7 @@ export default function OrdersView() {
  ) : order.status === 'REFUND_CREDITED' ? (
  <>
  <h4 className="font-bold text-[#1D1D1F] text-[15px]">Refund Credited</h4>
- <p className="text-xs text-gray-500 mt-1">Your refund of <span className="font-bold">₹{order.amount?.toFixed(2)}</span> for the return has been processed successfully on {order.dateText}.</p>
+ <p className="text-xs text-gray-500 mt-1">Your refund of <span className="font-bold">₦{order.amount?.toFixed(2)}</span> for the return has been processed successfully on {order.dateText}.</p>
  <button className="text-[11px] font-bold text-red-500 mt-1 uppercase tracking-wider">View Refund details</button>
  </>
  ) : (
